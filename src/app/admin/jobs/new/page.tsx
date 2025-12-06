@@ -1,3 +1,5 @@
+"use client";
+
 import { createJob } from "@/lib/actions/jobs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +14,26 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function PostJobPage() {
+    const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    async function handleSubmit(formData: FormData) {
+        setIsSubmitting(true);
+        try {
+            await createJob(formData);
+            router.push("/jobs");
+            router.refresh();
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to create job. Please try again.");
+            setIsSubmitting(false);
+        }
+    }
+
     return (
         <div className="container mx-auto py-10 px-4 max-w-2xl">
             <Card>
@@ -21,7 +41,7 @@ export default function PostJobPage() {
                     <CardTitle>Post a New Job</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form action={createJob} className="space-y-6">
+                    <form action={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="title">Job Title</Label>
                             <Input id="title" name="title" required placeholder="e.g. Registered Nurse" />
@@ -73,7 +93,9 @@ export default function PostJobPage() {
                             />
                         </div>
 
-                        <Button type="submit" className="w-full">Post Job</Button>
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? "Posting..." : "Post Job"}
+                        </Button>
                     </form>
                 </CardContent>
             </Card>

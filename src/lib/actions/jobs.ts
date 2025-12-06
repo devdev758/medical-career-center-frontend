@@ -74,7 +74,6 @@ export async function createJob(formData: FormData) {
         });
 
         revalidatePath("/jobs");
-        redirect("/jobs");
     } catch (error) {
         console.error("Failed to create job:", error);
         console.error("Error details:", {
