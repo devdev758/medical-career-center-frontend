@@ -7,35 +7,43 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  JOB_SEEKER
+  EMPLOYER
+  ADMIN
+}
+
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("USER") // USER, ADMIN
+  role          UserRole      @default(JOB_SEEKER)
+  companyId     String?
+  company       Company?      @relation(fields: [companyId], references: [id])
   accounts      Account[]
   sessions      Session[]
   applications  Application[]
   savedJobs     SavedJob[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -65,17 +73,23 @@ model Company {
   logo        String?
   website     String?
   description String?  @db.Text
+  location    String?
+  industry    String?
+  size        String? // 1-10, 11-50, 51-200, 201-500, 500+
+  founded     String?
+  verified    Boolean  @default(false)
   jobs        Job[]
+  users       User[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Category {
-  id    String @id @default(cuid())
-  name  String @unique
-  slug  String @unique
-  icon  String?
-  jobs  Job[]
+  id   String  @id @default(cuid())
+  name String  @unique
+  slug String  @unique
+  icon String?
+  jobs Job[]
 }
 
 model Job {
@@ -113,10 +127,11 @@ model Application {
   id          String   @id @default(cuid())
   jobId       String
   userId      String
-  status      String   @default("PENDING") // PENDING, REVIEWED, REJECTED, HIRED
+  status      String   @default("PENDING") // PENDING, REVIEWED, SHORTLISTED, REJECTED, HIRED
   phone       String?
   resumeUrl   String?
   coverLetter String?  @db.Text
+  notes       String?  @db.Text // Internal notes from employer
   job         Job      @relation(fields: [jobId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
   appliedAt   DateTime @default(now())
