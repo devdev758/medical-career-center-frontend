@@ -77,6 +77,18 @@ export async function createJob(formData: FormData) {
         redirect("/jobs");
     } catch (error) {
         console.error("Failed to create job:", error);
-        throw new Error("Failed to create job");
+        console.error("Error details:", {
+            message: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            formData: {
+                title,
+                companyName,
+                location,
+                salary,
+                type,
+                remote
+            }
+        });
+        throw new Error(`Failed to create job: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
