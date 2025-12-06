@@ -8,7 +8,11 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
-        await signIn("credentials", formData);
+        await signIn("credentials", {
+            redirect: true,
+            redirectTo: "/jobs",
+            ...Object.fromEntries(formData),
+        });
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
