@@ -52,15 +52,11 @@ export default async function PostJobPage() {
                                         <SelectValue placeholder="Select category" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {categories.length === 0 ? (
-                                            <SelectItem value="" disabled>No categories available</SelectItem>
-                                        ) : (
-                                            categories.map((category) => (
-                                                <SelectItem key={category.id} value={category.id}>
-                                                    {category.icon} {category.name}
-                                                </SelectItem>
-                                            ))
-                                        )}
+                                        {categories.map((category) => (
+                                            <SelectItem key={category.id} value={category.id}>
+                                                {category.icon} {category.name}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
