@@ -1,0 +1,82 @@
+import { createJob } from "@/lib/actions/jobs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function PostJobPage() {
+    return (
+        <div className="container mx-auto py-10 px-4 max-w-2xl">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Post a New Job</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form action={createJob} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="title">Job Title</Label>
+                            <Input id="title" name="title" required placeholder="e.g. Registered Nurse" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="companyName">Company Name</Label>
+                            <Input id="companyName" name="companyName" required placeholder="e.g. City Hospital" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="location">Location</Label>
+                            <Input id="location" name="location" placeholder="e.g. New York, NY" />
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="remote" name="remote" />
+                            <Label htmlFor="remote">Remote Position</Label>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="type">Job Type</Label>
+                            <Select name="type" defaultValue="FULL_TIME">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="FULL_TIME">Full Time</SelectItem>
+                                    <SelectItem value="PART_TIME">Part Time</SelectItem>
+                                    <SelectItem value="CONTRACT">Contract</SelectItem>
+                                    <SelectItem value="INTERNSHIP">Internship</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="salary">Salary Range</Label>
+                            <Input id="salary" name="salary" placeholder="e.g. $80,000 - $100,000" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Job Description</Label>
+                            <Textarea
+                                id="description"
+                                name="description"
+                                required
+                                className="min-h-[200px]"
+                                placeholder="Describe the role, responsibilities, and requirements..."
+                            />
+                        </div>
+
+                        <Button type="submit" className="w-full">Post Job</Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
