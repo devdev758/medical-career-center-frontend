@@ -1,8 +1,13 @@
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -11,45 +16,6 @@ export default async function ProfilePage() {
         redirect("/login?callbackUrl=/dashboard/profile");
     }
 
-    return (
-        <main className="container mx-auto py-10 px-4 max-w-2xl">
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Profile Settings</h1>
-                <p className="text-muted-foreground">
-                    Manage your account information
-                </p>
-            </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Account Information</CardTitle>
-                    <CardDescription>
-                        Your profile details
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">Name</p>
-                        <p className="text-lg">{session.user.name || "Not set"}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">Email</p>
-                        <p className="text-lg">{session.user.email}</p>
-                    </div>
-
-                    <div className="pt-4 border-t">
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Profile editing features coming soon! You'll be able to update your name,
-                            add a bio, upload a profile picture, and manage your resume.
-                        </p>
-                        <Button asChild variant="outline">
-                            <Link href="/dashboard">
-                                Back to Dashboard
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </main>
-    );
-}
+    async function updateProfile(formData: FormData) {
+        "use server";
+        const name = formData.get

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Building2, MapPin, Clock, DollarSign } from "lucide-react";
+import { Building2, MapPin, Clock, DollarSign, ArrowLeft } from "lucide-react";
 import { BookmarkButton } from "@/components/bookmark-button";
 
 export default async function SavedJobsPage() {
@@ -19,6 +19,11 @@ export default async function SavedJobsPage() {
 
     return (
         <main className="container mx-auto py-10 px-4">
+            <Link href="/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back to Dashboard
+            </Link>
+
             <div className="mb-8">
                 <h1 className="text-4xl font-bold mb-2">Saved Jobs</h1>
                 <p className="text-muted-foreground">

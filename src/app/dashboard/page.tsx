@@ -1,5 +1,6 @@
 import { getUserApplications } from "@/lib/actions/applications";
 import { getSavedJobs } from "@/lib/actions/saved-jobs";
+import { logout } from "@/lib/actions/auth";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,15 +25,23 @@ export default async function DashboardPage() {
 
     return (
         <main className="container mx-auto py-10 px-4">
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-                <p className="text-muted-foreground">
-                    Welcome back, {session.user.name || session.user.email}!
-                </p>
+            <div className="mb-8 flex justify-between items-start">
+                <div>
+                    <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        Welcome back, {session.user.name || session.user.email}!
+                    </p>
+                </div>
+                <form action={logout}>
+                    <Button variant="outline" type="submit">
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                    </Button>
+                </form>
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md://grid-cols-3 gap-6 mb-8">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
