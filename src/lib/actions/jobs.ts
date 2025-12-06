@@ -3,9 +3,55 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function getJobs() {
+interface SearchFilters {
+    keyword?: string;
+    location?: string;
+    categoryId?: string;
+    experienceLevel?: string;
+    jobType?: string;
+    remote?: boolean;
+}
+
+export async function searchJobs(filters: SearchFilters = {}) {
     try {
+        const where: any = {};
+
+        // Keyword search (title, description, company name)
+        if (filters.keyword) {
+            where.OR = [
+                { title: { contains: filters.keyword, mode: 'insensitive' } },
+                { description: { contains: filters.keyword, mode: 'insensitive' } },
+                { company: { name: { contains: filters.keyword, mode: 'insensitive' } } },
+            ];
+        }
+
+        // Location filter
+        if (filters.location) {
+            where.location = { contains: filters.location, mode: 'insensitive' };
+        }
+
+        // Category filter
+        if (filters.categoryId) {
+            where.categoryId = filters.categoryId;
+        }
+
+        // Experience level filter
+        if (filters.experienceLevel) {
+            where.experienceLevel = filters.experienceLevel;
+        }
+
+        // Job type filter
+        if (filters.jobType) {
+            where.type = filters.jobType;
+        }
+
+        // Remote filter
+        if (filters.remote !== undefined) {
+            where.remote = filters.remote;
+        }
+
         const jobs = await prisma.job.findMany({
+            where,
             include: {
                 company: true,
                 category: true,
@@ -14,11 +60,16 @@ export async function getJobs() {
                 createdAt: "desc",
             },
         });
+
         return jobs;
     } catch (error) {
-        console.error("Failed to fetch jobs:", error);
+        console.error("Failed to search jobs:", error);
         return [];
     }
+}
+
+export async function getJobs() {
+    return searchJobs();
 }
 
 export async function getJob(slug: string) {
