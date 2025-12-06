@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
 import { authenticate } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 function LoginButton() {
     const { pending } = useFormStatus();
@@ -25,6 +27,14 @@ function LoginButton() {
 
 export default function LoginPage() {
     const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
+    async function handleSubmit(formData: FormData) {
+        // Add callback URL to form data
+        formData.append("callbackUrl", callbackUrl);
+        return dispatch(formData);
+    }
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -35,7 +45,7 @@ export default function LoginPage() {
                         Enter your email below to login to your account.
                     </CardDescription>
                 </CardHeader>
-                <form action={dispatch}>
+                <form action={handleSubmit}>
                     <CardContent className="grid gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
@@ -56,7 +66,15 @@ export default function LoginPage() {
                         )}
                     </CardContent>
                     <CardFooter>
-                        <LoginButton />
+                        <div className="w-full space-y-4">
+                            <LoginButton />
+                            <p className="text-sm text-center text-muted-foreground">
+                                Don't have an account?{" "}
+                                <Link href="/register" className="text-primary hover:underline">
+                                    Sign up
+                                </Link>
+                            </p>
+                        </div>
                     </CardFooter>
                 </form>
             </Card>

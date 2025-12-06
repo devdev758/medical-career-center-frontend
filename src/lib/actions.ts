@@ -8,10 +8,13 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
+        const callbackUrl = formData.get("callbackUrl") as string || "/dashboard";
+
         await signIn("credentials", {
             redirect: true,
-            redirectTo: "/jobs",
-            ...Object.fromEntries(formData),
+            redirectTo: callbackUrl,
+            email: formData.get("email") as string,
+            password: formData.get("password") as string,
         });
     } catch (error) {
         if (error instanceof AuthError) {
