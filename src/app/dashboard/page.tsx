@@ -1,7 +1,9 @@
+```javascript
 import { getUserApplications } from "@/lib/actions/applications";
 import { getSavedJobs } from "@/lib/actions/saved-jobs";
 import { logout } from "@/lib/actions/auth";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,16 @@ export default async function DashboardPage() {
 
     if (!session?.user) {
         redirect("/login?callbackUrl=/dashboard");
+    }
+
+    // Check if user is an employer and redirect to employer dashboard
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+    });
+
+    if (user?.role === "EMPLOYER") {
+        redirect("/employer/dashboard");
     }
 
     const [applications, savedJobs] = await Promise.all([
