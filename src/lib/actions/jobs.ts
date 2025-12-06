@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function getJobs() {
     try {
@@ -73,6 +74,7 @@ export async function createJob(formData: FormData) {
         });
 
         revalidatePath("/jobs");
+        redirect("/jobs");
     } catch (error) {
         console.error("Failed to create job:", error);
         throw new Error("Failed to create job");
