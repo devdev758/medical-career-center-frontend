@@ -10,7 +10,7 @@ import { Search, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface JobSearchProps {
-    categories: Array<{ id: string; name: string; icon: string }>;
+    categories: Array<{ id: string; name: string; icon: string | null }>;
 }
 
 export function JobSearch({ categories }: JobSearchProps) {
@@ -100,7 +100,7 @@ export function JobSearch({ categories }: JobSearchProps) {
                             <SelectItem value="all">All categories</SelectItem>
                             {categories.map((cat) => (
                                 <SelectItem key={cat.id} value={cat.id}>
-                                    {cat.icon} {cat.name}
+                                    {cat.icon || ""} {cat.name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
