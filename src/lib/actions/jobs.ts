@@ -73,9 +73,8 @@ export async function createJob(formData: FormData) {
         });
 
         revalidatePath("/jobs");
-        return { success: true };
     } catch (error) {
         console.error("Failed to create job:", error);
-        return { error: "Failed to create job" };
+        throw new Error("Failed to create job");
     }
 }
