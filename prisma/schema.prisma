@@ -18,6 +18,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   applications  Application[]
+  savedJobs     SavedJob[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -69,33 +70,58 @@ model Company {
   updatedAt   DateTime @updatedAt
 }
 
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  icon  String?
+  jobs  Job[]
+}
+
 model Job {
-  id          String        @id @default(cuid())
-  title       String
-  slug        String        @unique
-  description String        @db.Text
-  location    String?
-  type        String        @default("FULL_TIME") // FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP
-  salary      String?
-  remote      Boolean       @default(false)
-  companyId   String
-  company     Company       @relation(fields: [companyId], references: [id])
-  applications Application[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  description     String        @db.Text
+  location        String?
+  type            String        @default("FULL_TIME") // FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP
+  salary          String?
+  remote          Boolean       @default(false)
+  experienceLevel String        @default("MID") // ENTRY, MID, SENIOR
+  companyId       String
+  categoryId      String?
+  company         Company       @relation(fields: [companyId], references: [id])
+  category        Category?     @relation(fields: [categoryId], references: [id])
+  applications    Application[]
+  savedBy         SavedJob[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model SavedJob {
+  id      String   @id @default(cuid())
+  userId  String
+  jobId   String
+  user    User     @relation(fields: [userId], references: [id])
+  job     Job      @relation(fields: [jobId], references: [id])
+  savedAt DateTime @default(now())
+
+  @@unique([userId, jobId])
 }
 
 model Application {
-  id        String   @id @default(cuid())
-  jobId     String
-  userId    String
-  status    String   @default("PENDING") // PENDING, REVIEWED, REJECTED, HIRED
-  resume    String?
-  coverLetter String? @db.Text
-  job       Job      @relation(fields: [jobId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  jobId       String
+  userId      String
+  status      String   @default("PENDING") // PENDING, REVIEWED, REJECTED, HIRED
+  phone       String?
+  resumeUrl   String?
+  coverLetter String?  @db.Text
+  job         Job      @relation(fields: [jobId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  appliedAt   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([jobId, userId])
 }

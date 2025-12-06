@@ -1,6 +1,5 @@
-"use client";
-
 import { createJob } from "@/lib/actions/jobs";
+import { getCategories } from "@/lib/actions/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,24 +13,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { redirect } from "next/navigation";
 
-export default function PostJobPage() {
-    const router = useRouter();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+export default async function PostJobPage() {
+    const categories = await getCategories();
 
     async function handleSubmit(formData: FormData) {
-        setIsSubmitting(true);
-        try {
-            await createJob(formData);
-            router.push("/jobs");
-            router.refresh();
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Failed to create job. Please try again.");
-            setIsSubmitting(false);
-        }
+        "use server";
+        await createJob(formData);
+        redirect("/jobs");
     }
 
     return (
@@ -50,6 +40,38 @@ export default function PostJobPage() {
                         <div className="space-y-2">
                             <Label htmlFor="companyName">Company Name</Label>
                             <Input id="companyName" name="companyName" required placeholder="e.g. City Hospital" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="categoryId">Category</Label>
+                                <Select name="categoryId">
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((category) => (
+                                            <SelectItem key={category.id} value={category.id}>
+                                                {category.icon} {category.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="experienceLevel">Experience Level</Label>
+                                <Select name="experienceLevel" defaultValue="MID">
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ENTRY">Entry Level</SelectItem>
+                                        <SelectItem value="MID">Mid Level</SelectItem>
+                                        <SelectItem value="SENIOR">Senior Level</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
 
                         <div className="space-y-2">
@@ -93,9 +115,7 @@ export default function PostJobPage() {
                             />
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? "Posting..." : "Post Job"}
-                        </Button>
+                        <Button type="submit" className="w-full">Post Job</Button>
                     </form>
                 </CardContent>
             </Card>

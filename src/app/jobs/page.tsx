@@ -37,8 +37,8 @@ export default async function JobsPage() {
                     jobs.map((job) => (
                         <Card key={job.id} className="hover:shadow-md transition-shadow">
                             <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="flex-1">
                                         <CardTitle className="text-xl mb-1">
                                             <Link href={`/jobs/${job.slug}`} className="hover:underline">
                                                 {job.title}
@@ -49,13 +49,20 @@ export default async function JobsPage() {
                                             {job.company.name}
                                         </CardDescription>
                                     </div>
-                                    <Badge variant={job.remote ? "secondary" : "outline"}>
-                                        {job.type.replace("_", " ")}
-                                    </Badge>
+                                    <div className="flex flex-col gap-2">
+                                        <Badge variant={job.remote ? "secondary" : "outline"}>
+                                            {job.type.replace("_", " ")}
+                                        </Badge>
+                                        {job.category && (
+                                            <Badge variant="default">
+                                                {job.category.icon} {job.category.name}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex gap-4 text-sm text-muted-foreground mb-4">
+                                <div className="flex gap-4 text-sm text-muted-foreground mb-4 flex-wrap">
                                     <div className="flex items-center gap-1">
                                         <MapPin className="w-4 h-4" />
                                         {job.location || "Remote"}
@@ -70,6 +77,9 @@ export default async function JobsPage() {
                                         <Clock className="w-4 h-4" />
                                         {new Date(job.createdAt).toLocaleDateString()}
                                     </div>
+                                    <Badge variant="outline" className="text-xs">
+                                        {job.experienceLevel.replace("_", " ")}
+                                    </Badge>
                                 </div>
                             </CardContent>
                             <CardFooter>

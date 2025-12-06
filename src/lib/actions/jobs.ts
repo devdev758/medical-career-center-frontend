@@ -2,13 +2,13 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function getJobs() {
     try {
         const jobs = await prisma.job.findMany({
             include: {
                 company: true,
+                category: true,
             },
             orderBy: {
                 createdAt: "desc",
@@ -27,6 +27,7 @@ export async function getJob(slug: string) {
             where: { slug },
             include: {
                 company: true,
+                category: true,
             },
         });
         return job;
@@ -36,8 +37,6 @@ export async function getJob(slug: string) {
     }
 }
 
-// TODO: Add applyForJob (User only)
-
 export async function createJob(formData: FormData) {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -46,6 +45,8 @@ export async function createJob(formData: FormData) {
     const type = formData.get("type") as string;
     const remote = formData.get("remote") === "on";
     const companyName = formData.get("companyName") as string;
+    const categoryId = formData.get("categoryId") as string;
+    const experienceLevel = formData.get("experienceLevel") as string;
 
     // Simple slug generation
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
@@ -69,25 +70,15 @@ export async function createJob(formData: FormData) {
                 salary,
                 type,
                 remote,
+                experienceLevel,
                 companyId: company.id,
+                categoryId: categoryId || null,
             },
         });
 
         revalidatePath("/jobs");
     } catch (error) {
         console.error("Failed to create job:", error);
-        console.error("Error details:", {
-            message: error instanceof Error ? error.message : "Unknown error",
-            stack: error instanceof Error ? error.stack : undefined,
-            formData: {
-                title,
-                companyName,
-                location,
-                salary,
-                type,
-                remote
-            }
-        });
-        throw new Error(`Failed to create job: ${error instanceof Error ? error.message : "Unknown error"}`);
+        throw error;
     }
 }
