@@ -18,6 +18,8 @@ import { redirect } from "next/navigation";
 export default async function PostJobPage() {
     const categories = await getCategories();
 
+    console.log('Fetched categories:', categories.length, categories);
+
     async function handleSubmit(formData: FormData) {
         "use server";
         await createJob(formData);
@@ -50,11 +52,15 @@ export default async function PostJobPage() {
                                         <SelectValue placeholder="Select category" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {categories.map((category) => (
-                                            <SelectItem key={category.id} value={category.id}>
-                                                {category.icon} {category.name}
-                                            </SelectItem>
-                                        ))}
+                                        {categories.length === 0 ? (
+                                            <SelectItem value="" disabled>No categories available</SelectItem>
+                                        ) : (
+                                            categories.map((category) => (
+                                                <SelectItem key={category.id} value={category.id}>
+                                                    {category.icon} {category.name}
+                                                </SelectItem>
+                                            ))
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>
