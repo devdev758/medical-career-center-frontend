@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Suspense } from "react";
 
 function LoginButton() {
     const { pending } = useFormStatus();
@@ -25,7 +26,7 @@ function LoginButton() {
     );
 }
 
-export default function LoginPage() {
+function LoginForm() {
     const [errorMessage, dispatch] = useFormState(authenticate, undefined);
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -37,47 +38,61 @@ export default function LoginPage() {
     }
 
     return (
+        <Card className="w-full max-w-sm">
+            <CardHeader>
+                <CardTitle className="text-2xl">Login</CardTitle>
+                <CardDescription>
+                    Enter your email below to login to your account.
+                </CardDescription>
+            </CardHeader>
+            <form action={handleSubmit}>
+                <CardContent className="grid gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="m@example.com"
+                            required
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input id="password" name="password" type="password" required />
+                    </div>
+                    {errorMessage && (
+                        <div className="text-red-500 text-sm">{errorMessage}</div>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    <div className="w-full space-y-4">
+                        <LoginButton />
+                        <p className="text-sm text-center text-muted-foreground">
+                            Don't have an account?{" "}
+                            <Link href="/register" className="text-primary hover:underline">
+                                Sign up
+                            </Link>
+                        </p>
+                    </div>
+                </CardFooter>
+            </form>
+        </Card>
+    );
+}
+
+export default function LoginPage() {
+    return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <CardTitle className="text-2xl">Login</CardTitle>
-                    <CardDescription>
-                        Enter your email below to login to your account.
-                    </CardDescription>
-                </CardHeader>
-                <form action={handleSubmit}>
-                    <CardContent className="grid gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" name="password" type="password" required />
-                        </div>
-                        {errorMessage && (
-                            <div className="text-red-500 text-sm">{errorMessage}</div>
-                        )}
+            <Suspense fallback={
+                <Card className="w-full max-w-sm">
+                    <CardContent className="py-20 text-center">
+                        <p>Loading...</p>
                     </CardContent>
-                    <CardFooter>
-                        <div className="w-full space-y-4">
-                            <LoginButton />
-                            <p className="text-sm text-center text-muted-foreground">
-                                Don't have an account?{" "}
-                                <Link href="/register" className="text-primary hover:underline">
-                                    Sign up
-                                </Link>
-                            </p>
-                        </div>
-                    </CardFooter>
-                </form>
-            </Card>
+                </Card>
+            }>
+                <LoginForm />
+            </Suspense>
         </div>
     );
 }
