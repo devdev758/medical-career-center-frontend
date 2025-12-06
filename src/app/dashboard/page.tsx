@@ -1,4 +1,3 @@
-```javascript
 import { getUserApplications } from "@/lib/actions/applications";
 import { getSavedJobs } from "@/lib/actions/saved-jobs";
 import { logout } from "@/lib/actions/auth";
