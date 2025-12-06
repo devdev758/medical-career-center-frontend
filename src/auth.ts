@@ -29,13 +29,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     const user = await getUser(email);
                     if (!user) return null;
 
-                    // For now, we'll assume passwords are not hashed if they are created manually
-                    // In production, you MUST hash passwords.
-                    // const passwordsMatch = await bcrypt.compare(password, user.password || "");
-                    // if (passwordsMatch) return user;
-
-                    // Temporary: Allow login if password matches (plaintext) - REPLACE THIS
-                    if (user.password === password) return user;
+                    // Compare hashed password
+                    const passwordsMatch = await bcrypt.compare(password, user.password || "");
+                    if (passwordsMatch) return user;
                 }
 
                 console.log("Invalid credentials");
