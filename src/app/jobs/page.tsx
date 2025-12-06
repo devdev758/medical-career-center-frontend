@@ -1,5 +1,7 @@
 import { searchJobs } from "@/lib/actions/jobs";
 import { getCategories } from "@/lib/actions/categories";
+import { checkIfSaved } from "@/lib/actions/saved-jobs";
+import { auth } from "@/auth";
 import Link from "next/link";
 import {
     Card,
@@ -13,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Building2, Clock, DollarSign } from "lucide-react";
 import { JobSearch } from "@/components/job-search";
+import { BookmarkButton } from "@/components/bookmark-button";
 
 export default async function JobsPage({
     searchParams,
@@ -20,6 +23,7 @@ export default async function JobsPage({
     searchParams: { [key: string]: string | undefined };
 }) {
     const categories = await getCategories();
+    const session = await auth();
 
     const filters = {
         keyword: searchParams.q,
@@ -31,6 +35,14 @@ export default async function JobsPage({
     };
 
     const jobs = await searchJobs(filters);
+
+    // Check saved status for all jobs
+    const jobsWithSavedStatus = await Promise.all(
+        jobs.map(async (job) => ({
+            ...job,
+            isSaved: await checkIfSaved(job.id),
+        }))
+    );
 
     return (
         <main className="container mx-auto py-10 px-4">
@@ -66,7 +78,7 @@ export default async function JobsPage({
                         </div>
                     ) : (
                         <div className="grid gap-6">
-                            {jobs.map((job) => (
+                            {jobsWithSavedStatus.map((job) => (
                                 <Card key={job.id} className="hover:shadow-md transition-shadow">
                                     <CardHeader>
                                         <div className="flex justify-between items-start gap-4">
@@ -81,15 +93,22 @@ export default async function JobsPage({
                                                     {job.company.name}
                                                 </CardDescription>
                                             </div>
-                                            <div className="flex flex-col gap-2">
-                                                <Badge variant={job.remote ? "secondary" : "outline"}>
-                                                    {job.type.replace("_", " ")}
-                                                </Badge>
-                                                {job.category && (
-                                                    <Badge variant="default">
-                                                        {job.category.icon} {job.category.name}
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex flex-col gap-2">
+                                                    <Badge variant={job.remote ? "secondary" : "outline"}>
+                                                        {job.type.replace("_", " ")}
                                                     </Badge>
-                                                )}
+                                                    {job.category && (
+                                                        <Badge variant="default">
+                                                            {job.category.icon} {job.category.name}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <BookmarkButton
+                                                    jobId={job.id}
+                                                    initialSaved={job.isSaved}
+                                                    isLoggedIn={!!session?.user}
+                                                />
                                             </div>
                                         </div>
                                     </CardHeader>
