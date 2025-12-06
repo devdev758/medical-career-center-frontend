@@ -15,6 +15,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 
+export const revalidate = 0; // Disable caching for this page
+
 export default async function PostJobPage() {
     const categories = await getCategories();
 
