@@ -4,7 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
-export async function getEmployerApplications(jobId?: string) {
+export async function getEmployerApplications(filters?: {
+    search?: string;
+    status?: string;
+    jobId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+}) {
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -20,13 +26,42 @@ export async function getEmployerApplications(jobId?: string) {
         throw new Error("Unauthorized");
     }
 
-    const applications = await prisma.application.findMany({
-        where: {
-            job: {
-                companyId: user.company.id,
-                ...(jobId ? { id: jobId } : {}),
-            },
+    // Build dynamic where clause
+    const where: any = {
+        job: {
+            companyId: user.company.id,
+            ...(filters?.jobId ? { id: filters.jobId } : {}),
         },
+    };
+
+    // Add status filter
+    if (filters?.status && filters.status !== "ALL") {
+        where.status = filters.status;
+    }
+
+    // Add date range filter
+    if (filters?.dateFrom || filters?.dateTo) {
+        where.appliedAt = {};
+        if (filters.dateFrom) {
+            where.appliedAt.gte = new Date(filters.dateFrom);
+        }
+        if (filters.dateTo) {
+            where.appliedAt.lte = new Date(filters.dateTo);
+        }
+    }
+
+    // Add search filter (candidate name or email)
+    if (filters?.search) {
+        where.user = {
+            OR: [
+                { name: { contains: filters.search, mode: "insensitive" } },
+                { email: { contains: filters.search, mode: "insensitive" } },
+            ],
+        };
+    }
+
+    const applications = await prisma.application.findMany({
+        where,
         include: {
             job: {
                 include: {
