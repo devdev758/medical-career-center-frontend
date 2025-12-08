@@ -10,14 +10,14 @@ function slugify(text: any) {
     return text
         .toString()
         .toLowerCase()
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-        .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
 }
 
-// Helper to parse currency/number (BLS uses '*' or '#' for missing data)
+// Helper to parse currency/number
 function parseNumber(val: any) {
     if (!val || val === '*' || val === '#') return null;
     const num = parseFloat(val);
@@ -25,25 +25,21 @@ function parseNumber(val: any) {
 }
 
 async function importData() {
-    console.log("Starting BLS Data Import...");
+    console.log("Starting Optimized BLS Data Import...");
 
     const workbook = new ExcelJS.stream.xlsx.WorkbookReader(filePath, {});
 
+    // 1. Collect all unique locations and salary records in memory
+    // (36k records is small enough for memory ~10MB)
+    const locationsMap = new Map(); // key: slug, value: { city, state, stateName }
+    const salaryRecords = [];
+
     let rowCount = 0;
-    let headers: any[] = [];
-    let batchLocations = [];
-    let batchSalaries = [];
-    const BATCH_SIZE = 500; // Process in batches
-
-    // Cache locations to avoid repeated DB lookups/inserts for same location
-    // Map<slug, locationId>
-    const locationCache = new Map();
-
-    // Pre-load existing locations if any (optional, but good for re-runs)
-    // For now, we'll rely on upsert or just cache what we create in this run.
 
     for await (const worksheet of workbook) {
-        console.log(`Processing worksheet: ${worksheet.name}`);
+        console.log(`Reading worksheet: ${worksheet.name}`);
+
+        let headers: any[] = [];
 
         for await (const row of worksheet) {
             rowCount++;
@@ -66,88 +62,52 @@ async function importData() {
                 continue;
             }
 
-            // 1. Handle Location
+            // Parse Location
             const areaType = String(rowObj['AREA_TYPE']);
             const areaTitle = rowObj['AREA_TITLE'];
             const primState = rowObj['PRIM_STATE'];
 
-            let locationId = null;
             let city = "";
             let state = "";
             let stateName = "";
             let locationSlug = "";
+            let isNational = false;
 
             if (areaType === '1') {
-                // National - locationId stays null
+                isNational = true;
             } else if (areaType === '2') {
-                // State Level
-                // AREA_TITLE is usually the state name (e.g., "Alabama")
-                // PRIM_STATE is "AL"
-                city = "";
                 state = primState;
                 stateName = areaTitle;
                 locationSlug = slugify(stateName);
             } else if (areaType === '4') {
-                // Metropolitan Area (City level)
-                // AREA_TITLE e.g., "Birmingham-Hoover, AL"
-                // We need to parse this.
-                // Usually "City Name, StateCode"
-                // Sometimes multi-state: "New York-Newark-Jersey City, NY-NJ-PA"
-                // For simplicity, we'll take the primary state.
-
                 const parts = areaTitle.split(',');
                 if (parts.length >= 2) {
-                    // Take the first part as city name (might contain dashes)
                     city = parts[0].trim();
-                    // State might be complex, use PRIM_STATE for consistency
                     state = primState;
-                    // State Name - we don't have it easily for MSA, maybe map later or leave empty/duplicate code
-                    stateName = primState; // Placeholder
+                    stateName = primState;
                     locationSlug = slugify(`${city}-${state}`);
                 } else {
-                    // Fallback
                     city = areaTitle;
                     state = primState;
                     locationSlug = slugify(`${city}-${state}`);
                 }
             } else {
-                // Skip other area types for now (e.g., non-metro areas)
                 continue;
             }
 
-            // Create/Get Location if not National
-            if (areaType !== '1') {
-                if (!locationCache.has(locationSlug)) {
-                    // Upsert Location
-                    try {
-                        const loc = await prisma.location.upsert({
-                            where: { city_state: { city, state } },
-                            update: {},
-                            create: {
-                                city,
-                                state,
-                                stateName: stateName || state, // Fallback
-                                slug: locationSlug
-                            }
-                        });
-                        locationCache.set(locationSlug, loc.id);
-                        locationId = loc.id;
-                    } catch (e: any) {
-                        console.error(`Error upserting location ${locationSlug}:`, e.message);
-                        continue; // Skip this row if location fails
-                    }
-                } else {
-                    locationId = locationCache.get(locationSlug);
+            if (!isNational) {
+                if (!locationsMap.has(locationSlug)) {
+                    locationsMap.set(locationSlug, { city, state, stateName, slug: locationSlug });
                 }
             }
 
-            // 2. Prepare Salary Data
+            // Prepare Salary Record (without locationId yet)
             const careerTitle = rowObj['OCC_TITLE'];
-            const careerKeyword = slugify(careerTitle); // This will be our URL slug for career
+            const careerKeyword = slugify(careerTitle);
 
-            const salaryRecord = {
+            salaryRecords.push({
                 careerKeyword,
-                locationId,
+                locationSlug: isNational ? null : locationSlug, // Temporary field to link later
                 year: 2024,
                 source: "BLS",
                 employmentCount: parseNumber(rowObj['TOT_EMP']),
@@ -161,59 +121,76 @@ async function importData() {
                 annualMedian: parseNumber(rowObj['A_MEDIAN']),
                 annual75th: parseNumber(rowObj['A_PCT75']),
                 annual90th: parseNumber(rowObj['A_PCT90']),
-            };
-
-            // Upsert Salary Data
-            // We do this one by one or batch? Upsert is safer one by one to handle conflicts.
-            // Given 36k rows, one by one might take a few minutes, which is fine for a seed script.
-            try {
-                await prisma.salaryData.upsert({
-                    where: {
-                        careerKeyword_locationId_year: {
-                            careerKeyword,
-                            locationId: locationId, // Prisma handles null correctly in where input?
-                            // Wait, earlier we had issues with null in unique constraint in seed script?
-                            // Let's verify. If locationId is null, we need to handle it.
-                            // Actually, for National data (locationId=null), we might need to be careful.
-                            // Let's try.
-                            year: 2024
-                        }
-                    },
-                    update: salaryRecord,
-                    create: salaryRecord
-                });
-            } catch (e) {
-                // If unique constraint fails on null, try findFirst logic or just skip
-                // console.error(`Error upserting salary for ${careerKeyword}:`, e.message);
-
-                // Fallback for National data if upsert fails on null
-                if (locationId === null) {
-                    const existing = await prisma.salaryData.findFirst({
-                        where: { careerKeyword, locationId: null, year: 2024 }
-                    });
-                    if (existing) {
-                        await prisma.salaryData.update({
-                            where: { id: existing.id },
-                            data: salaryRecord
-                        });
-                    } else {
-                        // Remove locationId if null to avoid Prisma error if it prefers omission
-                        const { locationId, ...rest } = salaryRecord;
-                        await prisma.salaryData.create({
-                            data: locationId ? salaryRecord : rest
-                        });
-                    }
-                }
-            }
-
-            if (rowCount % 1000 === 0) {
-                console.log(`Processed ${rowCount} rows...`);
-            }
+            });
         }
         break; // Only first sheet
     }
 
-    console.log("Import completed!");
+    console.log(`Parsed ${salaryRecords.length} salary records.`);
+    console.log(`Found ${locationsMap.size} unique locations.`);
+
+    // 2. Batch Insert Locations
+    console.log("Upserting Locations (this may take a moment)...");
+    // We use createMany with skipDuplicates for speed. 
+    // If we need to update existing locations, we'd need upsert, but for initial import createMany is best.
+    // However, Prisma createMany skipDuplicates is only supported on some DBs. Postgres supports it.
+
+    const locationsToInsert = Array.from(locationsMap.values());
+    const LOCATION_BATCH_SIZE = 1000;
+
+    for (let i = 0; i < locationsToInsert.length; i += LOCATION_BATCH_SIZE) {
+        const batch = locationsToInsert.slice(i, i + LOCATION_BATCH_SIZE);
+        await prisma.location.createMany({
+            data: batch,
+            skipDuplicates: true
+        });
+        console.log(`Inserted locations batch ${i / LOCATION_BATCH_SIZE + 1}`);
+    }
+
+    // 3. Fetch All Locations to Map Slugs to IDs
+    console.log("Fetching all locations for mapping...");
+    const allLocations = await prisma.location.findMany({
+        select: { id: true, slug: true }
+    });
+
+    const slugToId = new Map();
+    allLocations.forEach((loc: any) => slugToId.set(loc.slug, loc.id));
+
+    // 4. Map Salary Records to Location IDs
+    console.log("Mapping salary records...");
+    const finalSalaryRecords = salaryRecords.map(record => {
+        const { locationSlug, ...rest } = record;
+        let locationId = null;
+
+        if (locationSlug) {
+            locationId = slugToId.get(locationSlug);
+            if (!locationId) {
+                // Should not happen if insert worked
+                // console.warn(`Location ID not found for slug: ${locationSlug}`);
+                return null;
+            }
+        }
+
+        return {
+            ...rest,
+            locationId
+        };
+    }).filter(r => r !== null);
+
+    // 5. Batch Insert Salary Data
+    console.log(`Inserting ${finalSalaryRecords.length} salary records...`);
+    const SALARY_BATCH_SIZE = 2000;
+
+    for (let i = 0; i < finalSalaryRecords.length; i += SALARY_BATCH_SIZE) {
+        const batch = finalSalaryRecords.slice(i, i + SALARY_BATCH_SIZE);
+        await prisma.salaryData.createMany({
+            data: batch,
+            skipDuplicates: true
+        });
+        console.log(`Inserted salary batch ${i / SALARY_BATCH_SIZE + 1}`);
+    }
+
+    console.log("Import Completed Successfully!");
 }
 
 importData()
