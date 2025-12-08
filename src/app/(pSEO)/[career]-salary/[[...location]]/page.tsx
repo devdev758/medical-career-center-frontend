@@ -48,7 +48,7 @@ async function getData(career: string, locationSlugs?: string[]) {
     try {
         if (!career) {
             console.error("getData: career param is missing");
-            return { salaryData: null, locationName: "", locationType: "", careerTitle: "", relatedLocations: [], careerKeyword: "" };
+            return { salaryData: null, locationName: "", locationType: "", careerTitle: "", relatedLocations: [], careerKeyword: "", error: "Missing career param" };
         }
 
         const careerKeyword = career.replace("-salary", ""); // e.g. "registered-nurses"
@@ -90,46 +90,73 @@ async function getData(career: string, locationSlugs?: string[]) {
         });
 
         if (!salaryData) {
-            // Fallback or 404? For pSEO, maybe show national data with a note?
-            // For now, let's return null and handle in UI
-            return { salaryData: null, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), careerKeyword, relatedLocations: [] };
+            return { salaryData: null, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), careerKeyword, relatedLocations: [], error: "No salary data found" };
         }
 
         // Fetch Related Locations (e.g. other cities in state, or other states)
         let relatedLocations: any[] = [];
-        if (locationType === "NATIONAL") {
-            // Get top paying states (mock or real query if we had sorting)
-            // For now just get random states
-            relatedLocations = await prisma.location.findMany({
-                where: { city: "" }, // States
-                take: 6
-            });
-        } else if (locationType === "STATE" && locationId) {
-            // Get cities in this state
-            const currentState = await prisma.location.findUnique({ where: { id: locationId } });
-            if (currentState) {
+        try {
+            if (locationType === "NATIONAL") {
+                // Get top paying states (mock or real query if we had sorting)
+                // For now just get random states
                 relatedLocations = await prisma.location.findMany({
-                    where: { state: currentState.state, NOT: { city: "" } },
+                    where: { city: "" }, // States
                     take: 6
                 });
+            } else if (locationType === "STATE" && locationId) {
+                // Get cities in this state
+                const currentState = await prisma.location.findUnique({ where: { id: locationId } });
+                if (currentState) {
+                    relatedLocations = await prisma.location.findMany({
+                        where: { state: currentState.state, NOT: { city: "" } },
+                        take: 6
+                    });
+                }
             }
+        } catch (e) {
+            console.error("Error fetching related locations:", e);
+            // Ignore related locations error
         }
 
-        return { salaryData, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), relatedLocations, careerKeyword };
+        return { salaryData, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), relatedLocations, careerKeyword, error: null };
     } catch (error) {
         console.error("Error in getData:", error);
-        throw error; // Re-throw to be caught by error boundary
+        return {
+            salaryData: null,
+            locationName: "Error",
+            locationType: "ERROR",
+            careerTitle: "Error",
+            relatedLocations: [],
+            careerKeyword: "",
+            error: error instanceof Error ? error.message : String(error)
+        };
     }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { career, location } = params;
-    const { locationName, careerTitle } = await getData(career, location);
+    try {
+        const { career, location } = params;
+        const data = await getData(career, location);
 
-    return {
-        title: `${careerTitle} Salary in ${locationName} (2025 Guide)`,
-        description: `How much does a ${careerTitle} make in ${locationName}? View average salary, hourly pay, and wage distribution for 2025.`,
-    };
+        if (data.error || !data.salaryData) {
+            return {
+                title: "Salary Data Unavailable",
+                description: "Salary data is currently unavailable."
+            };
+        }
+
+        const { locationName, careerTitle } = data;
+        return {
+            title: `${careerTitle} Salary in ${locationName} (2025 Guide)`,
+            description: `How much does a ${careerTitle} make in ${locationName}? View average salary, hourly pay, and wage distribution for 2025.`,
+        };
+    } catch (e) {
+        console.error("Error in generateMetadata:", e);
+        return {
+            title: "Salary Guide",
+            description: "Medical career salary guide."
+        };
+    }
 }
 
 export default async function SalaryPage({ params }: PageProps) {
@@ -138,8 +165,19 @@ export default async function SalaryPage({ params }: PageProps) {
         const { career, location } = params;
 
         console.log("SalaryPage: calling getData");
-        const { salaryData, locationName, locationType, careerTitle, relatedLocations, careerKeyword } = await getData(career, location);
-        console.log("SalaryPage: getData returned", { locationName, hasSalaryData: !!salaryData });
+        const data = await getData(career, location);
+        const { salaryData, locationName, locationType, careerTitle, relatedLocations, careerKeyword, error } = data;
+        console.log("SalaryPage: getData returned", { locationName, hasSalaryData: !!salaryData, error });
+
+        if (error) {
+            return (
+                <div className="container mx-auto py-20 px-4 text-center">
+                    <h1 className="text-2xl font-bold text-destructive mb-4">Error Loading Data</h1>
+                    <p className="text-muted-foreground">{error}</p>
+                    <p className="text-xs text-muted-foreground mt-4">Digest: {new Date().toISOString()}</p>
+                </div>
+            );
+        }
 
         if (!salaryData) {
             console.log("SalaryPage: No salary data, returning notFound");

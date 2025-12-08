@@ -1,4 +1,5 @@
-import { SalaryData } from "@prisma/client";
+// import { SalaryData } from "@prisma/client";
+
 
 export function formatCurrency(amount: number) {
     return new Intl.NumberFormat('en-US', {
@@ -8,7 +9,7 @@ export function formatCurrency(amount: number) {
     }).format(amount);
 }
 
-export function generateWageNarrative(salary: SalaryData, careerTitle: string, locationName: string) {
+export function generateWageNarrative(salary: any, careerTitle: string, locationName: string) {
     const hourlyMedian = salary.hourlyMedian ? `$${salary.hourlyMedian.toFixed(2)}` : "N/A";
     const annualMedian = formatCurrency(salary.annualMedian || 0);
 
@@ -26,7 +27,7 @@ export function generateWageNarrative(salary: SalaryData, careerTitle: string, l
     };
 }
 
-export function generateFAQSchema(careerTitle: string, locationName: string, salary: SalaryData) {
+export function generateFAQSchema(careerTitle: string, locationName: string, salary: any) {
     const annualMedian = formatCurrency(salary.annualMedian || 0);
     const hourlyMedian = salary.hourlyMedian ? `$${salary.hourlyMedian.toFixed(2)}` : "N/A";
 
