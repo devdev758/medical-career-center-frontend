@@ -28,6 +28,7 @@ const formatCareerTitle = (slug: string) => {
 };
 
 async function getJobData(career: string, locationSlugs?: string[]) {
+    if (!career) return { jobs: [], locationName: "", locationType: "", careerTitle: "" };
     const careerKeyword = career.replace("-jobs", ""); // e.g. "registered-nurses"
 
     let locationFilter: any = {};
