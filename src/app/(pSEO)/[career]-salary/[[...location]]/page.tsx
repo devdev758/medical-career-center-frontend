@@ -2,12 +2,28 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, MapPin, TrendingUp, DollarSign, BookOpen, HelpCircle } from "lucide-react";
+import { ArrowLeft, MapPin, TrendingUp, DollarSign, BookOpen, HelpCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
+
+// Simple Markdown renderer for bold text
+const MarkdownText = ({ children }: { children: string }) => {
+    if (!children) return null;
+    const parts = children.split(/(\*\*.*?\*\*)/g);
+    return (
+        <>
+            {parts.map((part, i) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <strong key={i}>{part.slice(2, -2)}</strong>;
+                }
+                return part;
+            })}
+        </>
+    );
+};
 
 // Force dynamic rendering
 export const revalidate = 3600;
@@ -208,7 +224,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         <section className="prose dark:prose-invert max-w-none">
                             <h2 className="text-2xl font-bold mb-4">How much does a {careerTitle} make in {locationName}?</h2>
                             <p className="text-lg leading-relaxed mb-4">
-                                <ReactMarkdown>{narrative.intro}</ReactMarkdown>
+                                <MarkdownText>{narrative.intro}</MarkdownText>
                             </p>
 
                             <div className="grid md:grid-cols-2 gap-6 my-8 not-prose">
@@ -222,7 +238,7 @@ export default async function SalaryPage({ params }: PageProps) {
                                             Entry-level positions start around:
                                         </p>
                                         <p className="font-medium">
-                                            <ReactMarkdown>{narrative.starting}</ReactMarkdown>
+                                            <MarkdownText>{narrative.starting}</MarkdownText>
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -237,14 +253,14 @@ export default async function SalaryPage({ params }: PageProps) {
                                             Top earners can make up to:
                                         </p>
                                         <p className="font-medium">
-                                            <ReactMarkdown>{narrative.experienced}</ReactMarkdown>
+                                            <MarkdownText>{narrative.experienced}</MarkdownText>
                                         </p>
                                     </CardContent>
                                 </Card>
                             </div>
 
                             <p className="text-lg leading-relaxed">
-                                <ReactMarkdown>{narrative.median}</ReactMarkdown>
+                                <MarkdownText>{narrative.median}</MarkdownText>
                             </p>
                         </section>
 
