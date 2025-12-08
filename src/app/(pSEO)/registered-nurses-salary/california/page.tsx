@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = {
     title: "Registered Nurses Salary in California (2025 Guide)",
-    description: "How much does a Registered Nurse make in California? View average salary, hourly pay, and wage distribution for 2025.",
+    description: "How much does a Registered Nurses make in California? View average salary, hourly pay, and wage distribution for 2025.",
 };
 
 export default async function Page() {
@@ -28,7 +28,7 @@ export default async function Page() {
         return notFound();
     }
 
-    const careerTitle = "Registered Nurse";
+    const careerTitle = "Registered Nurses";
     const locationName = "California";
     const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
@@ -43,7 +43,7 @@ export default async function Page() {
         }
     });
 
-    const comparisonText = nationalData
+    const comparisonText = nationalData 
         ? salaryData.annualMedian && nationalData.annualMedian && salaryData.annualMedian > nationalData.annualMedian
             ? `Above the national average of ${formatCurrency(nationalData.annualMedian)}.`
             : `Compared to the national average of ${formatCurrency(nationalData.annualMedian || 0)}.`
@@ -69,7 +69,7 @@ export default async function Page() {
 
                 {salaryData.employmentCount && (
                     <p className="text-lg">
-                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s in the state, this occupation plays a vital role in California's healthcare system.
+                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s in the state, this occupation plays a vital role in {locationName}'s healthcare system.
                     </p>
                 )}
 
@@ -129,11 +129,11 @@ export default async function Page() {
                 <Separator className="my-8" />
 
                 <h2 className="text-3xl font-bold mb-4">{careerTitle} Salary in {locationName} – Overview</h2>
-
+                
                 <p className="text-lg mb-4">{narrative.overview}</p>
 
                 <ul className="space-y-2 text-lg">
-                    {narrative.distribution.map((item, index) => (
+                    {narrative.distribution.map((item: string, index: number) => (
                         <li key={index}>{item}</li>
                     ))}
                 </ul>
@@ -181,7 +181,7 @@ export default async function Page() {
                     <li><strong>Location:</strong> Salaries vary by city due to cost of living differences.</li>
                     <li><strong>Education:</strong> Advanced certifications and degrees can lead to higher pay bands.</li>
                     <li><strong>Employer Type:</strong> Hospitals, private clinics, and government agencies offer different compensation packages.</li>
-                    <li><strong>Specialization:</strong> Specialized nursing fields like ICU, ER, or surgical nursing often command premium wages.</li>
+                    <li><strong>Specialization:</strong> Specialized fields often command premium wages.</li>
                 </ul>
             </article>
 
@@ -217,15 +217,7 @@ export default async function Page() {
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col gap-2">
-                            <Link href="/nurse-practitioners-salary" className="text-sm hover:underline text-primary">
-                                Nurse Practitioners Salary
-                            </Link>
-                            <Link href="/physician-assistants-salary" className="text-sm hover:underline text-primary">
-                                Physician Assistants Salary
-                            </Link>
-                            <Link href="/dental-hygienists-salary" className="text-sm hover:underline text-primary">
-                                Dental Hygienists Salary
-                            </Link>
+                            <p className="text-sm text-muted-foreground">Explore similar healthcare careers in {locationName}</p>
                         </div>
                     </CardContent>
                 </Card>
