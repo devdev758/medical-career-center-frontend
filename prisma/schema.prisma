@@ -14,21 +14,26 @@ enum UserRole {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          UserRole      @default(JOB_SEEKER)
-  companyId     String?
-  company       Company?      @relation(fields: [companyId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
-  applications  Application[]
-  savedJobs     SavedJob[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+  role           UserRole         @default(JOB_SEEKER)
+  companyId      String?
+  company        Company?         @relation(fields: [companyId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  applications   Application[]
+  savedJobs      SavedJob[]
+  profile        Profile?
+  workExperience WorkExperience[]
+  education      Education[]
+  skills         Skill[]
+  certifications Certification[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model Account {
@@ -75,7 +80,7 @@ model Company {
   description String?  @db.Text
   location    String?
   industry    String?
-  size        String? // 1-10, 11-50, 51-200, 201-500, 500+
+  size        String?
   founded     String?
   verified    Boolean  @default(false)
   jobs        Job[]
@@ -98,10 +103,10 @@ model Job {
   slug            String        @unique
   description     String        @db.Text
   location        String?
-  type            String        @default("FULL_TIME") // FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP
+  type            String        @default("FULL_TIME")
   salary          String?
   remote          Boolean       @default(false)
-  experienceLevel String        @default("MID") // ENTRY, MID, SENIOR
+  experienceLevel String        @default("MID")
   companyId       String
   categoryId      String?
   company         Company       @relation(fields: [companyId], references: [id])
@@ -127,11 +132,11 @@ model Application {
   id          String   @id @default(cuid())
   jobId       String
   userId      String
-  status      String   @default("PENDING") // PENDING, REVIEWED, SHORTLISTED, REJECTED, HIRED
+  status      String   @default("PENDING")
   phone       String?
   resumeUrl   String?
   coverLetter String?  @db.Text
-  notes       String?  @db.Text // Internal notes from employer
+  notes       String?  @db.Text
   job         Job      @relation(fields: [jobId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
   appliedAt   DateTime @default(now())
@@ -139,4 +144,88 @@ model Application {
   updatedAt   DateTime @updatedAt
 
   @@unique([jobId, userId])
+}
+
+model Profile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline          String?
+  bio               String?  @db.Text
+  phone             String?
+  location          String?
+  website           String?
+  linkedIn          String?
+  resumeUrl         String?
+  resumeFileName    String?
+  jobTypes          String[]
+  desiredSalary     String?
+  willingToRelocate Boolean  @default(false)
+  profileComplete   Int      @default(0)
+  isPublic          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model WorkExperience {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  company     String
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Education {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution  String
+  degree       String
+  fieldOfStudy String?
+  startDate    DateTime
+  endDate      DateTime?
+  isCurrent    Boolean   @default(false)
+  grade        String?
+  description  String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Skill {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  level             String?
+  yearsOfExperience Int?
+  createdAt         DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Certification {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  issuingOrg    String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  credentialId  String?
+  credentialUrl String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
 }
