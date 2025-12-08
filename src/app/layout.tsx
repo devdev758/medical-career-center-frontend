@@ -18,18 +18,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
   let user = null;
-  if (session?.user?.id) {
-    user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        name: true,
-        email: true,
-        role: true,
-      },
-    });
+  try {
+    const session = await auth();
+    if (session?.user?.id) {
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
+    }
+  } catch (e) {
+    console.error("RootLayout Auth Error:", e);
+    // Continue rendering as logged out
   }
 
   return (
