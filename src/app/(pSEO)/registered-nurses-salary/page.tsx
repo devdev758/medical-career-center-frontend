@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Clock, DollarSign } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -62,6 +62,59 @@ export default async function Page() {
                         With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s nationwide, this occupation plays a vital role in healthcare delivery across the country.
                     </p>
                 )}
+
+                <div className="grid md:grid-cols-3 gap-6 my-8 not-prose">
+                    <Card className="bg-primary/5 border-primary/20">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-primary/10 rounded-full">
+                                    <DollarSign className="w-5 h-5 text-primary" />
+                                </div>
+                                <p className="text-sm text-muted-foreground font-medium">Median Annual</p>
+                            </div>
+                            <p className="text-3xl font-bold text-primary">
+                                {formatCurrency(salaryData.annualMedian || 0)}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                ${salaryData.hourlyMedian?.toFixed(2) || "N/A"}/hour
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
+                                    <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                </div>
+                                <p className="text-sm text-muted-foreground font-medium">Top 10%</p>
+                            </div>
+                            <p className="text-3xl font-bold text-green-700 dark:text-green-400">
+                                {formatCurrency(salaryData.annual90th || 0)}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                ${salaryData.hourly90th?.toFixed(2) || "N/A"}/hour
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+                                    <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                                </div>
+                                <p className="text-sm text-muted-foreground font-medium">Starting (10th %)</p>
+                            </div>
+                            <p className="text-3xl font-bold text-orange-700 dark:text-orange-400">
+                                {formatCurrency(salaryData.annual10th || 0)}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                ${salaryData.hourly10th?.toFixed(2) || "N/A"}/hour
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
 
                 <Separator className="my-8" />
 
