@@ -44,18 +44,26 @@ export default async function SalaryPage({ searchParams }: PageProps) {
     let salaryData;
 
     if (city && location) {
-        // City-level page: find by city slug
-        salaryData = await prisma.salaryData.findFirst({
+        // City-level page: find location by state and city
+        // First, find the location that matches both state and city
+        const cityLocation = await prisma.location.findFirst({
             where: {
-                careerKeyword: profession,
-                location: {
-                    slug: city,
-                    city: { not: "" }
-                },
-                year: 2024
-            },
-            include: { location: true }
+                slug: city,
+                city: { not: "" },
+                stateName: formatLocationName(location)
+            }
         });
+
+        if (cityLocation) {
+            salaryData = await prisma.salaryData.findFirst({
+                where: {
+                    careerKeyword: profession,
+                    locationId: cityLocation.id,
+                    year: 2024
+                },
+                include: { location: true }
+            });
+        }
     } else if (location) {
         // State-level page
         salaryData = await prisma.salaryData.findFirst({
