@@ -513,3 +513,214 @@ export async function deleteCertification(id: string) {
     await calculateProfileCompletion(session.user.id);
     revalidatePath("/dashboard/profile");
 }
+
+// Employer functions to view candidate profiles
+export async function getCandidateProfile(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    // Verify employer has access to this application
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: {
+            job: true,
+            user: {
+                include: {
+                    profile: true,
+                },
+            },
+        },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    return {
+        user: application.user,
+        profile: application.user.profile,
+    };
+}
+
+export async function getCandidateWorkExperience(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { job: true },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const experiences = await prisma.workExperience.findMany({
+        where: { userId: application.userId },
+        orderBy: [
+            { isCurrent: "desc" },
+            { startDate: "desc" },
+        ],
+    });
+
+    return experiences;
+}
+
+export async function getCandidateEducation(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { job: true },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const education = await prisma.education.findMany({
+        where: { userId: application.userId },
+        orderBy: [
+            { isCurrent: "desc" },
+            { startDate: "desc" },
+        ],
+    });
+
+    return education;
+}
+
+export async function getCandidateSkills(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { job: true },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const skills = await prisma.skill.findMany({
+        where: { userId: application.userId },
+        orderBy: { createdAt: "desc" },
+    });
+
+    return skills;
+}
+
+export async function getCandidateLicenses(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { job: true },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const licenses = await prisma.license.findMany({
+        where: { userId: application.userId },
+        orderBy: { expiryDate: "desc" },
+    });
+
+    return licenses;
+}
+
+export async function getCandidateCertifications(applicationId: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { company: true },
+    });
+
+    if (user?.role !== "EMPLOYER" || !user.company) {
+        throw new Error("Unauthorized");
+    }
+
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { job: true },
+    });
+
+    if (!application || application.job.companyId !== user.company.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const certifications = await prisma.certification.findMany({
+        where: { userId: application.userId },
+        orderBy: { issueDate: "desc" },
+    });
+
+    return certifications;
+}
