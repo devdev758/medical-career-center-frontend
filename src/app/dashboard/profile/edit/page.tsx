@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -35,15 +42,38 @@ export default async function EditProfilePage() {
         const jobTypes = formData.getAll("jobTypes") as string[];
 
         await updateProfile({
+            // Personal Information
+            firstName: formData.get("firstName") as string,
+            lastName: formData.get("lastName") as string,
+            dateOfBirth: formData.get("dateOfBirth") ? new Date(formData.get("dateOfBirth") as string) : null,
+            gender: formData.get("gender") as string,
+            address: formData.get("address") as string,
+            city: formData.get("city") as string,
+            state: formData.get("state") as string,
+            zipCode: formData.get("zipCode") as string,
+            country: formData.get("country") as string,
+
+            // Professional Information
             headline: formData.get("headline") as string,
             bio: formData.get("bio") as string,
             phone: formData.get("phone") as string,
             location: formData.get("location") as string,
             website: formData.get("website") as string,
             linkedIn: formData.get("linkedIn") as string,
+
+            // Medical-Specific Fields
+            licenseNumber: formData.get("licenseNumber") as string,
+            licenseState: formData.get("licenseState") as string,
+            licenseExpiry: formData.get("licenseExpiry") ? new Date(formData.get("licenseExpiry") as string) : null,
+            npiNumber: formData.get("npiNumber") as string,
+            specialization: formData.get("specialization") as string,
+            yearsOfExperience: formData.get("yearsOfExperience") ? parseInt(formData.get("yearsOfExperience") as string) : null,
+
+            // Job Preferences
             jobTypes,
             desiredSalary: formData.get("desiredSalary") as string,
             willingToRelocate: formData.get("willingToRelocate") === "on",
+            availableFrom: formData.get("availableFrom") ? new Date(formData.get("availableFrom") as string) : null,
             isPublic: formData.get("isPublic") === "on",
         });
 
@@ -51,7 +81,7 @@ export default async function EditProfilePage() {
     }
 
     return (
-        <main className="container mx-auto py-10 px-4 max-w-3xl">
+        <main className="container mx-auto py-10 px-4 max-w-4xl">
             <Link href="/dashboard/profile" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Back to Profile
@@ -64,30 +94,145 @@ export default async function EditProfilePage() {
                 </p>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
-                    <CardDescription>
-                        Tell employers about yourself
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form action={handleSubmit} className="space-y-6">
+            <form action={handleSubmit} className="space-y-6">
+                {/* Personal Information */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Personal Information</CardTitle>
+                        <CardDescription>
+                            Your basic personal details
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="firstName">First Name *</Label>
+                                <Input
+                                    id="firstName"
+                                    name="firstName"
+                                    placeholder="John"
+                                    defaultValue={profile?.firstName || ""}
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="lastName">Last Name *</Label>
+                                <Input
+                                    id="lastName"
+                                    name="lastName"
+                                    placeholder="Doe"
+                                    defaultValue={profile?.lastName || ""}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                                <Input
+                                    id="dateOfBirth"
+                                    name="dateOfBirth"
+                                    type="date"
+                                    defaultValue={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : ""}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="gender">Gender</Label>
+                                <Select name="gender" defaultValue={profile?.gender || ""}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Male">Male</SelectItem>
+                                        <SelectItem value="Female">Female</SelectItem>
+                                        <SelectItem value="Non-binary">Non-binary</SelectItem>
+                                        <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
-                            <Label htmlFor="headline">Professional Headline</Label>
+                            <Label htmlFor="address">Street Address</Label>
+                            <Input
+                                id="address"
+                                name="address"
+                                placeholder="123 Main St, Apt 4B"
+                                defaultValue={profile?.address || ""}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="city">City</Label>
+                                <Input
+                                    id="city"
+                                    name="city"
+                                    placeholder="New York"
+                                    defaultValue={profile?.city || ""}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="state">State</Label>
+                                <Input
+                                    id="state"
+                                    name="state"
+                                    placeholder="NY"
+                                    defaultValue={profile?.state || ""}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="zipCode">ZIP Code</Label>
+                                <Input
+                                    id="zipCode"
+                                    name="zipCode"
+                                    placeholder="10001"
+                                    defaultValue={profile?.zipCode || ""}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="phone">Phone Number *</Label>
+                            <Input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                placeholder="+1 (555) 123-4567"
+                                defaultValue={profile?.phone || ""}
+                                required
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Professional Information */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Professional Information</CardTitle>
+                        <CardDescription>
+                            Tell employers about your professional background
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="headline">Professional Headline *</Label>
                             <Input
                                 id="headline"
                                 name="headline"
                                 placeholder="e.g., Registered Nurse with 5 years of ICU experience"
                                 defaultValue={profile?.headline || ""}
+                                required
                             />
-                            <p className="text-xs text-muted-foreground">
-                                A brief, compelling summary of your professional identity
-                            </p>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="bio">Bio</Label>
+                            <Label htmlFor="bio">Professional Summary</Label>
                             <Textarea
                                 id="bio"
                                 name="bio"
@@ -99,23 +244,24 @@ export default async function EditProfilePage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Phone Number</Label>
-                                <Input
-                                    id="phone"
-                                    name="phone"
-                                    type="tel"
-                                    placeholder="+1 (555) 123-4567"
-                                    defaultValue={profile?.phone || ""}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="location">Location</Label>
+                                <Label htmlFor="location">Preferred Work Location</Label>
                                 <Input
                                     id="location"
                                     name="location"
                                     placeholder="City, State"
                                     defaultValue={profile?.location || ""}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="yearsOfExperience">Years of Experience</Label>
+                                <Input
+                                    id="yearsOfExperience"
+                                    name="yearsOfExperience"
+                                    type="number"
+                                    min="0"
+                                    placeholder="5"
+                                    defaultValue={profile?.yearsOfExperience || ""}
                                 />
                             </div>
                         </div>
@@ -143,29 +289,103 @@ export default async function EditProfilePage() {
                                 />
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        <div className="border-t pt-6 space-y-4">
-                            <h3 className="font-semibold">Job Preferences</h3>
-
+                {/* Medical-Specific Information */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Medical Credentials</CardTitle>
+                        <CardDescription>
+                            Your medical licenses and certifications
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Preferred Job Types</Label>
-                                <div className="space-y-2">
-                                    {["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"].map((type) => (
-                                        <div key={type} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={type}
-                                                name="jobTypes"
-                                                value={type}
-                                                defaultChecked={profile?.jobTypes?.includes(type)}
-                                            />
-                                            <label htmlFor={type} className="text-sm">
-                                                {type.replace("_", " ")}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
+                                <Label htmlFor="licenseNumber">License Number</Label>
+                                <Input
+                                    id="licenseNumber"
+                                    name="licenseNumber"
+                                    placeholder="e.g., RN123456"
+                                    defaultValue={profile?.licenseNumber || ""}
+                                />
                             </div>
 
+                            <div className="space-y-2">
+                                <Label htmlFor="licenseState">License State</Label>
+                                <Input
+                                    id="licenseState"
+                                    name="licenseState"
+                                    placeholder="e.g., CA"
+                                    defaultValue={profile?.licenseState || ""}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="licenseExpiry">License Expiry Date</Label>
+                                <Input
+                                    id="licenseExpiry"
+                                    name="licenseExpiry"
+                                    type="date"
+                                    defaultValue={profile?.licenseExpiry ? new Date(profile.licenseExpiry).toISOString().split('T')[0] : ""}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="npiNumber">NPI Number</Label>
+                                <Input
+                                    id="npiNumber"
+                                    name="npiNumber"
+                                    placeholder="10-digit NPI"
+                                    defaultValue={profile?.npiNumber || ""}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="specialization">Specialization</Label>
+                            <Input
+                                id="specialization"
+                                name="specialization"
+                                placeholder="e.g., Critical Care, Pediatrics"
+                                defaultValue={profile?.specialization || ""}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Job Preferences */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Job Preferences</CardTitle>
+                        <CardDescription>
+                            Help us match you with the right opportunities
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label>Preferred Job Types</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"].map((type) => (
+                                    <div key={type} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={type}
+                                            name="jobTypes"
+                                            value={type}
+                                            defaultChecked={profile?.jobTypes?.includes(type)}
+                                        />
+                                        <label htmlFor={type} className="text-sm">
+                                            {type.replace("_", " ")}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="desiredSalary">Desired Salary Range</Label>
                                 <Input
@@ -176,38 +396,48 @@ export default async function EditProfilePage() {
                                 />
                             </div>
 
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="willingToRelocate"
-                                    name="willingToRelocate"
-                                    defaultChecked={profile?.willingToRelocate}
+                            <div className="space-y-2">
+                                <Label htmlFor="availableFrom">Available From</Label>
+                                <Input
+                                    id="availableFrom"
+                                    name="availableFrom"
+                                    type="date"
+                                    defaultValue={profile?.availableFrom ? new Date(profile.availableFrom).toISOString().split('T')[0] : ""}
                                 />
-                                <label htmlFor="willingToRelocate" className="text-sm">
-                                    Willing to relocate
-                                </label>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="isPublic"
-                                    name="isPublic"
-                                    defaultChecked={profile?.isPublic}
-                                />
-                                <label htmlFor="isPublic" className="text-sm">
-                                    Make my profile public (visible to employers)
-                                </label>
                             </div>
                         </div>
 
-                        <div className="flex gap-4">
-                            <Button type="submit">Save Changes</Button>
-                            <Button type="button" variant="outline" asChild>
-                                <Link href="/dashboard/profile">Cancel</Link>
-                            </Button>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="willingToRelocate"
+                                name="willingToRelocate"
+                                defaultChecked={profile?.willingToRelocate}
+                            />
+                            <label htmlFor="willingToRelocate" className="text-sm">
+                                Willing to relocate
+                            </label>
                         </div>
-                    </form>
-                </CardContent>
-            </Card>
+
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="isPublic"
+                                name="isPublic"
+                                defaultChecked={profile?.isPublic}
+                            />
+                            <label htmlFor="isPublic" className="text-sm">
+                                Make my profile public (visible to employers)
+                            </label>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <div className="flex gap-4">
+                    <Button type="submit">Save Changes</Button>
+                    <Button type="button" variant="outline" asChild>
+                        <Link href="/dashboard/profile">Cancel</Link>
+                    </Button>
+                </div>
+            </form>
         </main>
     );
 }
