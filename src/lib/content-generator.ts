@@ -26,8 +26,6 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
     const annual90th = salary.annual90th ? formatCurrency(salary.annual90th) : "N/A";
 
     const employmentCount = salary.employmentCount ? salary.employmentCount.toLocaleString() : "N/A";
-    const jobsPer1000 = salary.jobsPer1000 ? salary.jobsPer1000.toFixed(3) : "N/A";
-    const locationQuotient = salary.locationQuotient ? salary.locationQuotient.toFixed(2) : "N/A";
 
     return {
         intro: `The average salary for a **${careerTitle}** in **${locationName}** is **${annualMedian}** per year (or **${hourlyMedian}** per hour).`,
@@ -46,11 +44,7 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
             experienced: `Those in the top 25% of earners take home around ${hourly75th} per hour or ${annual75th} per year.`,
             topEarners: `The highest earners, the top 10%, make about ${hourly90th} per hour or ${annual90th} per year.`
         },
-        employment: {
-            count: employmentCount,
-            jobsPer1000: jobsPer1000,
-            locationQuotient: locationQuotient
-        }
+        employmentCount: employmentCount
     };
 }
 

@@ -67,9 +67,9 @@ export default async function Page() {
                     According to data from the Bureau of Labor Statistics, the median annual salary for {careerTitle.toLowerCase()}s in {locationName} is <strong>{formatCurrency(salaryData.annualMedian || 0)}</strong>. {comparisonText}
                 </p>
 
-                {salaryData.employmentCount && salaryData.jobsPer1000 && salaryData.locationQuotient && (
+                {salaryData.employmentCount && (
                     <p className="text-lg">
-                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s in the state, this occupation makes up <strong>{salaryData.jobsPer1000.toFixed(3)}</strong> per 1,000 jobs in {locationName} and has a location quotient of <strong>{salaryData.locationQuotient.toFixed(2)}</strong> compared to the national average.
+                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s in the state, this occupation plays a vital role in California's healthcare system.
                     </p>
                 )}
 
@@ -116,11 +116,9 @@ export default async function Page() {
                 <Separator className="my-8" />
 
                 <h2 className="text-3xl font-bold mb-4">Is {locationName} a Good State for {careerTitle}s?</h2>
-                {salaryData.locationQuotient && salaryData.jobsPer1000 && (
-                    <p className="text-lg">
-                        The location quotient of <strong>{salaryData.locationQuotient.toFixed(2)}</strong> indicates that {locationName} has a {salaryData.locationQuotient > 1 ? 'higher' : 'slightly lower'} concentration of {careerTitle.toLowerCase()}s than the national average. Moreover, there are approximately <strong>{salaryData.jobsPer1000.toFixed(3)}</strong> {careerTitle.toLowerCase()} jobs per 1,000 total jobs in the state. Overall, {careerTitle}s in {locationName} earn a competitive wage, with a median hourly wage of <strong>${salaryData.hourlyMedian?.toFixed(2) || "N/A"}</strong> per hour.
-                    </p>
-                )}
+                <p className="text-lg">
+                    {careerTitle}s in {locationName} earn competitive wages, with a median hourly wage of <strong>${salaryData.hourlyMedian?.toFixed(2) || "N/A"}</strong> per hour. {salaryData.employmentCount && `With ${salaryData.employmentCount.toLocaleString()} employed professionals, there's a strong demand for ${careerTitle.toLowerCase()}s in the state.`}
+                </p>
 
                 <Separator className="my-8" />
 
