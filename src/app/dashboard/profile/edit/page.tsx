@@ -104,7 +104,7 @@ export default async function EditProfilePage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="firstName">First Name *</Label>
                                 <Input
@@ -113,6 +113,17 @@ export default async function EditProfilePage() {
                                     placeholder="John"
                                     defaultValue={profile?.firstName || ""}
                                     required
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="middleName">Middle Initial</Label>
+                                <Input
+                                    id="middleName"
+                                    name="middleName"
+                                    placeholder="M"
+                                    maxLength={1}
+                                    defaultValue={profile?.middleName || ""}
                                 />
                             </div>
 
@@ -137,6 +148,7 @@ export default async function EditProfilePage() {
                                     type="date"
                                     defaultValue={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : ""}
                                 />
+                                <p className="text-xs text-muted-foreground">Format: MM/DD/YYYY</p>
                             </div>
 
                             <div className="space-y-2">
@@ -156,43 +168,109 @@ export default async function EditProfilePage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="address">Street Address</Label>
+                            <Label htmlFor="address">Street Address *</Label>
                             <Input
                                 id="address"
                                 name="address"
-                                placeholder="123 Main St, Apt 4B"
+                                placeholder="123 Main Street"
                                 defaultValue={profile?.address || ""}
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="address2">Apartment, Suite, Unit, etc.</Label>
+                            <Input
+                                id="address2"
+                                name="address2"
+                                placeholder="Apt 4B"
+                                defaultValue={profile?.address2 || ""}
                             />
                         </div>
 
                         <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="city">City</Label>
+                                <Label htmlFor="city">City *</Label>
                                 <Input
                                     id="city"
                                     name="city"
                                     placeholder="New York"
                                     defaultValue={profile?.city || ""}
+                                    required
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="state">State</Label>
-                                <Input
-                                    id="state"
-                                    name="state"
-                                    placeholder="NY"
-                                    defaultValue={profile?.state || ""}
-                                />
+                                <Label htmlFor="state">State *</Label>
+                                <Select name="state" defaultValue={profile?.state || ""} required>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select state" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[200px]">
+                                        <SelectItem value="AL">Alabama</SelectItem>
+                                        <SelectItem value="AK">Alaska</SelectItem>
+                                        <SelectItem value="AZ">Arizona</SelectItem>
+                                        <SelectItem value="AR">Arkansas</SelectItem>
+                                        <SelectItem value="CA">California</SelectItem>
+                                        <SelectItem value="CO">Colorado</SelectItem>
+                                        <SelectItem value="CT">Connecticut</SelectItem>
+                                        <SelectItem value="DE">Delaware</SelectItem>
+                                        <SelectItem value="FL">Florida</SelectItem>
+                                        <SelectItem value="GA">Georgia</SelectItem>
+                                        <SelectItem value="HI">Hawaii</SelectItem>
+                                        <SelectItem value="ID">Idaho</SelectItem>
+                                        <SelectItem value="IL">Illinois</SelectItem>
+                                        <SelectItem value="IN">Indiana</SelectItem>
+                                        <SelectItem value="IA">Iowa</SelectItem>
+                                        <SelectItem value="KS">Kansas</SelectItem>
+                                        <SelectItem value="KY">Kentucky</SelectItem>
+                                        <SelectItem value="LA">Louisiana</SelectItem>
+                                        <SelectItem value="ME">Maine</SelectItem>
+                                        <SelectItem value="MD">Maryland</SelectItem>
+                                        <SelectItem value="MA">Massachusetts</SelectItem>
+                                        <SelectItem value="MI">Michigan</SelectItem>
+                                        <SelectItem value="MN">Minnesota</SelectItem>
+                                        <SelectItem value="MS">Mississippi</SelectItem>
+                                        <SelectItem value="MO">Missouri</SelectItem>
+                                        <SelectItem value="MT">Montana</SelectItem>
+                                        <SelectItem value="NE">Nebraska</SelectItem>
+                                        <SelectItem value="NV">Nevada</SelectItem>
+                                        <SelectItem value="NH">New Hampshire</SelectItem>
+                                        <SelectItem value="NJ">New Jersey</SelectItem>
+                                        <SelectItem value="NM">New Mexico</SelectItem>
+                                        <SelectItem value="NY">New York</SelectItem>
+                                        <SelectItem value="NC">North Carolina</SelectItem>
+                                        <SelectItem value="ND">North Dakota</SelectItem>
+                                        <SelectItem value="OH">Ohio</SelectItem>
+                                        <SelectItem value="OK">Oklahoma</SelectItem>
+                                        <SelectItem value="OR">Oregon</SelectItem>
+                                        <SelectItem value="PA">Pennsylvania</SelectItem>
+                                        <SelectItem value="RI">Rhode Island</SelectItem>
+                                        <SelectItem value="SC">South Carolina</SelectItem>
+                                        <SelectItem value="SD">South Dakota</SelectItem>
+                                        <SelectItem value="TN">Tennessee</SelectItem>
+                                        <SelectItem value="TX">Texas</SelectItem>
+                                        <SelectItem value="UT">Utah</SelectItem>
+                                        <SelectItem value="VT">Vermont</SelectItem>
+                                        <SelectItem value="VA">Virginia</SelectItem>
+                                        <SelectItem value="WA">Washington</SelectItem>
+                                        <SelectItem value="WV">West Virginia</SelectItem>
+                                        <SelectItem value="WI">Wisconsin</SelectItem>
+                                        <SelectItem value="WY">Wyoming</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="zipCode">ZIP Code</Label>
+                                <Label htmlFor="zipCode">ZIP Code *</Label>
                                 <Input
                                     id="zipCode"
                                     name="zipCode"
                                     placeholder="10001"
+                                    pattern="[0-9]{5}"
+                                    maxLength={5}
                                     defaultValue={profile?.zipCode || ""}
+                                    required
                                 />
                             </div>
                         </div>
@@ -203,10 +281,12 @@ export default async function EditProfilePage() {
                                 id="phone"
                                 name="phone"
                                 type="tel"
-                                placeholder="+1 (555) 123-4567"
+                                placeholder="(555) 123-4567"
+                                pattern="[\(]?[0-9]{3}[\)]?[\s\-]?[0-9]{3}[\s\-]?[0-9]{4}"
                                 defaultValue={profile?.phone || ""}
                                 required
                             />
+                            <p className="text-xs text-muted-foreground">Format: (555) 123-4567</p>
                         </div>
                     </CardContent>
                 </Card>

@@ -153,10 +153,12 @@ model Profile {
 
   // Personal Information
   firstName   String?
+  middleName  String?
   lastName    String?
   dateOfBirth DateTime?
   gender      String?
   address     String?
+  address2    String?
   city        String?
   state       String?
   zipCode     String?
