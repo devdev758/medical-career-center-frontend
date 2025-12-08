@@ -147,24 +147,53 @@ model Application {
 }
 
 model Profile {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  headline          String?
-  bio               String?  @db.Text
-  phone             String?
-  location          String?
-  website           String?
-  linkedIn          String?
-  resumeUrl         String?
-  resumeFileName    String?
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal Information
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime?
+  gender      String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  country     String?   @default("United States")
+
+  // Professional Information
+  headline String?
+  bio      String? @db.Text
+  phone    String?
+  location String?
+  website  String?
+  linkedIn String?
+
+  // Medical-Specific Fields
+  licenseNumber     String?
+  licenseState      String?
+  licenseExpiry     DateTime?
+  npiNumber         String? // National Provider Identifier
+  specialization    String?
+  yearsOfExperience Int?
+
+  // Resume
+  resumeUrl      String?
+  resumeFileName String?
+
+  // Job Preferences
   jobTypes          String[]
   desiredSalary     String?
-  willingToRelocate Boolean  @default(false)
-  profileComplete   Int      @default(0)
-  isPublic          Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  willingToRelocate Boolean   @default(false)
+  availableFrom     DateTime?
+
+  // Metadata
+  profileComplete Int     @default(0)
+  isPublic        Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model WorkExperience {

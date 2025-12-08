@@ -18,18 +18,7 @@ export async function getProfile() {
     return profile;
 }
 
-export async function updateProfile(data: {
-    headline?: string;
-    bio?: string;
-    phone?: string;
-    location?: string;
-    website?: string;
-    linkedIn?: string;
-    jobTypes?: string[];
-    desiredSalary?: string;
-    willingToRelocate?: boolean;
-    isPublic?: boolean;
-}) {
+export async function updateProfile(data: any) {
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -54,13 +43,18 @@ export async function updateProfile(data: {
 export async function calculateProfileCompletion(userId: string) {
     let completion = 0;
 
-    // Basic info (20%)
     const profile = await prisma.profile.findUnique({
         where: { userId },
     });
 
-    if (profile?.headline && profile?.bio && profile?.phone && profile?.location) {
-        completion += 20;
+    // Personal info (15%)
+    if (profile?.firstName && profile?.lastName && profile?.phone) {
+        completion += 15;
+    }
+
+    // Professional info (15%)
+    if (profile?.headline && profile?.bio) {
+        completion += 15;
     }
 
     // Work experience (20%)
@@ -75,11 +69,11 @@ export async function calculateProfileCompletion(userId: string) {
     });
     if (education > 0) completion += 20;
 
-    // Skills (20%)
+    // Skills (15%)
     const skills = await prisma.skill.count({
         where: { userId },
     });
-    if (skills >= 3) completion += 20;
+    if (skills >= 3) completion += 15;
 
     // Certifications (10%)
     const certifications = await prisma.certification.count({
@@ -87,8 +81,8 @@ export async function calculateProfileCompletion(userId: string) {
     });
     if (certifications > 0) completion += 10;
 
-    // Resume (10%)
-    if (profile?.resumeUrl) completion += 10;
+    // Resume (5%)
+    if (profile?.resumeUrl) completion += 5;
 
     await prisma.profile.update({
         where: { userId },
@@ -139,31 +133,6 @@ export async function createWorkExperience(data: {
     });
 
     await calculateProfileCompletion(session.user.id);
-    revalidatePath("/dashboard/profile");
-
-    return experience;
-}
-
-export async function updateWorkExperience(id: string, data: {
-    title: string;
-    company: string;
-    location?: string;
-    startDate: Date;
-    endDate?: Date;
-    isCurrent: boolean;
-    description?: string;
-}) {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-        throw new Error("Unauthorized");
-    }
-
-    const experience = await prisma.workExperience.update({
-        where: { id, userId: session.user.id },
-        data,
-    });
-
     revalidatePath("/dashboard/profile");
 
     return experience;
@@ -293,6 +262,63 @@ export async function deleteSkill(id: string) {
     }
 
     await prisma.skill.delete({
+        where: { id, userId: session.user.id },
+    });
+
+    await calculateProfileCompletion(session.user.id);
+    revalidatePath("/dashboard/profile");
+}
+
+export async function getCertifications() {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const certifications = await prisma.certification.findMany({
+        where: { userId: session.user.id },
+        orderBy: { issueDate: "desc" },
+    });
+
+    return certifications;
+}
+
+export async function createCertification(data: {
+    name: string;
+    issuingOrg: string;
+    issueDate: Date;
+    expiryDate?: Date;
+    credentialId?: string;
+    credentialUrl?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const certification = await prisma.certification.create({
+        data: {
+            userId: session.user.id,
+            ...data,
+        },
+    });
+
+    await calculateProfileCompletion(session.user.id);
+    revalidatePath("/dashboard/profile");
+
+    return certification;
+}
+
+export async function deleteCertification(id: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    await prisma.certification.delete({
         where: { id, userId: session.user.id },
     });
 
