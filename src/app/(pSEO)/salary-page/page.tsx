@@ -13,6 +13,7 @@ interface PageProps {
     searchParams: {
         profession?: string;
         location?: string;
+        city?: string;
     };
 }
 
@@ -24,29 +25,60 @@ function formatCareerTitle(slug: string): string {
         .join(' ');
 }
 
+// Helper to format location name from slug
+function formatLocationName(slug: string): string {
+    return slug
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 export default async function SalaryPage({ searchParams }: PageProps) {
-    const { profession, location } = searchParams;
+    const { profession, location, city } = searchParams;
 
     if (!profession) {
         return notFound();
     }
 
-    // Fetch salary data
-    const salaryData = location
-        ? await prisma.salaryData.findFirst({
+    // Determine query based on what's provided
+    let salaryData;
+
+    if (city && location) {
+        // City-level page: find by city slug
+        salaryData = await prisma.salaryData.findFirst({
             where: {
                 careerKeyword: profession,
-                location: { slug: location },
+                location: {
+                    slug: city,
+                    city: { not: "" }
+                },
                 year: 2024
-            }
-        })
-        : await prisma.salaryData.findFirst({
+            },
+            include: { location: true }
+        });
+    } else if (location) {
+        // State-level page
+        salaryData = await prisma.salaryData.findFirst({
+            where: {
+                careerKeyword: profession,
+                location: {
+                    slug: location,
+                    city: ""
+                },
+                year: 2024
+            },
+            include: { location: true }
+        });
+    } else {
+        // National page
+        salaryData = await prisma.salaryData.findFirst({
             where: {
                 careerKeyword: profession,
                 locationId: null,
                 year: 2024
             }
         });
+    }
 
     if (!salaryData) {
         return notFound();
@@ -56,11 +88,19 @@ export default async function SalaryPage({ searchParams }: PageProps) {
 
     // Get location name
     let locationName = "United States";
-    if (location && salaryData.locationId) {
-        const locationData = await prisma.location.findUnique({
-            where: { id: salaryData.locationId }
-        });
-        locationName = locationData?.stateName || location;
+    if (city || location) {
+        if (salaryData.locationId) {
+            const locationData = await prisma.location.findUnique({
+                where: { id: salaryData.locationId }
+            });
+            if (locationData) {
+                locationName = locationData.city
+                    ? `${locationData.city}, ${locationData.stateName}`
+                    : locationData.stateName || formatLocationName(location || '');
+            }
+        } else if (location) {
+            locationName = formatLocationName(location);
+        }
     }
 
     const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
