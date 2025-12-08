@@ -44,13 +44,14 @@ export default async function SalaryPage({ searchParams }: PageProps) {
     let salaryData;
 
     if (city && location) {
-        // City-level page: find location by state and city
-        // First, find the location that matches both state and city
+        // City-level page: find location by city name and state
+        const cityName = formatLocationName(city);
+        const stateAbbr = location.toUpperCase();
+
         const cityLocation = await prisma.location.findFirst({
             where: {
-                slug: city,
-                city: { not: "" },
-                stateName: formatLocationName(location)
+                city: cityName,
+                state: stateAbbr
             }
         });
 
