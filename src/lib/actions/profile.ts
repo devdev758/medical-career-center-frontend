@@ -75,11 +75,17 @@ export async function calculateProfileCompletion(userId: string) {
     });
     if (skills >= 3) completion += 15;
 
-    // Certifications (10%)
+    // Licenses (5%)
+    const licenses = await prisma.license.count({
+        where: { userId },
+    });
+    if (licenses > 0) completion += 5;
+
+    // Certifications (5%)
     const certifications = await prisma.certification.count({
         where: { userId },
     });
-    if (certifications > 0) completion += 10;
+    if (certifications > 0) completion += 5;
 
     // Resume (5%)
     if (profile?.resumeUrl) completion += 5;
@@ -92,6 +98,7 @@ export async function calculateProfileCompletion(userId: string) {
     return completion;
 }
 
+// Work Experience
 export async function getWorkExperience() {
     const session = await auth();
 
@@ -138,6 +145,31 @@ export async function createWorkExperience(data: {
     return experience;
 }
 
+export async function updateWorkExperience(id: string, data: {
+    title: string;
+    company: string;
+    location?: string;
+    startDate: Date;
+    endDate?: Date;
+    isCurrent: boolean;
+    description?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const experience = await prisma.workExperience.update({
+        where: { id, userId: session.user.id },
+        data,
+    });
+
+    revalidatePath("/dashboard/profile");
+
+    return experience;
+}
+
 export async function deleteWorkExperience(id: string) {
     const session = await auth();
 
@@ -153,6 +185,7 @@ export async function deleteWorkExperience(id: string) {
     revalidatePath("/dashboard/profile");
 }
 
+// Education
 export async function getEducation() {
     const session = await auth();
 
@@ -200,6 +233,32 @@ export async function createEducation(data: {
     return education;
 }
 
+export async function updateEducation(id: string, data: {
+    institution: string;
+    degree: string;
+    fieldOfStudy?: string;
+    startDate: Date;
+    endDate?: Date;
+    isCurrent: boolean;
+    grade?: string;
+    description?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const education = await prisma.education.update({
+        where: { id, userId: session.user.id },
+        data,
+    });
+
+    revalidatePath("/dashboard/profile");
+
+    return education;
+}
+
 export async function deleteEducation(id: string) {
     const session = await auth();
 
@@ -215,6 +274,7 @@ export async function deleteEducation(id: string) {
     revalidatePath("/dashboard/profile");
 }
 
+// Skills
 export async function getSkills() {
     const session = await auth();
 
@@ -254,6 +314,27 @@ export async function addSkill(data: {
     return skill;
 }
 
+export async function updateSkill(id: string, data: {
+    name: string;
+    level?: string;
+    yearsOfExperience?: number;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const skill = await prisma.skill.update({
+        where: { id, userId: session.user.id },
+        data,
+    });
+
+    revalidatePath("/dashboard/profile");
+
+    return skill;
+}
+
 export async function deleteSkill(id: string) {
     const session = await auth();
 
@@ -269,6 +350,89 @@ export async function deleteSkill(id: string) {
     revalidatePath("/dashboard/profile");
 }
 
+// Licenses
+export async function getLicenses() {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const licenses = await prisma.license.findMany({
+        where: { userId: session.user.id },
+        orderBy: { expiryDate: "desc" },
+    });
+
+    return licenses;
+}
+
+export async function createLicense(data: {
+    licenseType: string;
+    licenseNumber: string;
+    state: string;
+    issueDate: Date;
+    expiryDate?: Date;
+    status?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const license = await prisma.license.create({
+        data: {
+            userId: session.user.id,
+            ...data,
+        },
+    });
+
+    await calculateProfileCompletion(session.user.id);
+    revalidatePath("/dashboard/profile");
+
+    return license;
+}
+
+export async function updateLicense(id: string, data: {
+    licenseType: string;
+    licenseNumber: string;
+    state: string;
+    issueDate: Date;
+    expiryDate?: Date;
+    status?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const license = await prisma.license.update({
+        where: { id, userId: session.user.id },
+        data,
+    });
+
+    revalidatePath("/dashboard/profile");
+
+    return license;
+}
+
+export async function deleteLicense(id: string) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    await prisma.license.delete({
+        where: { id, userId: session.user.id },
+    });
+
+    await calculateProfileCompletion(session.user.id);
+    revalidatePath("/dashboard/profile");
+}
+
+// Certifications
 export async function getCertifications() {
     const session = await auth();
 
@@ -306,6 +470,30 @@ export async function createCertification(data: {
     });
 
     await calculateProfileCompletion(session.user.id);
+    revalidatePath("/dashboard/profile");
+
+    return certification;
+}
+
+export async function updateCertification(id: string, data: {
+    name: string;
+    issuingOrg: string;
+    issueDate: Date;
+    expiryDate?: Date;
+    credentialId?: string;
+    credentialUrl?: string;
+}) {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const certification = await prisma.certification.update({
+        where: { id, userId: session.user.id },
+        data,
+    });
+
     revalidatePath("/dashboard/profile");
 
     return certification;

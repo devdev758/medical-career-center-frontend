@@ -14,26 +14,27 @@ enum UserRole {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  name           String?
-  email          String?          @unique
-  emailVerified  DateTime?
-  image          String?
-  password       String?
-  role           UserRole         @default(JOB_SEEKER)
-  companyId      String?
-  company        Company?         @relation(fields: [companyId], references: [id])
-  accounts       Account[]
-  sessions       Session[]
-  applications   Application[]
-  savedJobs      SavedJob[]
-  profile        Profile?
-  workExperience WorkExperience[]
-  education      Education[]
-  skills         Skill[]
-  certifications Certification[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id              String           @id @default(cuid())
+  name            String?
+  email           String?          @unique
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  role            UserRole         @default(JOB_SEEKER)
+  companyId       String?
+  company         Company?         @relation(fields: [companyId], references: [id])
+  accounts        Account[]
+  sessions        Session[]
+  applications    Application[]
+  savedJobs       SavedJob[]
+  profile         Profile?
+  workExperience  WorkExperience[]
+  education       Education[]
+  skills          Skill[]
+  certifications  Certification[]
+  licenses        License[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Account {
@@ -90,9 +91,9 @@ model Company {
 }
 
 model Category {
-  id   String  @id @default(cuid())
-  name String  @unique
-  slug String  @unique
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
   icon String?
   jobs Job[]
 }
@@ -165,18 +166,12 @@ model Profile {
   country     String?   @default("United States")
 
   // Professional Information
-  headline String?
-  bio      String? @db.Text
-  phone    String?
-  location String?
-  website  String?
-  linkedIn String?
-
-  // Medical-Specific Fields
-  licenseNumber     String?
-  licenseState      String?
-  licenseExpiry     DateTime?
-  npiNumber         String? // National Provider Identifier
+  headline          String?
+  bio               String? @db.Text
+  phone             String?
+  location          String?
+  website           String?
+  linkedIn          String?
   specialization    String?
   yearsOfExperience Int?
 
@@ -187,7 +182,7 @@ model Profile {
   // Job Preferences
   jobTypes          String[]
   desiredSalary     String?
-  willingToRelocate Boolean   @default(false)
+  willingToRelocate Boolean  @default(false)
   availableFrom     DateTime?
 
   // Metadata
@@ -241,6 +236,22 @@ model Skill {
   level             String?
   yearsOfExperience Int?
   createdAt         DateTime @default(now())
+
+  @@index([userId])
+}
+
+model License {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseType   String    // e.g., "RN", "LPN", "MD", "NP"
+  licenseNumber String
+  state         String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  status        String    @default("ACTIVE") // ACTIVE, EXPIRED, SUSPENDED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([userId])
 }
