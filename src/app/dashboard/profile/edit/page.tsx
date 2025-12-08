@@ -145,8 +145,10 @@ export default async function EditProfilePage() {
                                 <Input
                                     id="dateOfBirth"
                                     name="dateOfBirth"
-                                    type="date"
-                                    defaultValue={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : ""}
+                                    type="text"
+                                    placeholder="MM/DD/YYYY"
+                                    pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}"
+                                    defaultValue={profile?.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString('en-US') : ""}
                                 />
                                 <p className="text-xs text-muted-foreground">Format: MM/DD/YYYY</p>
                             </div>
@@ -409,8 +411,10 @@ export default async function EditProfilePage() {
                                 <Input
                                     id="licenseExpiry"
                                     name="licenseExpiry"
-                                    type="date"
-                                    defaultValue={profile?.licenseExpiry ? new Date(profile.licenseExpiry).toISOString().split('T')[0] : ""}
+                                    type="text"
+                                    placeholder="MM/DD/YYYY"
+                                    pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}"
+                                    defaultValue={profile?.licenseExpiry ? new Date(profile.licenseExpiry).toLocaleDateString('en-US') : ""}
                                 />
                             </div>
 
@@ -481,8 +485,10 @@ export default async function EditProfilePage() {
                                 <Input
                                     id="availableFrom"
                                     name="availableFrom"
-                                    type="date"
-                                    defaultValue={profile?.availableFrom ? new Date(profile.availableFrom).toISOString().split('T')[0] : ""}
+                                    type="text"
+                                    placeholder="MM/DD/YYYY"
+                                    pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}"
+                                    defaultValue={profile?.availableFrom ? new Date(profile.availableFrom).toLocaleDateString('en-US') : ""}
                                 />
                             </div>
                         </div>
