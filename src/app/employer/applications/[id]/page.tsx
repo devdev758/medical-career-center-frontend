@@ -144,11 +144,16 @@ export default async function ApplicationDetailsPage({
                         </div>
 
                         {application.resumeUrl && (
-                            <div>
+                            <div className="flex gap-2">
                                 <Button asChild>
                                     <Link href={`/employer/applications/${application.id}/resume`} target="_blank">
                                         <Download className="w-4 h-4 mr-2" />
                                         Download Resume
+                                    </Link>
+                                </Button>
+                                <Button variant="outline" asChild>
+                                    <Link href={`/employer/applications/${application.id}/candidate`}>
+                                        View Full Profile
                                     </Link>
                                 </Button>
                             </div>
