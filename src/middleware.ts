@@ -4,11 +4,15 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
+    console.log('[Middleware] Path:', path);
+
     // Match salary pages: /[profession]-salary or /[profession]-salary/[location]
     const salaryMatch = path.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z0-9-]+))?$/);
 
     if (salaryMatch) {
         const [_, profession, location] = salaryMatch;
+
+        console.log('[Middleware] Matched salary page:', { profession, location });
 
         // Rewrite to our salary handler
         const url = request.nextUrl.clone();
@@ -18,15 +22,10 @@ export function middleware(request: NextRequest) {
             url.searchParams.set('location', location);
         }
 
+        console.log('[Middleware] Rewriting to:', url.toString());
+
         return NextResponse.rewrite(url);
     }
 
     return NextResponse.next();
 }
-
-export const config = {
-    matcher: [
-        '/:path*-salary',
-        '/:path*-salary/:location*',
-    ],
-};
