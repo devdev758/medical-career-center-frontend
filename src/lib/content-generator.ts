@@ -12,18 +12,47 @@ export function formatCurrency(amount: number) {
 export function generateWageNarrative(salary: any, careerTitle: string, locationName: string) {
     const hourlyMedian = salary.hourlyMedian ? `$${salary.hourlyMedian.toFixed(2)}` : "N/A";
     const annualMedian = formatCurrency(salary.annualMedian || 0);
+    const hourlyMean = salary.hourlyMean ? `$${salary.hourlyMean.toFixed(2)}` : "N/A";
+    const annualMean = salary.annualMean ? formatCurrency(salary.annualMean) : "N/A";
 
-    const startingHourly = salary.hourly10th ? `$${salary.hourly10th.toFixed(2)}` : "N/A";
-    const startingAnnual = salary.annual10th ? formatCurrency(salary.annual10th) : "N/A";
+    const hourly10th = salary.hourly10th ? `$${salary.hourly10th.toFixed(2)}` : "N/A";
+    const annual10th = salary.annual10th ? formatCurrency(salary.annual10th) : "N/A";
 
-    const experiencedHourly = salary.hourly90th ? `$${salary.hourly90th.toFixed(2)}` : "N/A";
-    const experiencedAnnual = salary.annual90th ? formatCurrency(salary.annual90th) : "N/A";
+    const hourly25th = salary.hourly25th ? `$${salary.hourly25th.toFixed(2)}` : "N/A";
+    const annual25th = salary.annual25th ? formatCurrency(salary.annual25th) : "N/A";
+
+    const hourly75th = salary.hourly75th ? `$${salary.hourly75th.toFixed(2)}` : "N/A";
+    const annual75th = salary.annual75th ? formatCurrency(salary.annual75th) : "N/A";
+
+    const hourly90th = salary.hourly90th ? `$${salary.hourly90th.toFixed(2)}` : "N/A";
+    const annual90th = salary.annual90th ? formatCurrency(salary.annual90th) : "N/A";
+
+    const employmentCount = salary.employmentCount ? salary.employmentCount.toLocaleString() : "N/A";
+    const jobsPer1000 = salary.jobsPer1000 ? salary.jobsPer1000.toFixed(3) : "N/A";
+    const locationQuotient = salary.locationQuotient ? salary.locationQuotient.toFixed(2) : "N/A";
 
     return {
         intro: `The average salary for a **${careerTitle}** in **${locationName}** is **${annualMedian}** per year (or **${hourlyMedian}** per hour).`,
-        starting: `**Starting Out:** Entry-level ${careerTitle}s (10th percentile) typically earn around **${startingHourly}** per hour or **${startingAnnual}** annually.`,
-        median: `**Average:** The median wage sits at **${hourlyMedian}** per hour or **${annualMedian}** per year. This means half of the ${careerTitle}s in ${locationName} earn more than this, while the other half earns less.`,
-        experienced: `**Top Earners:** Highly experienced professionals (90th percentile) can earn up to **${experiencedHourly}** per hour or **${experiencedAnnual}** per year.`
+        overview: `The average hourly salary for ${careerTitle.toLowerCase()}s in ${locationName} is ${hourlyMean}.`,
+        distribution: [
+            `${careerTitle}s in the bottom 10% earn ${hourly10th} per hour or ${annual10th} annually.`,
+            `Those in the bottom 25% earn ${hourly25th} per hour or ${annual25th} per year.`,
+            `The median or average salary is ${hourlyMedian} per hour or ${annualMedian} annually.`,
+            `In the top 25%, ${locationName} ${careerTitle.toLowerCase()}s make ${hourly75th} per hour or ${annual75th} per year.`,
+            `The highest paid ${careerTitle.toLowerCase()}s in the top 10% earn ${hourly90th} per hour or ${annual90th} annually.`
+        ],
+        wageBreakdown: {
+            starting: `If you're starting as a ${careerTitle.toLowerCase()}, you might find yourself earning around ${hourly10th} per hour or ${annual10th} per year.`,
+            earlyCareer: `With a bit more experience, earnings around ${hourly25th} per hour or ${annual25th} per year are common.`,
+            median: `The median wage sits at ${hourlyMedian} per hour or ${annualMedian} per year. This means half of the ${careerTitle.toLowerCase()}s in ${locationName} earn more than this, while the other half earns less.`,
+            experienced: `Those in the top 25% of earners take home around ${hourly75th} per hour or ${annual75th} per year.`,
+            topEarners: `The highest earners, the top 10%, make about ${hourly90th} per hour or ${annual90th} per year.`
+        },
+        employment: {
+            count: employmentCount,
+            jobsPer1000: jobsPer1000,
+            locationQuotient: locationQuotient
+        }
     };
 }
 
