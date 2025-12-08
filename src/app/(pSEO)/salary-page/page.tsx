@@ -44,9 +44,9 @@ export default async function SalaryPage({ searchParams }: PageProps) {
     let salaryData;
 
     if (city && location) {
-        // City-level page: find location by city name and state
+        // City-level page: find location by city name and state abbreviation
         const cityName = formatLocationName(city);
-        const stateAbbr = location.toUpperCase();
+        const stateAbbr = location.toUpperCase(); // URL has state abbreviation (e.g., "ca" → "CA")
 
         const cityLocation = await prisma.location.findFirst({
             where: {
@@ -66,12 +66,14 @@ export default async function SalaryPage({ searchParams }: PageProps) {
             });
         }
     } else if (location) {
-        // State-level page
+        // State-level page: location is state abbreviation (e.g., "ca")
+        const stateAbbr = location.toUpperCase();
+
         salaryData = await prisma.salaryData.findFirst({
             where: {
                 careerKeyword: profession,
                 location: {
-                    slug: location,
+                    state: stateAbbr,
                     city: ""
                 },
                 year: 2024
