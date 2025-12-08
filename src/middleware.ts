@@ -14,24 +14,17 @@ export function middleware(request: NextRequest) {
 
         console.log('[Middleware] Matched salary page:', { profession, location });
 
-        // Rewrite to our salary handler
+        // Rewrite to our salary page with query params
         const url = request.nextUrl.clone();
-        url.pathname = '/api/salary-page';
-
-        // Pass parameters via headers (query params don't survive rewrites)
-        const headers = new Headers(request.headers);
-        headers.set('x-salary-profession', profession);
+        url.pathname = '/salary-page';
+        url.searchParams.set('profession', profession);
         if (location) {
-            headers.set('x-salary-location', location);
+            url.searchParams.set('location', location);
         }
 
         console.log('[Middleware] Rewriting to:', url.toString());
 
-        return NextResponse.rewrite(url, {
-            request: {
-                headers: headers,
-            },
-        });
+        return NextResponse.rewrite(url);
     }
 
     return NextResponse.next();
