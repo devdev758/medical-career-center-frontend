@@ -44,9 +44,16 @@ async function generateSalaryPageHTML(profession: string, location?: string) {
         }
 
         const careerTitle = formatCareerTitle(profession);
-        const locationName = location
-            ? (salaryData.location?.stateName || formatLocationName(location))
-            : "United States";
+
+        // Get location name
+        let locationName = "United States";
+        if (location && salaryData.locationId) {
+            // Fetch location separately to avoid type issues
+            const locationData = await prisma.location.findUnique({
+                where: { id: salaryData.locationId }
+            });
+            locationName = locationData?.stateName || formatLocationName(location);
+        }
 
         const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
         const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
