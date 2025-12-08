@@ -62,15 +62,7 @@ async function getData(career: string) {
     return { salaryData, relatedLocations, careerKeyword, careerTitle: formatCareerTitle(careerKeyword) };
 }
 
-export async function generateStaticParams() {
-    // Generate pages for key careers
-    return [
-        { career: 'registered-nurses-salary' },
-        { career: 'nurse-practitioners-salary' },
-        { career: 'physician-assistants-salary' },
-        { career: 'dental-hygienists-salary' },
-    ];
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { career } = params;

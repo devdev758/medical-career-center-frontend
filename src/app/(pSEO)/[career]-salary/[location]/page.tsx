@@ -82,23 +82,7 @@ async function getData(career: string, locationSlug: string) {
     };
 }
 
-export async function generateStaticParams() {
-    // Generate pages for key career/location combinations
-    const careers = ['registered-nurses-salary', 'nurse-practitioners-salary', 'physician-assistants-salary', 'dental-hygienists-salary'];
-    const locations = await prisma.location.findMany({
-        where: { city: "" }, // States only
-        select: { slug: true },
-        take: 10
-    });
-
-    const params = [];
-    for (const career of careers) {
-        for (const location of locations) {
-            params.push({ career, location: location.slug });
-        }
-    }
-    return params;
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { career, location } = params;
