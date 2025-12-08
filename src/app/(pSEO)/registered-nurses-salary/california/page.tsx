@@ -22,6 +22,8 @@ const MarkdownText = ({ children }: { children: string }) => {
     );
 };
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: "Registered Nurses Salary in California (2025 Guide)",
     description: "How much does a Registered Nurse make in California? View average salary, hourly pay, and wage distribution for 2025.",
