@@ -192,9 +192,11 @@ async function generateSalaryPageHTML(profession: string, location?: string) {
 }
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const profession = searchParams.get('profession');
-    const location = searchParams.get('location');
+    // Get parameters from headers (passed by middleware)
+    const profession = request.headers.get('x-salary-profession');
+    const location = request.headers.get('x-salary-location');
+
+    console.log('[API] Received:', { profession, location });
 
     if (!profession) {
         return new NextResponse('Profession required', { status: 400 });
