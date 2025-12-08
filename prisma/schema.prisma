@@ -108,14 +108,31 @@ model Job {
   salary          String?
   remote          Boolean       @default(false)
   experienceLevel String        @default("MID")
-  companyId       String
+  
+  // Internal vs External
+  source          String        @default("INTERNAL") // INTERNAL, INDEED, ZIPRECRUITER
+  externalId      String?
+  externalUrl     String?
+  
+  // Company Info (Optional for External)
+  companyId       String?
+  companyName     String?       // For external jobs
+  companyLogo     String?       // For external jobs
+  
+  // pSEO Linking
+  careerKeyword   String?
+  
   categoryId      String?
-  company         Company       @relation(fields: [companyId], references: [id])
+  company         Company?      @relation(fields: [companyId], references: [id])
   category        Category?     @relation(fields: [categoryId], references: [id])
   applications    Application[]
   savedBy         SavedJob[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
+  @@unique([source, externalId])
+  @@index([careerKeyword])
+  @@index([location])
 }
 
 model SavedJob {
@@ -270,4 +287,55 @@ model Certification {
   updatedAt     DateTime  @updatedAt
 
   @@index([userId])
+}
+
+// Programmatic SEO Models
+
+model Location {
+  id        String   @id @default(cuid())
+  city      String
+  state     String   // e.g., "CA"
+  stateName String   // e.g., "California"
+  zip       String?
+  slug      String   // e.g., "los-angeles-ca"
+  
+  // Relations
+  salaries  SalaryData[]
+  // jobs      Job[]    // Future proofing for Phase 8
+
+  @@unique([city, state])
+  @@index([state])
+  @@index([slug])
+}
+
+model SalaryData {
+  id              String   @id @default(cuid())
+  
+  careerKeyword   String   // e.g., "ultrasound-technician"
+  
+  locationId      String?
+  location        Location? @relation(fields: [locationId], references: [id])
+  
+  // BLS Data Points
+  hourly10th      Float?
+  hourly25th      Float?
+  hourlyMedian    Float?
+  hourly75th      Float?
+  hourly90th      Float?
+  
+  annual10th      Float?
+  annual25th      Float?
+  annualMedian    Float?
+  annual75th      Float?
+  annual90th      Float?
+  
+  employmentCount Int?     // Number of jobs in this area
+  
+  year            Int      // Data year (e.g., 2024)
+  source          String   // "BLS"
+  
+  updatedAt       DateTime @updatedAt
+
+  @@unique([careerKeyword, locationId, year])
+  @@index([careerKeyword])
 }

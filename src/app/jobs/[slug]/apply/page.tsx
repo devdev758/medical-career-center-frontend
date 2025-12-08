@@ -46,7 +46,7 @@ export default async function ApplyPage({ params }: { params: { slug: string } }
                 <CardHeader>
                     <CardTitle>Apply for {job.title}</CardTitle>
                     <CardDescription>
-                        at {job.company.name}
+                        at {job.company?.name || job.companyName || "Confidential"}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -57,7 +57,7 @@ export default async function SavedJobsPage() {
                                         </CardTitle>
                                         <CardDescription className="flex items-center gap-2">
                                             <Building2 className="w-4 h-4" />
-                                            {job.company.name}
+                                            {job.company?.name || job.companyName || "Confidential"}
                                         </CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2">

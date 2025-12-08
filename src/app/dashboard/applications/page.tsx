@@ -76,7 +76,7 @@ export default async function ApplicationsPage() {
                                         </CardTitle>
                                         <CardDescription className="flex items-center gap-2">
                                             <Building2 className="w-4 h-4" />
-                                            {application.job.company.name}
+                                            {application.job.company?.name || application.job.companyName || "Confidential"}
                                         </CardDescription>
                                     </div>
                                     <Badge variant={getStatusColor(application.status)}>

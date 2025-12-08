@@ -34,7 +34,7 @@ export default async function JobPage({ params }: { params: { slug: string } }) 
                         <div className="flex flex-wrap gap-4 text-muted-foreground mb-4">
                             <div className="flex items-center gap-1">
                                 <Building2 className="w-4 h-4" />
-                                {job.company.name}
+                                {job.company?.name || job.companyName || "Confidential"}
                             </div>
                             <div className="flex items-center gap-1">
                                 <MapPin className="w-4 h-4" />
@@ -120,16 +120,16 @@ export default async function JobPage({ params }: { params: { slug: string } }) 
                             <CardTitle className="text-lg">About the Company</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {job.company.logo && (
+                            {(job.company?.logo || job.companyLogo) && (
                                 <img
-                                    src={job.company.logo}
-                                    alt={job.company.name}
-                                    className="w-16 h-16 object-contain rounded-md border bg-white p-1"
+                                    src={job.company?.logo || job.companyLogo || ""}
+                                    alt={job.company?.name || job.companyName || "Company Logo"}
+                                    className="w-16 h-16 object-contain rounded-lg border bg-white p-1"
                                 />
                             )}
-                            <div>
-                                <h4 className="font-semibold">{job.company.name}</h4>
-                                {job.company.website && (
+                            <div className="space-y-1">
+                                <h3 className="font-semibold">{job.company?.name || job.companyName || "Confidential"}</h3>
+                                {job.company?.website && (
                                     <a
                                         href={job.company.website}
                                         target="_blank"
@@ -141,7 +141,7 @@ export default async function JobPage({ params }: { params: { slug: string } }) 
                                     </a>
                                 )}
                             </div>
-                            {job.company.description && (
+                            {job.company?.description && (
                                 <p className="text-sm text-muted-foreground">
                                     {job.company.description}
                                 </p>

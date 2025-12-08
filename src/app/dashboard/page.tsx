@@ -203,7 +203,7 @@ export default async function DashboardPage() {
                                     <div key={app.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
                                         <div>
                                             <p className="font-medium">{app.job.title}</p>
-                                            <p className="text-sm text-muted-foreground">{app.job.company.name}</p>
+                                            <p className="text-sm text-muted-foreground">{app.job.company?.name || app.job.companyName || "Confidential"}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm font-medium">{app.status}</p>
