@@ -54,7 +54,7 @@ export default async function Page() {
                 </h1>
 
                 <p className="text-xl leading-relaxed">
-                    According to data from the Bureau of Labor Statistics, the average annual salary for {careerTitle.toLowerCase()}s in {locationName} is <strong>{formatCurrency(salaryData.annualMean || 0)}</strong>.
+                    According to data from the Bureau of Labor Statistics, the median annual salary for {careerTitle.toLowerCase()}s in {locationName} is <strong>{formatCurrency(salaryData.annualMedian || 0)}</strong>.
                 </p>
 
                 {salaryData.employmentCount && (
@@ -126,10 +126,6 @@ export default async function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <div className="flex justify-between items-center py-2 border-b">
-                            <span className="text-muted-foreground">Mean Annual</span>
-                            <span className="font-bold">{formatCurrency(salaryData.annualMean || 0)}</span>
-                        </div>
                         <div className="flex justify-between items-center py-2 border-b">
                             <span className="text-muted-foreground">Median Annual</span>
                             <span className="font-bold">{formatCurrency(salaryData.annualMedian || 0)}</span>

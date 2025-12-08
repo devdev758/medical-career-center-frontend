@@ -12,8 +12,6 @@ export function formatCurrency(amount: number) {
 export function generateWageNarrative(salary: any, careerTitle: string, locationName: string) {
     const hourlyMedian = salary.hourlyMedian ? `$${salary.hourlyMedian.toFixed(2)}` : "N/A";
     const annualMedian = formatCurrency(salary.annualMedian || 0);
-    const hourlyMean = salary.hourlyMean ? `$${salary.hourlyMean.toFixed(2)}` : "N/A";
-    const annualMean = salary.annualMean ? formatCurrency(salary.annualMean) : "N/A";
 
     const hourly10th = salary.hourly10th ? `$${salary.hourly10th.toFixed(2)}` : "N/A";
     const annual10th = salary.annual10th ? formatCurrency(salary.annual10th) : "N/A";
@@ -33,7 +31,7 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
 
     return {
         intro: `The average salary for a **${careerTitle}** in **${locationName}** is **${annualMedian}** per year (or **${hourlyMedian}** per hour).`,
-        overview: `The average hourly salary for ${careerTitle.toLowerCase()}s in ${locationName} is ${hourlyMean}.`,
+        overview: `The median hourly salary for ${careerTitle.toLowerCase()}s in ${locationName} is ${hourlyMedian}.`,
         distribution: [
             `${careerTitle}s in the bottom 10% earn ${hourly10th} per hour or ${annual10th} annually.`,
             `Those in the bottom 25% earn ${hourly25th} per hour or ${annual25th} per year.`,

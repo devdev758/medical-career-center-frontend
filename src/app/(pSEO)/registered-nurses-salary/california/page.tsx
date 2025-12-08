@@ -2,25 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock, DollarSign } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
-
-const MarkdownText = ({ children }: { children: string }) => {
-    if (!children) return null;
-    const parts = children.split(/(\*\*.*?\*\*)/g);
-    return (
-        <>
-            {parts.map((part, i) => {
-                if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i}>{part.slice(2, -2)}</strong>;
-                }
-                return part;
-            })}
-        </>
-    );
-};
 
 export const dynamic = 'force-dynamic';
 
@@ -49,8 +34,23 @@ export default async function Page() {
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
     const careerDescription = getCareerDescription("registered-nurses");
 
+    // Get national average for comparison
+    const nationalData = await prisma.salaryData.findFirst({
+        where: {
+            careerKeyword: "registered-nurses",
+            locationId: null,
+            year: 2024
+        }
+    });
+
+    const comparisonText = nationalData
+        ? salaryData.annualMedian && nationalData.annualMedian && salaryData.annualMedian > nationalData.annualMedian
+            ? `Above the national average of ${formatCurrency(nationalData.annualMedian)}.`
+            : `Compared to the national average of ${formatCurrency(nationalData.annualMedian || 0)}.`
+        : "";
+
     return (
-        <main className="container mx-auto py-10 px-4">
+        <main className="container mx-auto py-10 px-4 max-w-5xl">
             <div className="mb-6">
                 <Link href="/" className="inline-flex items-center text-sm text-primary hover:underline">
                     <ArrowLeft className="w-4 h-4 mr-1" />
@@ -58,150 +58,141 @@ export default async function Page() {
                 </Link>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <div className="space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                            {careerTitle} Salary in <span className="text-primary">{locationName}</span>
-                        </h1>
-                        <p className="text-xl text-muted-foreground">
-                            Updated for 2025 • Data from Bureau of Labor Statistics
-                        </p>
+            <article className="prose prose-lg dark:prose-invert max-w-none">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+                    How much does a {careerTitle} make in {locationName}?
+                </h1>
 
-                        <div className="flex flex-wrap gap-4 mt-6">
-                            <Card className="bg-primary/5 border-primary/20">
-                                <CardContent className="p-4 flex items-center gap-3">
-                                    <div className="p-2 bg-primary/10 rounded-full">
-                                        <DollarSign className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground font-medium">Average Annual</p>
-                                        <p className="text-2xl font-bold text-primary">
-                                            {formatCurrency(salaryData.annualMedian || 0)}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                <p className="text-xl leading-relaxed">
+                    According to data from the Bureau of Labor Statistics, the median annual salary for {careerTitle.toLowerCase()}s in {locationName} is <strong>{formatCurrency(salaryData.annualMedian || 0)}</strong>. {comparisonText}
+                </p>
 
-                            <Card className="bg-primary/5 border-primary/20">
-                                <CardContent className="p-4 flex items-center gap-3">
-                                    <div className="p-2 bg-primary/10 rounded-full">
-                                        <Clock className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground font-medium">Average Hourly</p>
-                                        <p className="text-2xl font-bold text-primary">
-                                            ${salaryData.hourlyMedian?.toFixed(2) || "N/A"}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
+                {salaryData.employmentCount && salaryData.jobsPer1000 && salaryData.locationQuotient && (
+                    <p className="text-lg">
+                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s in the state, this occupation makes up <strong>{salaryData.jobsPer1000.toFixed(3)}</strong> per 1,000 jobs in {locationName} and has a location quotient of <strong>{salaryData.locationQuotient.toFixed(2)}</strong> compared to the national average.
+                    </p>
+                )}
 
-                    <Separator />
+                <Separator className="my-8" />
 
-                    <section className="prose dark:prose-invert max-w-none">
-                        <h2 className="text-2xl font-bold mb-4">What is a {careerTitle}?</h2>
-                        <p className="text-lg leading-relaxed text-muted-foreground">
-                            {careerDescription}
-                        </p>
-                    </section>
+                <h2 className="text-3xl font-bold mb-4">{careerTitle} Salary in {locationName} – Overview</h2>
 
-                    <section className="prose dark:prose-invert max-w-none">
-                        <h2 className="text-2xl font-bold mb-4">How much does a {careerTitle} make in {locationName}?</h2>
-                        <p className="text-lg leading-relaxed mb-4">
-                            <MarkdownText>{narrative.intro}</MarkdownText>
-                        </p>
+                <p className="text-lg mb-4">{narrative.overview}</p>
 
-                        <div className="grid md:grid-cols-2 gap-6 my-8 not-prose">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Starting Salary</CardTitle>
-                                    <CardDescription>10th Percentile</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-2">
-                                        Entry-level positions start around:
-                                    </p>
-                                    <p className="font-medium">
-                                        <MarkdownText>{narrative.starting}</MarkdownText>
-                                    </p>
-                                </CardContent>
-                            </Card>
+                <ul className="space-y-2 text-lg">
+                    {narrative.distribution.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Experienced Salary</CardTitle>
-                                    <CardDescription>90th Percentile</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-2">
-                                        Top earners can make up to:
-                                    </p>
-                                    <p className="font-medium">
-                                        <MarkdownText>{narrative.experienced}</MarkdownText>
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </div>
+                <p className="text-lg mt-6">Let's dive deeper into the wage distribution:</p>
 
-                        <p className="text-lg leading-relaxed">
-                            <MarkdownText>{narrative.median}</MarkdownText>
-                        </p>
-                    </section>
+                <Separator className="my-8" />
 
-                    <section className="prose dark:prose-invert max-w-none">
-                        <h2 className="text-2xl font-bold mb-4">Factors Affecting {careerTitle} Salary</h2>
-                        <ul className="space-y-2">
-                            <li><strong>Experience:</strong> Senior roles with 5+ years of experience command significantly higher wages.</li>
-                            <li><strong>Location:</strong> Salaries vary by state and city due to cost of living differences.</li>
-                            <li><strong>Education:</strong> Advanced certifications and degrees can lead to higher pay bands.</li>
-                            <li><strong>Employer Type:</strong> Hospitals, private clinics, and government agencies offer different compensation packages.</li>
-                        </ul>
-                    </section>
+                <h2 className="text-3xl font-bold mb-4">Wage Distribution: How Do Salaries Vary Among {careerTitle}s in {locationName}?</h2>
 
-                    <Card className="bg-primary text-primary-foreground">
-                        <CardContent className="p-8 text-center space-y-4">
-                            <h3 className="text-2xl font-bold">Looking for a {careerTitle} Job in {locationName}?</h3>
-                            <p className="text-primary-foreground/90 max-w-xl mx-auto">
-                                We have open positions available right now. Browse listings and apply today.
-                            </p>
-                            <Button size="lg" variant="secondary" asChild className="mt-4">
-                                <Link href="/registered-nurses-jobs/california">
-                                    View {careerTitle} Jobs
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
+                <div className="space-y-4 text-lg">
+                    <p><strong>Starting Out:</strong> {narrative.wageBreakdown.starting}</p>
+                    <p><strong>Early Career:</strong> {narrative.wageBreakdown.earlyCareer}</p>
+                    <p><strong>Most Common:</strong> {narrative.wageBreakdown.median}</p>
+                    <p><strong>Experienced:</strong> {narrative.wageBreakdown.experienced}</p>
+                    <p><strong>Top Earners:</strong> {narrative.wageBreakdown.topEarners}</p>
                 </div>
 
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Stats</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex justify-between items-center py-2 border-b">
-                                <span className="text-muted-foreground">Median Annual</span>
-                                <span className="font-bold text-foreground">{formatCurrency(salaryData.annualMedian || 0)}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-2 border-b">
-                                <span className="text-muted-foreground">Median Hourly</span>
-                                <span className="font-bold text-foreground">${salaryData.hourlyMedian?.toFixed(2) || "N/A"}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-2 border-b">
-                                <span className="text-muted-foreground">Employment</span>
-                                <span className="font-bold">{salaryData.employmentCount?.toLocaleString() || "N/A"}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-2">
-                                <span className="text-muted-foreground">Data Source</span>
-                                <span className="font-bold">BLS (May 2024)</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                <Separator className="my-8" />
+
+                <h2 className="text-3xl font-bold mb-4">What is a {careerTitle}?</h2>
+                <p className="text-lg">{careerDescription}</p>
+
+                <Separator className="my-8" />
+
+                <h2 className="text-3xl font-bold mb-4">How Many {careerTitle}s Are There in {locationName}?</h2>
+                {salaryData.employmentCount && (
+                    <p className="text-lg">
+                        In {locationName}, there's a sizable community of {careerTitle.toLowerCase()}s. As of the latest data, <strong>{salaryData.employmentCount.toLocaleString()}</strong> of them were employed across the state.
+                    </p>
+                )}
+
+                <Separator className="my-8" />
+
+                <h2 className="text-3xl font-bold mb-4">Is {locationName} a Good State for {careerTitle}s?</h2>
+                {salaryData.locationQuotient && salaryData.jobsPer1000 && (
+                    <p className="text-lg">
+                        The location quotient of <strong>{salaryData.locationQuotient.toFixed(2)}</strong> indicates that {locationName} has a {salaryData.locationQuotient > 1 ? 'higher' : 'slightly lower'} concentration of {careerTitle.toLowerCase()}s than the national average. Moreover, there are approximately <strong>{salaryData.jobsPer1000.toFixed(3)}</strong> {careerTitle.toLowerCase()} jobs per 1,000 total jobs in the state. Overall, {careerTitle}s in {locationName} earn a competitive wage, with a median hourly wage of <strong>${salaryData.hourlyMedian?.toFixed(2) || "N/A"}</strong> per hour.
+                    </p>
+                )}
+
+                <Separator className="my-8" />
+
+                <h2 className="text-3xl font-bold mb-4">Factors Affecting {careerTitle} Salary</h2>
+                <ul className="space-y-3 text-lg">
+                    <li><strong>Experience:</strong> Senior roles with 5+ years of experience command significantly higher wages.</li>
+                    <li><strong>Location:</strong> Salaries vary by city due to cost of living differences.</li>
+                    <li><strong>Education:</strong> Advanced certifications and degrees can lead to higher pay bands.</li>
+                    <li><strong>Employer Type:</strong> Hospitals, private clinics, and government agencies offer different compensation packages.</li>
+                    <li><strong>Specialization:</strong> Specialized nursing fields like ICU, ER, or surgical nursing often command premium wages.</li>
+                </ul>
+            </article>
+
+            <Separator className="my-12" />
+
+            <div className="grid md:grid-cols-2 gap-8 my-12">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <DollarSign className="w-5 h-5 text-primary" />
+                            Quick Stats
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <div className="flex justify-between items-center py-2 border-b">
+                            <span className="text-muted-foreground">Median Annual</span>
+                            <span className="font-bold">{formatCurrency(salaryData.annualMedian || 0)}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b">
+                            <span className="text-muted-foreground">Median Hourly</span>
+                            <span className="font-bold">${salaryData.hourlyMedian?.toFixed(2) || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                            <span className="text-muted-foreground">Employment</span>
+                            <span className="font-bold">{salaryData.employmentCount?.toLocaleString() || "N/A"}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Related Careers</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col gap-2">
+                            <Link href="/nurse-practitioners-salary" className="text-sm hover:underline text-primary">
+                                Nurse Practitioners Salary
+                            </Link>
+                            <Link href="/physician-assistants-salary" className="text-sm hover:underline text-primary">
+                                Physician Assistants Salary
+                            </Link>
+                            <Link href="/dental-hygienists-salary" className="text-sm hover:underline text-primary">
+                                Dental Hygienists Salary
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
+
+            <Card className="bg-primary text-primary-foreground my-12">
+                <CardContent className="p-8 text-center space-y-4">
+                    <h3 className="text-2xl font-bold">Looking for a {careerTitle} Job in {locationName}?</h3>
+                    <p className="text-primary-foreground/90 max-w-xl mx-auto">
+                        We have open positions available right now. Browse listings and apply today.
+                    </p>
+                    <Button size="lg" variant="secondary" asChild className="mt-4">
+                        <Link href="/registered-nurses-jobs/california">
+                            View {careerTitle} Jobs
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
 
             <script
                 type="application/ld+json"
