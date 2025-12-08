@@ -29,71 +29,81 @@ const formatCareerTitle = (slug: string) => {
 };
 
 async function getData(career: string, locationSlugs?: string[]) {
-    const careerKeyword = career.replace("-salary", ""); // e.g. "registered-nurses"
+    try {
+        if (!career) {
+            console.error("getData: career param is missing");
+            return { salaryData: null, locationName: "", locationType: "", careerTitle: "", relatedLocations: [], careerKeyword: "" };
+        }
 
-    let locationId = null;
-    let locationName = "United States";
-    let locationType = "NATIONAL";
+        const careerKeyword = career.replace("-salary", ""); // e.g. "registered-nurses"
 
-    if (locationSlugs && locationSlugs.length > 0) {
-        if (locationSlugs.length === 1) {
-            // State level
-            const stateSlug = locationSlugs[0];
-            const loc = await prisma.location.findFirst({ where: { slug: stateSlug } });
-            if (loc) {
-                locationId = loc.id;
-                locationName = loc.stateName;
-                locationType = "STATE";
-            }
-        } else if (locationSlugs.length === 2) {
-            // City level
-            const citySlug = locationSlugs[1];
-            const loc = await prisma.location.findFirst({ where: { slug: citySlug } });
-            if (loc) {
-                locationId = loc.id;
-                locationName = `${loc.city}, ${loc.state}`;
-                locationType = "CITY";
+        let locationId = null;
+        let locationName = "United States";
+        let locationType = "NATIONAL";
+
+        if (locationSlugs && locationSlugs.length > 0) {
+            if (locationSlugs.length === 1) {
+                // State level
+                const stateSlug = locationSlugs[0];
+                const loc = await prisma.location.findFirst({ where: { slug: stateSlug } });
+                if (loc) {
+                    locationId = loc.id;
+                    locationName = loc.stateName;
+                    locationType = "STATE";
+                }
+            } else if (locationSlugs.length === 2) {
+                // City level
+                const citySlug = locationSlugs[1];
+                const loc = await prisma.location.findFirst({ where: { slug: citySlug } });
+                if (loc) {
+                    locationId = loc.id;
+                    locationName = `${loc.city}, ${loc.state}`;
+                    locationType = "CITY";
+                }
             }
         }
-    }
 
-    // Fetch Salary Data
-    const salaryData = await prisma.salaryData.findFirst({
-        where: {
-            careerKeyword: careerKeyword,
-            locationId: locationId,
-            year: 2024
-        },
-        include: { location: true }
-    });
-
-    if (!salaryData) {
-        // Fallback or 404? For pSEO, maybe show national data with a note?
-        // For now, let's return null and handle in UI
-        return { salaryData: null, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), careerKeyword };
-    }
-
-    // Fetch Related Locations (e.g. other cities in state, or other states)
-    let relatedLocations: any[] = [];
-    if (locationType === "NATIONAL") {
-        // Get top paying states (mock or real query if we had sorting)
-        // For now just get random states
-        relatedLocations = await prisma.location.findMany({
-            where: { city: "" }, // States
-            take: 6
+        // Fetch Salary Data
+        const salaryData = await prisma.salaryData.findFirst({
+            where: {
+                careerKeyword: careerKeyword,
+                locationId: locationId,
+                year: 2024
+            },
+            include: { location: true }
         });
-    } else if (locationType === "STATE" && locationId) {
-        // Get cities in this state
-        const currentState = await prisma.location.findUnique({ where: { id: locationId } });
-        if (currentState) {
+
+        if (!salaryData) {
+            // Fallback or 404? For pSEO, maybe show national data with a note?
+            // For now, let's return null and handle in UI
+            return { salaryData: null, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), careerKeyword, relatedLocations: [] };
+        }
+
+        // Fetch Related Locations (e.g. other cities in state, or other states)
+        let relatedLocations: any[] = [];
+        if (locationType === "NATIONAL") {
+            // Get top paying states (mock or real query if we had sorting)
+            // For now just get random states
             relatedLocations = await prisma.location.findMany({
-                where: { state: currentState.state, NOT: { city: "" } },
+                where: { city: "" }, // States
                 take: 6
             });
+        } else if (locationType === "STATE" && locationId) {
+            // Get cities in this state
+            const currentState = await prisma.location.findUnique({ where: { id: locationId } });
+            if (currentState) {
+                relatedLocations = await prisma.location.findMany({
+                    where: { state: currentState.state, NOT: { city: "" } },
+                    take: 6
+                });
+            }
         }
-    }
 
-    return { salaryData, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), relatedLocations, careerKeyword };
+        return { salaryData, locationName, locationType, careerTitle: formatCareerTitle(careerKeyword), relatedLocations, careerKeyword };
+    } catch (error) {
+        console.error("Error in getData:", error);
+        throw error; // Re-throw to be caught by error boundary
+    }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
