@@ -48,7 +48,7 @@ export function JobFilterSidebar({ onFilterChange, availableLocations, available
         sortBy: 'relevance',
         datePosted: 'any',
         salaryMin: 0,
-        salaryMax: 200000,
+        salaryMax: 300000,
         remote: [],
         location: [],
         company: [],
@@ -144,21 +144,54 @@ export function JobFilterSidebar({ onFilterChange, availableLocations, available
             {/* Salary */}
             <FilterSection title="Salary" sectionKey="salary">
                 <div className="space-y-4">
-                    <div>
-                        <Label className="text-sm mb-2 block">
-                            ${filters.salaryMin.toLocaleString()} - ${filters.salaryMax.toLocaleString()}
-                        </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <Label className="text-xs text-muted-foreground mb-1 block">Min</Label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                                <input
+                                    type="number"
+                                    value={filters.salaryMin}
+                                    onChange={(e) => updateFilter('salaryMin', parseInt(e.target.value) || 0)}
+                                    className="w-full pl-6 pr-2 py-1.5 text-sm border rounded-md"
+                                    min={0}
+                                    max={filters.salaryMax}
+                                    step={5000}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label className="text-xs text-muted-foreground mb-1 block">Max</Label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                                <input
+                                    type="number"
+                                    value={filters.salaryMax}
+                                    onChange={(e) => updateFilter('salaryMax', parseInt(e.target.value) || 200000)}
+                                    className="w-full pl-6 pr-2 py-1.5 text-sm border rounded-md"
+                                    min={filters.salaryMin}
+                                    max={300000}
+                                    step={5000}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="pt-2">
                         <Slider
                             min={0}
-                            max={200000}
+                            max={300000}
                             step={5000}
                             value={[filters.salaryMin, filters.salaryMax]}
-                            onValueChange={([min, max]) => {
+                            onValueChange={([min, max]: number[]) => {
                                 updateFilter('salaryMin', min);
                                 updateFilter('salaryMax', max);
                             }}
                             className="w-full"
                         />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                            <span>$0</span>
+                            <span>$300K</span>
+                        </div>
                     </div>
                 </div>
             </FilterSection>
@@ -275,7 +308,7 @@ export function JobFilterSidebar({ onFilterChange, availableLocations, available
                             sortBy: 'relevance',
                             datePosted: 'any',
                             salaryMin: 0,
-                            salaryMax: 200000,
+                            salaryMax: 300000,
                             remote: [],
                             location: [],
                             company: [],
