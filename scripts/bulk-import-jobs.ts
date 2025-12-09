@@ -139,6 +139,26 @@ function formatSalary(min?: number, max?: number): string | null {
 }
 
 /**
+ * Format location to show City, State instead of City, County
+ */
+function formatLocation(location: { display_name: string; area: string[] }): string {
+    // Adzuna location.area format: ["US", "State", "County", "City"]
+    // We want: "City, State" or just "State" if no city
+    if (location.area && location.area.length >= 2) {
+        const state = location.area[1]; // Index 1 is the state
+        const city = location.area[location.area.length - 1]; // Last item is usually the city
+
+        // If city is different from state, show "City, State"
+        if (city && city !== state) {
+            return `${city}, ${state}`;
+        }
+        return state;
+    }
+    // Fallback to display_name if area is not available
+    return location.display_name;
+}
+
+/**
  * Import jobs to database
  */
 async function importJobs(jobs: AdzunaJob[], careerKeyword: string): Promise<void> {
@@ -157,7 +177,7 @@ async function importJobs(jobs: AdzunaJob[], careerKeyword: string): Promise<voi
                 update: {
                     title: job.title,
                     description: job.description,
-                    location: job.location.display_name,
+                    location: formatLocation(job.location),
                     salary: salary,
                     type: job.contract_time === 'full_time' ? 'FULL_TIME' :
                         job.contract_time === 'part_time' ? 'PART_TIME' : 'FULL_TIME',
@@ -170,7 +190,7 @@ async function importJobs(jobs: AdzunaJob[], careerKeyword: string): Promise<voi
                     title: job.title,
                     slug: baseSlug,
                     description: job.description,
-                    location: job.location.display_name,
+                    location: formatLocation(job.location),
                     salary: salary,
                     type: job.contract_time === 'full_time' ? 'FULL_TIME' :
                         job.contract_time === 'part_time' ? 'PART_TIME' : 'FULL_TIME',

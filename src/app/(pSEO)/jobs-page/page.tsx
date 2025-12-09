@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { prisma } from '@/lib/prisma';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, Building2, DollarSign, Clock, ExternalLink } from 'lucide-react';
-
-const prisma = new PrismaClient();
+import { ArrowLeft } from 'lucide-react';
+import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +66,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
             { source: 'asc' }, // Internal jobs first
             { createdAt: 'desc' }
         ],
-        take: 50
+        take: 200 // Increased limit for filtering
     });
 
     const careerTitle = formatCareerTitle(profession);
@@ -114,83 +112,8 @@ export default async function JobsPage({ searchParams }: PageProps) {
                 </CardContent>
             </Card>
 
-            {/* Job Listings */}
-            {jobs.length === 0 ? (
-                <Card>
-                    <CardContent className="p-12 text-center">
-                        <p className="text-xl text-muted-foreground mb-4">
-                            No jobs found for {careerTitle} {locationName !== 'United States' && `in ${locationName}`}
-                        </p>
-                        <p className="text-sm text-muted-foreground mb-6">
-                            Try searching in a different location or check back later for new opportunities.
-                        </p>
-                        <Button asChild variant="outline">
-                            <Link href={`/${profession}-jobs`}>
-                                View All {careerTitle} Jobs
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid gap-6">
-                    {jobs.map((job) => (
-                        <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
-                                <div className="flex items-start justify-between gap-4">
-                                    <div className="flex-1">
-                                        <CardTitle className="text-2xl mb-2">
-                                            {job.title}
-                                        </CardTitle>
-                                        <div className="flex items-center gap-4 text-muted-foreground">
-                                            <div className="flex items-center gap-1">
-                                                <Building2 className="w-4 h-4" />
-                                                <span>{job.companyName || 'Company'}</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <MapPin className="w-4 h-4" />
-                                                <span>{job.location}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        {job.salary && (
-                                            <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold mb-2">
-                                                <DollarSign className="w-4 h-4" />
-                                                <span>{job.salary}</span>
-                                            </div>
-                                        )}
-                                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                            <Clock className="w-3 h-3" />
-                                            <span>{formatDate(job.createdAt.toISOString())}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="mb-4">
-                                    <p className="text-muted-foreground line-clamp-3">
-                                        {job.description.substring(0, 300)}...
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex gap-2">
-                                        <Badge variant="secondary">{job.type.replace('_', ' ')}</Badge>
-                                        {job.remote && <Badge variant="outline">Remote</Badge>}
-                                        {job.source !== 'INTERNAL' && <Badge variant="outline">External</Badge>}
-                                    </div>
-
-                                    <Button asChild>
-                                        <Link href={`/job-detail/${job.id}`}>
-                                            View Details →
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
+            {/* Job Listings with Filters */}
+            <JobListingsWithFilters jobs={jobs} profession={profession} />
 
             {/* SEO Content Section */}
             <div className="mt-12 prose prose-lg dark:prose-invert max-w-none">
