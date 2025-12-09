@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getCategories } from "@/lib/actions/categories";
+import { getHealthcareProfessions } from "@/lib/actions/professions";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export default async function PostJobPage() {
         redirect("/dashboard");
     }
 
-    const categories = await getCategories();
+    const professions = await getHealthcareProfessions();
 
     async function handleSubmit(formData: FormData) {
         "use server";
@@ -45,7 +45,7 @@ export default async function PostJobPage() {
         const salary = formData.get("salary") as string;
         const remote = formData.get("remote") === "true";
         const experienceLevel = formData.get("experienceLevel") as string;
-        const categoryId = formData.get("categoryId") as string;
+        const careerKeyword = formData.get("careerKeyword") as string;
 
         const slug = title
             .toLowerCase()
@@ -67,8 +67,9 @@ export default async function PostJobPage() {
                 salary: salary || null,
                 remote,
                 experienceLevel,
-                categoryId: categoryId || null,
+                careerKeyword: careerKeyword || null,
                 companyId: user!.company!.id,
+                source: 'INTERNAL',
             },
         });
 
@@ -114,15 +115,15 @@ export default async function PostJobPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="categoryId">Category</Label>
-                                <Select name="categoryId">
+                                <Label htmlFor="careerKeyword">Profession *</Label>
+                                <Select name="careerKeyword" required>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select category" />
+                                        <SelectValue placeholder="Select profession" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        {categories.map((category) => (
-                                            <SelectItem key={category.id} value={category.id}>
-                                                {category.icon} {category.name}
+                                    <SelectContent className="max-h-[300px]">
+                                        {professions.map((profession) => (
+                                            <SelectItem key={profession.slug} value={profession.slug}>
+                                                {profession.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
