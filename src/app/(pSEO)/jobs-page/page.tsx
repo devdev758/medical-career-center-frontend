@@ -61,12 +61,13 @@ export default async function JobsPage({ searchParams }: PageProps) {
         };
     }
 
-    // Fetch jobs
+    // Fetch jobs (both internal employer postings and external Adzuna jobs)
     const jobs = await prisma.job.findMany({
         where: whereClause,
-        orderBy: {
-            createdAt: 'desc'
-        },
+        orderBy: [
+            { source: 'asc' }, // Internal jobs first
+            { createdAt: 'desc' }
+        ],
         take: 50
     });
 
@@ -176,18 +177,13 @@ export default async function JobsPage({ searchParams }: PageProps) {
                                     <div className="flex gap-2">
                                         <Badge variant="secondary">{job.type.replace('_', ' ')}</Badge>
                                         {job.remote && <Badge variant="outline">Remote</Badge>}
+                                        {job.source !== 'INTERNAL' && <Badge variant="outline">External</Badge>}
                                     </div>
 
                                     <Button asChild>
-                                        <a
-                                            href={job.externalUrl || '#'}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2"
-                                        >
-                                            Apply Now
-                                            <ExternalLink className="w-4 h-4" />
-                                        </a>
+                                        <Link href={`/job/${job.id}`}>
+                                            View Details →
+                                        </Link>
                                     </Button>
                                 </div>
                             </CardContent>
