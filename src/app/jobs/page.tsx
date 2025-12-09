@@ -1,147 +1,236 @@
-import { searchJobs } from "@/lib/actions/jobs";
-import { getCategories } from "@/lib/actions/categories";
-import { checkIfSaved } from "@/lib/actions/saved-jobs";
-import { auth } from "@/auth";
-import Link from "next/link";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MapPin, Building2, Clock, DollarSign } from "lucide-react";
-import { JobSearch } from "@/components/job-search";
-import { BookmarkButton } from "@/components/bookmark-button";
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { JobsHeroSection } from '@/components/jobs/JobsHeroSection';
+import { ProfessionBrowseGrid } from '@/components/jobs/ProfessionBrowseGrid';
+import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
+import { ArrowRight } from 'lucide-react';
 
-export default async function JobsPage({
-    searchParams,
-}: {
-    searchParams: { [key: string]: string | undefined };
-}) {
-    const categories = await getCategories();
-    const session = await auth();
+export const dynamic = 'force-dynamic';
 
-    const filters = {
-        keyword: searchParams.q,
-        location: searchParams.location,
-        categoryId: searchParams.category === "all" ? undefined : searchParams.category,
-        experienceLevel: searchParams.level === "all" ? undefined : searchParams.level,
-        jobType: searchParams.type === "all" ? undefined : searchParams.type,
-        remote: searchParams.remote === "true" ? true : undefined,
+interface PageProps {
+    searchParams: {
+        q?: string;
+        location?: string;
+        profession?: string;
+        page?: string;
     };
+}
 
-    const jobs = await searchJobs(filters);
+export default async function JobsLandingPage({ searchParams }: PageProps) {
+    const page = parseInt(searchParams.page || '1');
+    const pageSize = 50;
+    const skip = (page - 1) * pageSize;
 
-    // Check saved status for all jobs
-    const jobsWithSavedStatus = await Promise.all(
-        jobs.map(async (job) => ({
-            ...job,
-            isSaved: await checkIfSaved(job.id),
-        }))
-    );
+    // Build query
+    const whereClause: any = {};
+
+    if (searchParams.q) {
+        whereClause.OR = [
+            { title: { contains: searchParams.q, mode: 'insensitive' as const } },
+            { description: { contains: searchParams.q, mode: 'insensitive' as const } },
+            { companyName: { contains: searchParams.q, mode: 'insensitive' as const } },
+        ];
+    }
+
+    if (searchParams.location) {
+        whereClause.location = {
+            contains: searchParams.location,
+            mode: 'insensitive' as const
+        };
+    }
+
+    if (searchParams.profession) {
+        whereClause.careerKeyword = searchParams.profession;
+    }
+
+    // Fetch jobs with pagination
+    const [jobs, totalJobs] = await Promise.all([
+        prisma.job.findMany({
+            where: whereClause,
+            orderBy: [
+                { source: 'asc' }, // Internal jobs first
+                { createdAt: 'desc' }
+            ],
+            take: pageSize,
+            skip: skip
+        }),
+        prisma.job.count({ where: whereClause })
+    ]);
+
+    // Get profession counts for browse grid (top 20 professions)
+    const professionCounts = await prisma.job.groupBy({
+        by: ['careerKeyword'],
+        _count: true,
+        where: {
+            careerKeyword: { not: null }
+        },
+        orderBy: {
+            _count: {
+                careerKeyword: 'desc'
+            }
+        },
+        take: 20
+    });
+
+    const professionsWithCounts = professionCounts
+        .filter(p => p.careerKeyword)
+        .map(p => ({
+            slug: p.careerKeyword!,
+            name: p.careerKeyword!.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            jobCount: p._count
+        }));
+
+    // Get total profession count
+    const totalProfessions = await prisma.job.findMany({
+        where: { careerKeyword: { not: null } },
+        select: { careerKeyword: true },
+        distinct: ['careerKeyword']
+    });
+
+    const totalPages = Math.ceil(totalJobs / pageSize);
+    const hasFilters = searchParams.q || searchParams.location || searchParams.profession;
 
     return (
-        <main className="container mx-auto py-10 px-4">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-4xl font-bold mb-2">Medical Jobs</h1>
-                    <p className="text-muted-foreground">
-                        Find your next career opportunity in healthcare.
-                    </p>
-                </div>
-            </div>
+        <main className="container mx-auto py-10 px-4 max-w-7xl">
+            {/* Hero Section */}
+            <JobsHeroSection
+                totalJobs={totalJobs}
+                totalProfessions={totalProfessions.length}
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-                {/* Search Sidebar */}
-                <aside>
-                    <JobSearch categories={categories} />
-                </aside>
+            {/* Show profession grid only if no filters applied */}
+            {!hasFilters && (
+                <ProfessionBrowseGrid professions={professionsWithCounts} />
+            )}
 
-                {/* Job Listings */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">
-                            {jobs.length} {jobs.length === 1 ? "job" : "jobs"} found
+            {/* Job Listings Section */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold mb-2">
+                            {hasFilters ? 'Search Results' : 'All Jobs'}
+                        </h2>
+                        <p className="text-muted-foreground">
+                            {totalJobs.toLocaleString()} jobs found
+                            {searchParams.q && ` for "${searchParams.q}"`}
+                            {searchParams.location && ` in ${searchParams.location}`}
                         </p>
                     </div>
+                </div>
 
-                    {jobs.length === 0 ? (
-                        <div className="text-center py-20 bg-muted rounded-lg">
-                            <h3 className="text-xl font-semibold">No jobs found</h3>
-                            <p className="text-muted-foreground">
-                                Try adjusting your search filters.
+                {jobs.length === 0 ? (
+                    <Card>
+                        <CardContent className="p-12 text-center">
+                            <p className="text-xl text-muted-foreground mb-4">
+                                No jobs found matching your criteria
                             </p>
-                        </div>
-                    ) : (
-                        <div className="grid gap-6">
-                            {jobsWithSavedStatus.map((job) => (
-                                <Card key={job.id} className="hover:shadow-md transition-shadow">
-                                    <CardHeader>
-                                        <div className="flex justify-between items-start gap-4">
-                                            <div className="flex-1">
-                                                <CardTitle className="text-xl mb-1">
-                                                    <Link href={`/jobs/${job.slug}`} className="hover:underline">
-                                                        {job.title}
-                                                    </Link>
-                                                </CardTitle>
-                                                <CardDescription className="flex items-center gap-2">
-                                                    <Building2 className="w-4 h-4" />
-                                                    {job.company?.name || job.companyName || "Confidential"}
-                                                </CardDescription>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex flex-col gap-2">
-                                                    <Badge variant={job.remote ? "secondary" : "outline"}>
-                                                        {job.type.replace("_", " ")}
-                                                    </Badge>
-                                                    {job.category && (
-                                                        <Badge variant="default">
-                                                            {job.category.icon} {job.category.name}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                                <BookmarkButton
-                                                    jobId={job.id}
-                                                    initialSaved={job.isSaved}
-                                                    isLoggedIn={!!session?.user}
-                                                />
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex gap-4 text-sm text-muted-foreground mb-4 flex-wrap">
-                                            <div className="flex items-center gap-1">
-                                                <MapPin className="w-4 h-4" />
-                                                {job.location || "Remote"}
-                                            </div>
-                                            {job.salary && (
-                                                <div className="flex items-center gap-1">
-                                                    <DollarSign className="w-4 h-4" />
-                                                    {job.salary}
-                                                </div>
-                                            )}
-                                            <div className="flex items-center gap-1">
-                                                <Clock className="w-4 h-4" />
-                                                {new Date(job.createdAt).toLocaleDateString()}
-                                            </div>
-                                            <Badge variant="outline" className="text-xs">
-                                                {job.experienceLevel.replace("_", " ")}
-                                            </Badge>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button asChild>
-                                            <Link href={`/jobs/${job.slug}`}>View Details</Link>
+                            <p className="text-sm text-muted-foreground mb-6">
+                                Try adjusting your search or browse by profession above
+                            </p>
+                            <Button asChild variant="outline">
+                                <Link href="/jobs">
+                                    Clear Filters
+                                </Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <>
+                        <JobListingsWithFilters jobs={jobs} profession="" />
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="mt-8 flex items-center justify-center gap-2">
+                                {page > 1 && (
+                                    <Button variant="outline" asChild>
+                                        <Link href={`/jobs?${new URLSearchParams({ ...searchParams, page: (page - 1).toString() }).toString()}`}>
+                                            Previous
+                                        </Link>
+                                    </Button>
+                                )}
+
+                                <div className="flex items-center gap-2">
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        const pageNum = i + 1;
+                                        return (
+                                            <Button
+                                                key={pageNum}
+                                                variant={page === pageNum ? 'default' : 'outline'}
+                                                size="sm"
+                                                asChild
+                                            >
+                                                <Link href={`/jobs?${new URLSearchParams({ ...searchParams, page: pageNum.toString() }).toString()}`}>
+                                                    {pageNum}
+                                                </Link>
+                                            </Button>
+                                        );
+                                    })}
+                                    {totalPages > 5 && <span className="text-muted-foreground">...</span>}
+                                    {totalPages > 5 && (
+                                        <Button variant="outline" size="sm" asChild>
+                                            <Link href={`/jobs?${new URLSearchParams({ ...searchParams, page: totalPages.toString() }).toString()}`}>
+                                                {totalPages}
+                                            </Link>
                                         </Button>
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                        </div>
-                    )}
+                                    )}
+                                </div>
+
+                                {page < totalPages && (
+                                    <Button variant="outline" asChild>
+                                        <Link href={`/jobs?${new URLSearchParams({ ...searchParams, page: (page + 1).toString() }).toString()}`}>
+                                            Next
+                                        </Link>
+                                    </Button>
+                                )}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* SEO Content */}
+            <div className="mt-16 prose prose-lg dark:prose-invert max-w-none">
+                <h2>Healthcare Jobs Across All Specialties</h2>
+                <p>
+                    Medical Career Center is your comprehensive resource for finding healthcare jobs across all {totalProfessions.length} medical professions.
+                    Whether you're a registered nurse, physician, dental professional, or allied health worker, we connect you with opportunities
+                    from leading healthcare employers nationwide.
+                </p>
+                <p>
+                    Browse by profession to find specialized opportunities, or use our advanced filters to narrow down jobs by location,
+                    salary range, employment type, and more. We aggregate both direct employer postings and external job listings to give
+                    you the most comprehensive view of available healthcare positions.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 not-prose mt-8">
+                    <Card>
+                        <CardContent className="p-6">
+                            <h3 className="font-semibold text-lg mb-2">Explore Salary Data</h3>
+                            <p className="text-muted-foreground mb-4">
+                                Research competitive salaries for your profession across different locations
+                            </p>
+                            <Button variant="outline" asChild>
+                                <Link href="/">
+                                    View Salary Pages <ArrowRight className="w-4 h-4 ml-2" />
+                                </Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="p-6">
+                            <h3 className="font-semibold text-lg mb-2">For Employers</h3>
+                            <p className="text-muted-foreground mb-4">
+                                Post jobs and connect with qualified healthcare professionals
+                            </p>
+                            <Button variant="outline" asChild>
+                                <Link href="/employer/jobs/new">
+                                    Post a Job <ArrowRight className="w-4 h-4 ml-2" />
+                                </Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </main>
