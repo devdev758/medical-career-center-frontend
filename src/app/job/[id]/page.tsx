@@ -34,12 +34,19 @@ export default async function JobDetailPage({ params }: PageProps) {
     const { id } = await params;
 
     const job = await prisma.job.findUnique({
-        where: { id },
-        include: { company: true }
+        where: { id }
     });
 
     if (!job) {
         return notFound();
+    }
+
+    // Fetch company separately if it exists
+    let company = null;
+    if (job.companyId) {
+        company = await prisma.company.findUnique({
+            where: { id: job.companyId }
+        });
     }
 
     const isExternal = job.source !== 'INTERNAL';
@@ -65,7 +72,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                             <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <Building2 className="w-4 h-4" />
-                                    <span className="font-medium">{job.companyName || job.company?.name || 'Company'}</span>
+                                    <span className="font-medium">{job.companyName || company?.name || 'Company'}</span>
                                 </div>
                                 {job.location && (
                                     <div className="flex items-center gap-2">
@@ -148,16 +155,16 @@ export default async function JobDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Company Info (if available) */}
-            {job.company && (
+            {company && (
                 <Card className="mb-6">
                     <CardHeader>
-                        <CardTitle>About {job.company.name}</CardTitle>
+                        <CardTitle>About {company.name}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">{job.company.description || 'No company description available.'}</p>
-                        {job.company.website && (
+                        <p className="text-muted-foreground">{company.description || 'No company description available.'}</p>
+                        {company.website && (
                             <Button variant="link" asChild className="mt-2 px-0">
-                                <a href={job.company.website} target="_blank" rel="noopener noreferrer">
+                                <a href={company.website} target="_blank" rel="noopener noreferrer">
                                     Visit Company Website →
                                 </a>
                             </Button>
