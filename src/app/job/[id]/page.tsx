@@ -31,8 +31,10 @@ function formatDate(dateString: string): string {
 }
 
 export default async function JobDetailPage({ params }: PageProps) {
+    const { id } = await params;
+
     const job = await prisma.job.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { company: true }
     });
 
