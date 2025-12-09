@@ -181,7 +181,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
                                     </div>
 
                                     <Button asChild>
-                                        <Link href={`/jobs/view/${job.id}`}>
+                                        <Link href={`/job-detail/${job.id}`}>
                                             View Details →
                                         </Link>
                                     </Button>
