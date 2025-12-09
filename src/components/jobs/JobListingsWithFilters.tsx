@@ -12,7 +12,7 @@ interface Job {
     id: string;
     title: string;
     companyName: string | null;
-    location: string;
+    location: string | null;
     salary: string | null;
     type: string;
     remote: boolean;
@@ -62,7 +62,7 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
 
     // Extract unique locations and companies
     const availableLocations = useMemo(() => {
-        const locations = new Set(jobs.map(j => j.location).filter(Boolean));
+        const locations = new Set(jobs.map(j => j.location).filter(Boolean) as string[]);
         return Array.from(locations).sort();
     }, [jobs]);
 
@@ -103,7 +103,7 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
         // Location filter
         if (filters.location.length > 0) {
             filtered = filtered.filter(job =>
-                filters.location.some(loc => job.location.includes(loc))
+                job.location && filters.location.some(loc => job.location!.includes(loc))
             );
         }
 
@@ -189,7 +189,7 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <MapPin className="w-4 h-4" />
-                                                    <span>{job.location}</span>
+                                                    <span>{job.location || 'Remote'}</span>
                                                 </div>
                                             </div>
                                         </div>
