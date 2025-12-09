@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
+import { InternalLinks } from "@/components/salary/InternalLinks";
 
 export const dynamic = 'force-dynamic';
 
@@ -243,19 +244,14 @@ export default async function SalaryPage({ searchParams }: PageProps) {
 
                 <h2 className="text-3xl font-bold mb-4">What is a {careerTitle}?</h2>
                 <p className="text-lg">{careerDescription}</p>
-
-                <Separator className="my-8" />
-
-                <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center my-12 not-prose">
-                    <h3 className="text-2xl font-bold mb-4">Looking for a {careerTitle} Job{location ? ` in ${locationName}` : ''}?</h3>
-                    <p className="mb-6">We have open positions available right now. Browse listings and apply today.</p>
-                    <Button size="lg" variant="secondary" asChild>
-                        <Link href={`/${profession}-jobs${location ? `/${location}` : ''}`}>
-                            View {careerTitle} Jobs
-                        </Link>
-                    </Button>
-                </div>
             </article>
+
+            {/* Internal Linking Section */}
+            <InternalLinks
+                profession={profession}
+                state={location}
+                city={city}
+            />
 
             <script
                 type="application/ld+json"
