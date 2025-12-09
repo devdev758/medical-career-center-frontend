@@ -42,11 +42,46 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
         .filter(Boolean)
         .slice(0, 6) as string[];
 
-    // Get geographic links
-    const neighboringStates = state ? getNeighboringStates(state).slice(0, 5) : [];
-    const majorCities = state && !city ? getMajorCities(state).slice(0, 6) : [];
+    // Get neighboring states and verify they have data
+    let verifiedNeighboringStates: string[] = [];
+    if (state && !city) {
+        const neighboringStateCodes = getNeighboringStates(state);
+        const stateChecks = await Promise.all(
+            neighboringStateCodes.map(async (stateCode) => {
+                const hasData = await prisma.salaryData.findFirst({
+                    where: {
+                        careerKeyword: profession,
+                        location: { state: stateCode, city: '' }
+                    }
+                });
+                return hasData ? stateCode : null;
+            })
+        );
+        verifiedNeighboringStates = stateChecks.filter(Boolean).slice(0, 5) as string[];
+    }
 
-    // Get nearby cities for city pages (query database for cities in same state)
+    // Get major cities and verify they have data
+    let verifiedMajorCities: string[] = [];
+    if (state && !city) {
+        const majorCityNames = getMajorCities(state);
+        const cityChecks = await Promise.all(
+            majorCityNames.map(async (cityName) => {
+                const hasData = await prisma.salaryData.findFirst({
+                    where: {
+                        careerKeyword: profession,
+                        location: {
+                            city: { contains: cityName, mode: 'insensitive' },
+                            state: state.toUpperCase()
+                        }
+                    }
+                });
+                return hasData ? cityName : null;
+            })
+        );
+        verifiedMajorCities = cityChecks.filter(Boolean).slice(0, 6) as string[];
+    }
+
+    // Get nearby cities for city pages (already filtered by profession in query)
     let nearbyCities: string[] = [];
     if (city && state) {
         const citiesInState = await prisma.location.findMany({
@@ -62,7 +97,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
             select: { city: true },
             take: 6
         });
-        nearbyCities = citiesInState.map(l => l.city);
+        nearbyCities = citiesInState.map((l: { city: string }) => l.city);
     }
 
     const stateFullName = state ? getStateName(state) : '';
@@ -95,7 +130,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
             )}
 
             {/* Major Cities (for state pages) */}
-            {state && !city && majorCities.length > 0 && (
+            {state && !city && verifiedMajorCities.length > 0 && (
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-xl">
@@ -104,7 +139,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            {majorCities.map(cityName => (
+                            {verifiedMajorCities.map(cityName => (
                                 <Link
                                     key={cityName}
                                     href={`/${profession}-salary/${state.toLowerCase()}/${createCitySlug(cityName)}`}
@@ -143,7 +178,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
             )}
 
             {/* Neighboring States (for state pages only) */}
-            {state && !city && neighboringStates.length > 0 && (
+            {state && !city && verifiedNeighboringStates.length > 0 && (
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-xl">
@@ -152,7 +187,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            {neighboringStates.map(stateCode => (
+                            {verifiedNeighboringStates.map(stateCode => (
                                 <Link
                                     key={stateCode}
                                     href={`/${profession}-salary/${stateCode.toLowerCase()}`}
