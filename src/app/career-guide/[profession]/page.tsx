@@ -16,6 +16,7 @@ import {
     Users,
     FileText
 } from 'lucide-react';
+import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,13 +68,10 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                <Link href="/" className="hover:text-foreground">Home</Link>
-                <span>/</span>
-                <Link href={`/${professionSlug}`} className="hover:text-foreground">{careerGuide.professionName}</Link>
-                <span>/</span>
-                <span>Career Guide</span>
-            </div>
+            <Breadcrumb
+                items={getProfessionBreadcrumbs(professionSlug, careerGuide.professionName, 'career-guide')}
+                className="mb-6"
+            />
 
             {/* H1 Title */}
             <h1 className="text-4xl md:text-5xl font-bold mb-6">

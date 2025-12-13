@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
+import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -139,12 +140,10 @@ export default async function SalaryPage({ searchParams }: PageProps) {
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
-            <div className="mb-6">
-                <Link href="/" className="inline-flex items-center text-sm text-primary hover:underline">
-                    <ArrowLeft className="w-4 h-4 mr-1" />
-                    Back to Home
-                </Link>
-            </div>
+            <Breadcrumb
+                items={getProfessionBreadcrumbs(profession, careerTitle, 'salary')}
+                className="mb-6"
+            />
 
             <article className="prose prose-lg dark:prose-invert max-w-none">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
@@ -257,6 +256,6 @@ export default async function SalaryPage({ searchParams }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-        </main>
+        </main >
     );
 }

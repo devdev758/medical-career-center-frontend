@@ -15,6 +15,7 @@ import {
     MapPin,
     Clock
 } from 'lucide-react';
+import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,11 +67,10 @@ export default async function ProfessionHubPage({ params }: PageProps) {
         <main className="container mx-auto py-10 px-4 max-w-7xl">
             {/* Hero Section */}
             <div className="mb-12">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                    <Link href="/" className="hover:text-foreground">Home</Link>
-                    <span>/</span>
-                    <span>{careerGuide.professionName}</span>
-                </div>
+                <Breadcrumb
+                    items={getProfessionBreadcrumbs(profession, careerGuide.professionName, 'hub')}
+                    className="mb-4"
+                />
 
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
                     {careerGuide.professionName}
