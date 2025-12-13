@@ -19,6 +19,8 @@ import {
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { getProfessionHubMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
+import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
+import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
 
 export const dynamic = 'force-dynamic';
 
@@ -285,6 +287,21 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Related Professions */}
+            <RelatedProfessions
+                profession={profession}
+                currentPageType="hub"
+                maxItems={6}
+                className="mb-12"
+            />
+
+            {/* Cross-Page Links */}
+            <CrossPageLinks
+                profession={profession}
+                currentPage="hub"
+                className="mb-12"
+            />
 
             {/* Career Overview Section */}
             <div className="grid md:grid-cols-2 gap-8 mb-12">

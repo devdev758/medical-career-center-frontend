@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { School, MapPin, DollarSign, GraduationCap, BookOpen, Award } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
+import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
+import { NearbyStatesLinks } from '@/components/geo/NearbyStatesLinks';
+import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
 import statesList from '@/data/states-list.json';
 
 export const dynamic = 'force-dynamic';
@@ -209,6 +212,34 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Related Professions - Show on both national and state pages */}
+            <RelatedProfessions
+                profession={profession}
+                currentPageType="schools"
+                state={location}
+                maxItems={6}
+                className="mb-12"
+            />
+
+            {/* Nearby States Links - Only show on state pages */}
+            {location && (
+                <NearbyStatesLinks
+                    profession={profession}
+                    currentState={location}
+                    pageType="schools"
+                    maxStates={5}
+                    className="mb-12"
+                />
+            )}
+
+            {/* Cross-Page Links */}
+            <CrossPageLinks
+                profession={profession}
+                state={location}
+                currentPage="schools"
+                className="mb-12"
+            />
 
             {!stateName && (
                 <Card className="mb-12">
