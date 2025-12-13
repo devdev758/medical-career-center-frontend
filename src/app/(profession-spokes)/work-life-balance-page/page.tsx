@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, Clock, AlertCircle, TrendingUp, Briefcase, DollarSign } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
+import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
+import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
 
 export const dynamic = 'force-dynamic';
 
@@ -246,6 +248,22 @@ export default async function WorkLifeBalancePage({ searchParams }: PageProps) {
                     </Button>
                 </div>
             </div>
+
+
+            {/* Related Professions */}
+            <RelatedProfessions 
+                profession={profession}
+                currentPageType="work-life"
+                maxItems={6}
+                className="mb-12"
+            />
+
+            {/* Cross-Page Links */}
+            <CrossPageLinks
+                profession={profession}
+                currentPage="work-life"
+                className="mb-12"
+            />
 
             <div className="text-center text-sm text-muted-foreground">
                 <p>
