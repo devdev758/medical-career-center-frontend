@@ -34,11 +34,16 @@ export function middleware(request: NextRequest) {
     }
 
     // Handle profession spoke pages
-    const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume)$/i);
+    const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume|specializations|skills|career-path|work-life-balance)$/i);
     if (spokesMatch) {
         const [, profession, spokeType] = spokesMatch;
-        // Map interview-questions to interview for the page directory
-        const pageType = spokeType === 'interview-questions' ? 'interview' : spokeType;
+        // Map URL spoke types to page directory names
+        const pageTypeMap: Record<string, string> = {
+            'interview-questions': 'interview',
+            'work-life-balance': 'work-life-balance',
+            'career-path': 'career-path',
+        };
+        const pageType = pageTypeMap[spokeType] || spokeType;
         const url = new URL(`/${pageType}-page`, request.url);
         url.searchParams.set('profession', profession);
         return NextResponse.rewrite(url);
@@ -60,5 +65,9 @@ export const config = {
         '/:path*-certification',
         '/:path*-interview-questions',
         '/:path*-resume',
+        '/:path*-specializations',
+        '/:path*-skills',
+        '/:path*-career-path',
+        '/:path*-work-life-balance',
     ],
 };
