@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
     if (salaryMatch) {
         const [, profession, state, city] = salaryMatch;
         const url = request.nextUrl.clone();
-        url.pathname = '/salary-page';
+        url.pathname = '/(pSEO)/salary-page';
         url.searchParams.set('profession', profession);
         if (state) url.searchParams.set('location', state);
         if (city) url.searchParams.set('city', city);
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
     if (jobMatch) {
         const [, profession, state, city] = jobMatch;
         const url = request.nextUrl.clone();
-        url.pathname = '/jobs-page';
+        url.pathname = '/(pSEO)/jobs-page';
         url.searchParams.set('profession', profession);
         if (state) url.searchParams.set('location', state);
         if (city) url.searchParams.set('city', city);

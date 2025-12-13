@@ -25,14 +25,10 @@ interface PageProps {
     };
 }
 
-// Extract profession slug from "how-to-become-X" format
-function extractProfessionSlug(slug: string): string {
-    return slug.replace('how-to-become-', '');
-}
-
 export default async function CareerGuideArticlePage({ params }: PageProps) {
     const { profession } = await params;
-    const professionSlug = extractProfessionSlug(profession);
+    // The profession param is already the slug (e.g., "anesthesia-technicians")
+    const professionSlug = profession;
 
     // Fetch career guide
     const careerGuide = await prisma.careerGuide.findUnique({
