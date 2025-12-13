@@ -1,0 +1,248 @@
+{
+    "registered-nurses": {
+        "similar": [
+            {
+                "slug": "licensed-practical-nurses",
+                "name": "Licensed Practical Nurses",
+                "relationship": "Similar patient care role, different education level"
+            },
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Similar clinical support duties"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Advanced practice nursing with prescriptive authority"
+            },
+            {
+                "slug": "nurse-anesthetists",
+                "name": "Nurse Anesthetists",
+                "relationship": "Specialized advanced practice in anesthesia"
+            },
+            {
+                "slug": "nurse-midwives",
+                "name": "Nurse Midwives",
+                "relationship": "Advanced practice in women's health"
+            }
+        ],
+        "related": [
+            {
+                "slug": "respiratory-therapists",
+                "name": "Respiratory Therapists",
+                "relationship": "Complementary patient care role"
+            },
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Rehabilitation and patient care"
+            }
+        ],
+        "family": "nursing"
+    },
+    "nurse-practitioners": {
+        "similar": [
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Similar scope of practice and autonomy"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Foundation nursing role"
+            },
+            {
+                "slug": "nurse-anesthetists",
+                "name": "Nurse Anesthetists",
+                "relationship": "Fellow advanced practice nurses"
+            }
+        ],
+        "family": "nursing"
+    },
+    "licensed-practical-nurses": {
+        "similar": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Similar entry-level patient care"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Natural career advancement path"
+            }
+        ],
+        "related": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Entry-level nursing support"
+            }
+        ],
+        "family": "nursing"
+    },
+    "physician-assistants": {
+        "similar": [
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Similar scope and responsibilities"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physicians",
+                "name": "Physicians",
+                "relationship": "Collaborative practice partners"
+            },
+            {
+                "slug": "surgeons",
+                "name": "Surgeons",
+                "relationship": "Surgical team collaboration"
+            }
+        ],
+        "family": "physician-support"
+    },
+    "physical-therapists": {
+        "similar": [
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Complementary rehabilitation services"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapist-assistants",
+                "name": "Physical Therapist Assistants",
+                "relationship": "Support role in physical therapy"
+            },
+            {
+                "slug": "athletic-trainers",
+                "name": "Athletic Trainers",
+                "relationship": "Sports medicine and rehabilitation"
+            }
+        ],
+        "family": "therapy"
+    },
+    "occupational-therapists": {
+        "similar": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Complementary rehabilitation focus"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "occupational-therapy-assistants",
+                "name": "Occupational Therapy Assistants",
+                "relationship": "Support role in occupational therapy"
+            },
+            {
+                "slug": "speech-language-pathologists",
+                "name": "Speech-Language Pathologists",
+                "relationship": "Rehabilitation team collaboration"
+            }
+        ],
+        "family": "therapy"
+    },
+    "respiratory-therapists": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Collaborative patient care"
+            },
+            {
+                "slug": "pulmonologists",
+                "name": "Pulmonologists",
+                "relationship": "Physician collaboration"
+            }
+        ],
+        "family": "therapy"
+    },
+    "medical-assistants": {
+        "similar": [
+            {
+                "slug": "licensed-practical-nurses",
+                "name": "Licensed Practical Nurses",
+                "relationship": "Similar clinical support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Common career advancement path"
+            }
+        ],
+        "related": [
+            {
+                "slug": "phlebotomists",
+                "name": "Phlebotomists",
+                "relationship": "Clinical support services"
+            }
+        ],
+        "family": "medical-support"
+    },
+    "radiologic-technologists": {
+        "similar": [
+            {
+                "slug": "mri-technologists",
+                "name": "MRI Technologists",
+                "relationship": "Specialized imaging modality"
+            },
+            {
+                "slug": "ct-technologists",
+                "name": "CT Technologists",
+                "relationship": "Advanced imaging specialization"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Physician collaboration"
+            },
+            {
+                "slug": "ultrasound-technicians",
+                "name": "Ultrasound Technicians",
+                "relationship": "Diagnostic imaging team"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "pharmacists": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "pharmacy-technicians",
+                "name": "Pharmacy Technicians",
+                "relationship": "Support role in pharmacy"
+            },
+            {
+                "slug": "clinical-pharmacologists",
+                "name": "Clinical Pharmacologists",
+                "relationship": "Medication research and development"
+            }
+        ],
+        "family": "pharmacy"
+    }
+}
