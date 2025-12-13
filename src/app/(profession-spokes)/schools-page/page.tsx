@@ -8,12 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { School, MapPin, DollarSign, GraduationCap, BookOpen, Award } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
+import statesList from '@/data/states-list.json';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
     searchParams: {
         profession?: string;
+        state?: string;
     };
 }
 
@@ -21,13 +23,30 @@ function formatCareerTitle(slug: string): string {
     return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
+function formatStateName(slug: string): string {
+    const state = statesList.find(s => s.slug === slug);
+    return state ? state.name : slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
     const profession = searchParams.profession || 'registered-nurses';
+    const stateSlug = searchParams.state;
     const careerTitle = formatCareerTitle(profession);
+
+    if (stateSlug) {
+        const stateName = formatStateName(stateSlug);
+        return {
+            title: `${careerTitle} Schools in ${stateName} 2025: Accredited Programs`,
+            description: `Find accredited ${careerTitle.toLowerCase()} programs in ${stateName}. Compare schools, tuition costs, admission requirements, and financial aid options.`,
+            alternates: {
+                canonical: `https://medicalcareercenter.org/${profession}-schools/${stateSlug}`
+            },
+        };
+    }
 
     return {
         title: `${careerTitle} Schools & Programs 2025: Accredited Training Programs`,
-        description: `Find accredited ${careerTitle.toLowerCase()} programs. Compare schools, tuition costs, program types, and admission requirements. Start your career today.`,
+        description: `Find accredited ${careerTitle.toLowerCase()} programs nationwide. Compare schools, tuition costs, program types, and admission requirements. Start your career today.`,
         alternates: {
             canonical: `https://medicalcareercenter.org/${profession}-schools`
         },
@@ -36,32 +55,63 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
 export default async function SchoolsPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
+    const stateSlug = searchParams.state;
     const careerTitle = formatCareerTitle(profession);
+    const stateName = stateSlug ? formatStateName(stateSlug) : null;
+
+    const breadcrumbItems = stateName
+        ? [
+            { label: 'Home', href: '/' },
+            { label: careerTitle, href: `/${profession}` },
+            { label: 'Schools & Programs', href: `/${profession}-schools` },
+            { label: stateName }
+        ]
+        : [
+            { label: 'Home', href: '/' },
+            { label: careerTitle, href: `/${profession}` },
+            { label: 'Schools & Programs' }
+        ];
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
-            <Breadcrumb
-                items={[
-                    { label: 'Home', href: '/' },
-                    { label: careerTitle, href: `/${profession}` },
-                    { label: 'Schools & Programs' }
-                ]}
-                className="mb-6"
-            />
+            <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                     <School className="w-10 h-10 text-primary" />
                     <h1 className="text-4xl md:text-5xl font-bold">
-                        {careerTitle} Schools & Training Programs
+                        {careerTitle} Schools {stateName && `in ${stateName}`}
                     </h1>
                 </div>
                 <p className="text-xl text-muted-foreground max-w-3xl">
-                    Find accredited programs, compare schools, and start your journey to becoming a {careerTitle.toLowerCase()}.
+                    Find accredited programs{stateName && ` in ${stateName}`}, compare schools, and start your journey to becoming a {careerTitle.toLowerCase()}.
                 </p>
             </div>
 
             <SpokeNavigation profession={profession} currentSpoke="schools" />
+
+            {stateName && (
+                <Card className="my-8 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <MapPin className="w-5 h-5" />
+                            Schools in {stateName}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                            {stateName} offers numerous accredited {careerTitle.toLowerCase()} programs across the state. Below you'll find information about program types, costs, and requirements specific to {stateName}.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Link href={`/${profession}-schools`}>
+                                <Button variant="outline" size="sm">
+                                    View All States
+                                </Button>
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="grid md:grid-cols-2 gap-8 my-12">
                 <Card>
@@ -115,7 +165,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                     <CardContent>
                         <div className="space-y-4">
                             <div>
-                                <p className="font-semibold">Average Program Costs:</p>
+                                <p className="font-semibold">Average Program Costs{stateName && ` in ${stateName}`}:</p>
                                 <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
                                     <li>• Associate Degree: $10,000 - $30,000</li>
                                     <li>• Bachelor's Degree: $40,000 - $100,000</li>
@@ -127,6 +177,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                                 <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
                                     <li>• Federal student loans</li>
                                     <li>• Scholarships and grants</li>
+                                    {stateName && <li>• {stateName}-specific financial aid programs</li>}
                                     <li>• Employer tuition assistance</li>
                                     <li>• Military benefits</li>
                                 </ul>
@@ -145,7 +196,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground mb-4">
-                        Ensure your program is accredited by recognized accrediting bodies. Accreditation ensures quality education and is often required for licensure and employment.
+                        Ensure your program is accredited by recognized accrediting bodies. Accreditation ensures quality education and is often required for licensure and employment{stateName && ` in ${stateName}`}.
                     </p>
                     <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
                         <p className="font-semibold mb-2">Key Accrediting Bodies:</p>
@@ -158,10 +209,34 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                 </CardContent>
             </Card>
 
+            {!stateName && (
+                <Card className="mb-12">
+                    <CardHeader>
+                        <CardTitle>Browse Schools by State</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                            Find {careerTitle.toLowerCase()} programs in your state:
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                            {statesList.map((state) => (
+                                <Link
+                                    key={state.slug}
+                                    href={`/${profession}-schools/${state.slug}`}
+                                    className="text-sm text-primary hover:underline"
+                                >
+                                    {state.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-8 mb-12">
                 <h2 className="text-2xl font-bold mb-4">Ready to Start Your Education?</h2>
                 <p className="text-muted-foreground mb-6">
-                    Explore comprehensive career information, salary data, and current job openings for {careerTitle.toLowerCase()}s.
+                    Explore comprehensive career information, salary data, and current job openings for {careerTitle.toLowerCase()}s{stateName && ` in ${stateName}`}.
                 </p>
                 <div className="flex flex-wrap gap-4">
                     <Button asChild>
@@ -171,14 +246,14 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                         </Link>
                     </Button>
                     <Button asChild variant="outline">
-                        <Link href={`/${profession}-salary`}>
+                        <Link href={stateName ? `/${profession}-salary/${stateSlug}` : `/${profession}-salary`}>
                             <DollarSign className="w-4 h-4 mr-2" />
-                            Salary Data
+                            Salary Data{stateName && ` in ${stateName}`}
                         </Link>
                     </Button>
                     <Button asChild variant="outline">
-                        <Link href={`/${profession}-jobs`}>
-                            Browse Jobs
+                        <Link href={stateName ? `/${profession}-jobs/${stateSlug}` : `/${profession}-jobs`}>
+                            Browse Jobs{stateName && ` in ${stateName}`}
                         </Link>
                     </Button>
                 </div>

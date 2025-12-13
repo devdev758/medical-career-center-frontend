@@ -34,9 +34,9 @@ export function middleware(request: NextRequest) {
     }
 
     // Handle profession spoke pages
-    const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume|specializations|skills|career-path|work-life-balance)$/i);
+    const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume|specializations|skills|career-path|work-life-balance)(?:\/([a-z-]+))?$/i);
     if (spokesMatch) {
-        const [, profession, spokeType] = spokesMatch;
+        const [, profession, spokeType, state] = spokesMatch;
         // Map URL spoke types to page directory names
         const pageTypeMap: Record<string, string> = {
             'interview-questions': 'interview',
@@ -46,6 +46,7 @@ export function middleware(request: NextRequest) {
         const pageType = pageTypeMap[spokeType] || spokeType;
         const url = new URL(`/${pageType}-page`, request.url);
         url.searchParams.set('profession', profession);
+        if (state) url.searchParams.set('state', state);
         return NextResponse.rewrite(url);
     }
 
@@ -62,6 +63,7 @@ export const config = {
         '/:path*-jobs/:state',
         '/:path*-jobs/:state/:city',
         '/:path*-schools',
+        '/:path*-schools/:state',
         '/:path*-certification',
         '/:path*-interview-questions',
         '/:path*-resume',
