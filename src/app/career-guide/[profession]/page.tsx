@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,12 +18,65 @@ import {
     FileText
 } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
+import { getCareerGuideMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: {
         profession: string;
+    };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { profession } = await params;
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { professionName: true, keyStats: true }
+    });
+
+    const jobCount = await prisma.job.count({
+        where: { careerKeyword: profession }
+    });
+
+    if (!careerGuide) {
+        return {
+            title: 'Career Guide Not Found',
+            description: 'The requested career guide could not be found.'
+        };
+    }
+
+    const keyStats = careerGuide.keyStats as any;
+    const metaTags = getCareerGuideMetaTags(
+        careerGuide.professionName,
+        keyStats.medianSalary,
+        jobCount
+    );
+
+    const canonicalUrl = getCanonicalUrl(`/how-to-become-${profession}`);
+    const ogTags = getOpenGraphTags(metaTags.title, metaTags.description, canonicalUrl, 'article');
+    const twitterTags = getTwitterCardTags(metaTags.title, metaTags.description);
+
+    return {
+        title: metaTags.title,
+        description: metaTags.description,
+        alternates: {
+            canonical: canonicalUrl
+        },
+        openGraph: ogTags,
+        twitter: twitterTags,
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
+        },
     };
 }
 
