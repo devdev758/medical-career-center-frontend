@@ -72,7 +72,7 @@ export const config = {
         '/:path*-jobs/:state',
         '/:path*-jobs/:state/:city',
         '/:path*-schools',
-        '/:path*-schools/:state',
+        '/:path*-schools/:path*',
         '/:path*-certification',
         '/:path*-interview-questions',
         '/:path*-resume',
