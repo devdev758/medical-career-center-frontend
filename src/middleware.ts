@@ -12,7 +12,9 @@ export function middleware(request: NextRequest) {
     }
 
     // Handle salary pages
-    const salaryMatch = pathname.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z]{2}))?(?:\/([a-z0-9-]+))?$/i);
+    // Pattern: /profession-salary OR /profession-salary/ST OR /profession-salary/ST/city
+    // ST must be exactly 2 letters (state code), city can be multi-word with hyphens
+    const salaryMatch = pathname.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z]{2})(?:\/([a-z0-9-]+))?)?$/i);
     if (salaryMatch) {
         const [, profession, state, city] = salaryMatch;
         const url = new URL('/salary-page', request.url);
@@ -23,7 +25,8 @@ export function middleware(request: NextRequest) {
     }
 
     // Handle job pages
-    const jobsMatch = pathname.match(/^\/([a-z0-9-]+)-jobs(?:\/([a-z]{2}))?(?:\/([a-z0-9-]+))?$/i);
+    // Pattern: /profession-jobs OR /profession-jobs/ST OR /profession-jobs/ST/city
+    const jobsMatch = pathname.match(/^\/([a-z0-9-]+)-jobs(?:\/([a-z]{2})(?:\/([a-z0-9-]+))?)?$/i);
     if (jobsMatch) {
         const [, profession, state, city] = jobsMatch;
         const url = new URL('/jobs-page', request.url);
