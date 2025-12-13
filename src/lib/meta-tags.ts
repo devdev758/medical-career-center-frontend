@@ -62,21 +62,21 @@ export function getOpenGraphTags(
     type: 'website' | 'article' = 'website'
 ) {
     return {
-        'og:title': title,
-        'og:description': description,
-        'og:url': url,
-        'og:type': type,
-        'og:site_name': 'Medical Career Center',
-        'og:locale': 'en_US',
+        title,
+        description,
+        url,
+        type,
+        siteName: 'Medical Career Center',
+        locale: 'en_US',
     };
 }
 
 // Helper to generate Twitter Card tags
 export function getTwitterCardTags(title: string, description: string) {
     return {
-        'twitter:card': 'summary_large_image',
-        'twitter:title': title,
-        'twitter:description': description,
+        card: 'summary_large_image' as const,
+        title,
+        description,
     };
 }
 
