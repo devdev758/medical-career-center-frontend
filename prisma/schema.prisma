@@ -402,6 +402,10 @@ model CareerGuide {
   resumeKeywords    Json     // Array of strings
   portfolioTips     String?  @db.Text
   
+  // AI-Generated Content (Full Markdown)
+  fullContent       String?  @db.Text  // Complete career guide markdown
+  interviewContent  String?  @db.Text  // Interview preparation markdown
+  
   // SEO & Meta
   metaTitle         String?
   metaDescription   String?

@@ -22,6 +22,7 @@ import { getCareerGuideMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCa
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -157,13 +158,20 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="career-guide" />
 
-            {/* Overview Section */}
-            <section className="mb-12">
-                <h2 className="text-3xl font-bold mb-4">Overview</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                    {careerGuide.overview}
-                </p>
-            </section>
+            {/* Render AI-generated content if available, otherwise show structured content */}
+            {careerGuide.fullContent ? (
+                <MarkdownContent content={careerGuide.fullContent} />
+            ) : (
+                <>
+                    {/* Overview Section */}
+                    <section className="mb-12">
+                        <h2 className="text-3xl font-bold mb-4">Overview</h2>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                            {careerGuide.overview}
+                        </p>
+                    </section>
+                </>
+            )}
 
             {/* Conversion Element #1 */}
             <Card className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200">
