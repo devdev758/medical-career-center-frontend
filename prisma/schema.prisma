@@ -339,3 +339,79 @@ model SalaryData {
   @@unique([careerKeyword, locationId, year])
   @@index([careerKeyword])
 }
+
+model CareerGuide {
+  id                String   @id @default(cuid())
+  professionSlug    String   @unique
+  professionName    String
+  
+  // Overview Section
+  overview          String   @db.Text
+  keyStats          Json     // { jobGrowth, medianSalary, jobOpenings, totalEmployed }
+  
+  // What Does [Profession] Do? Section
+  rolesDescription  String   @db.Text
+  dailyTasks        Json     // Array of strings: daily responsibilities
+  specializations   Json     // Array of objects: { name, description }
+  workEnvironments  Json     // Array of strings: hospitals, clinics, etc.
+  
+  // Salary Information Section
+  salaryOverview    String   @db.Text
+  nationalAverage   String?
+  topPayingStates   Json     // Array of objects: { state, salary }
+  entryLevelRange   String?
+  experiencedRange  String?
+  benefits          Json     // Array of strings: common benefits
+  
+  // Education & Certification Section
+  educationPath     String   @db.Text
+  requiredDegrees   Json     // Array of objects: { degree, description }
+  certifications    Json     // Array of objects: { name, issuer, description }
+  timeline          String?  // e.g., "2-4 years"
+  accreditedPrograms String? @db.Text
+  
+  // Skills Section
+  technicalSkills   Json     // Array of strings
+  softSkills        Json     // Array of strings
+  technologies      Json     // Array of strings: tools, software, equipment
+  
+  // Job Outlook Section
+  growthRate        String?  // e.g., "15% (Much faster than average)"
+  projections       String   @db.Text
+  emergingSpecializations Json // Array of strings
+  careerLadder      Json     // Array of objects: { level, title, description }
+  
+  // Schools & Programs Section
+  schoolsOverview   String   @db.Text
+  topSchools        Json     // Array of objects: { name, location, programType }
+  programTypes      Json     // Array of objects: { type, description }
+  financialAid      String?  @db.Text
+  
+  // Licensing by State Section
+  licensingOverview String   @db.Text
+  stateRequirements Json     // Object: { [state]: { required, details } }
+  examInfo          Json     // Array of objects: { examName, description }
+  renewalProcess    String?  @db.Text
+  
+  // Current Job Opportunities Section
+  jobMarketOverview String   @db.Text
+  featuredEmployers Json     // Array of strings: employer names
+  
+  // Interview & Resume Tips Section
+  interviewTips     String   @db.Text
+  resumeKeywords    Json     // Array of strings
+  portfolioTips     String?  @db.Text
+  
+  // SEO & Meta
+  metaTitle         String?
+  metaDescription   String?
+  slug              String?  // For /how-to-become-[profession]
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  published         Boolean  @default(false)
+  
+  @@index([professionSlug])
+  @@index([published])
+}
