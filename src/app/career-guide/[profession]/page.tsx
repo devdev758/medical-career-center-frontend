@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { getCareerGuideMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
+import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -151,6 +152,8 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
                     <p className="text-xl font-bold">{careerGuide.timeline}</p>
                 </div>
             </div>
+
+            <SpokeNavigation profession={profession} currentSpoke="career-guide" />
 
             {/* Overview Section */}
             <section className="mb-12">

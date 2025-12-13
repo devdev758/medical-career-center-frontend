@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { getProfessionHubMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
+import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -185,6 +186,9 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Quick Navigation */}
+            <SpokeNavigation profession={profession} />
 
             {/* Main Navigation Cards */}
             <div className="grid md:grid-cols-3 gap-6 mb-12">
