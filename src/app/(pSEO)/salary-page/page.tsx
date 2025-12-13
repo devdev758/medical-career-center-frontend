@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import type { Metadata } from 'next';
 import Link from "next/link";
 import { ArrowLeft, Clock, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
+import { getSalaryPageMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +35,80 @@ function formatLocationName(slug: string): string {
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+    const { profession, location, city } = searchParams;
+
+    if (!profession) {
+        return { title: 'Salary Data', description: 'Healthcare salary information' };
+    }
+
+    const careerTitle = formatCareerTitle(profession);
+    const isNational = !location && !city;
+    let locationName = 'United States';
+
+    if (city && location) {
+        locationName = `${formatLocationName(city)}, ${location.toUpperCase()}`;
+    } else if (location) {
+        locationName = formatLocationName(location);
+    }
+
+    // Fetch salary data for meta description
+    let salaryData;
+    if (city && location) {
+        const cityName = formatLocationName(city);
+        const stateAbbr = location.toUpperCase();
+        const locationRecord = await prisma.location.findFirst({
+            where: { city: cityName, state: stateAbbr }
+        });
+        if (locationRecord) {
+            salaryData = await prisma.salaryData.findFirst({
+                where: { careerKeyword: profession, locationId: locationRecord.id },
+                orderBy: { year: 'desc' }
+            });
+        }
+    } else if (location) {
+        const stateAbbr = location.toUpperCase();
+        const locationRecord = await prisma.location.findFirst({
+            where: { state: stateAbbr }
+        });
+        if (locationRecord) {
+            salaryData = await prisma.salaryData.findFirst({
+                where: { careerKeyword: profession, locationId: locationRecord.id },
+                orderBy: { year: 'desc' }
+            });
+        }
+    } else {
+        salaryData = await prisma.salaryData.findFirst({
+            where: { careerKeyword: profession, locationId: null },
+            orderBy: { year: 'desc' }
+        });
+    }
+
+    const medianSalary = salaryData?.annualMedian
+        ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
+        : '$60,000';
+
+    const metaTags = getSalaryPageMetaTags(careerTitle, locationName, medianSalary, isNational);
+    const urlPath = city && location
+        ? `/${profession}-salary/${location}/${city}`
+        : location
+            ? `/${profession}-salary/${location}`
+            : `/${profession}-salary`;
+
+    const canonicalUrl = getCanonicalUrl(urlPath);
+    const ogTags = getOpenGraphTags(metaTags.title, metaTags.description, canonicalUrl);
+    const twitterTags = getTwitterCardTags(metaTags.title, metaTags.description);
+
+    return {
+        title: metaTags.title,
+        description: metaTags.description,
+        alternates: { canonical: canonicalUrl },
+        openGraph: ogTags,
+        twitter: twitterTags,
+        robots: { index: true, follow: true },
+    };
 }
 
 export default async function SalaryPage({ searchParams }: PageProps) {

@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
+import { getJobsPageMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,6 +37,40 @@ function formatDate(dateString: string): string {
     if (diffDays < 7) return `${diffDays} days ago`;
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
     return `${Math.floor(diffDays / 30)} months ago`;
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+    const profession = searchParams.profession || 'registered-nurses';
+    const location = searchParams.location;
+    const city = searchParams.city;
+
+    const careerTitle = formatCareerTitle(profession);
+    const isNational = !location && !city;
+    const locationName = city || location || 'United States';
+
+    const jobCount = await prisma.job.count({
+        where: { careerKeyword: profession }
+    });
+
+    const metaTags = getJobsPageMetaTags(careerTitle, locationName, jobCount, isNational);
+    const urlPath = city && location
+        ? `/${profession}-jobs/${location}/${city}`
+        : location
+            ? `/${profession}-jobs/${location}`
+            : `/${profession}-jobs`;
+
+    const canonicalUrl = getCanonicalUrl(urlPath);
+    const ogTags = getOpenGraphTags(metaTags.title, metaTags.description, canonicalUrl);
+    const twitterTags = getTwitterCardTags(metaTags.title, metaTags.description);
+
+    return {
+        title: metaTags.title,
+        description: metaTags.description,
+        alternates: { canonical: canonicalUrl },
+        openGraph: ogTags,
+        twitter: twitterTags,
+        robots: { index: true, follow: true },
+    };
 }
 
 export default async function JobsPage({ searchParams }: PageProps) {
