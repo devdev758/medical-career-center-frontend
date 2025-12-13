@@ -27,6 +27,12 @@ interface PageProps {
 export default async function ProfessionHubPage({ params }: PageProps) {
     const { profession } = await params;
 
+    // If the profession starts with "how-to-become-", this should be handled by the career guide route
+    // But Next.js might route it here first, so we need to return notFound to let it fall through
+    if (profession.startsWith('how-to-become-')) {
+        notFound();
+    }
+
     // Fetch career guide
     const careerGuide = await prisma.careerGuide.findUnique({
         where: { professionSlug: profession },
