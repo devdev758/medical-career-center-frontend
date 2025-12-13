@@ -2,7 +2,7 @@
     "registered-nurses": {
         "similar": [
             {
-                "slug": "licensed-practical-nurses",
+                "slug": "licensed-practical-and-licensed-vocational-nurses",
                 "name": "Licensed Practical Nurses",
                 "relationship": "Similar patient care role, different education level"
             },
@@ -62,16 +62,77 @@
                 "slug": "nurse-anesthetists",
                 "name": "Nurse Anesthetists",
                 "relationship": "Fellow advanced practice nurses"
+            },
+            {
+                "slug": "family-medicine-physicians",
+                "name": "Family Medicine Physicians",
+                "relationship": "Collaborative practice partners"
             }
         ],
         "family": "nursing"
     },
-    "licensed-practical-nurses": {
+    "nurse-anesthetists": {
+        "similar": [
+            {
+                "slug": "anesthesiologists",
+                "name": "Anesthesiologists",
+                "relationship": "Similar anesthesia practice, different training path"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Foundation nursing role"
+            },
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Fellow advanced practice nurses"
+            },
+            {
+                "slug": "anesthesia-technicians",
+                "name": "Anesthesia Technicians",
+                "relationship": "Support role in anesthesia"
+            }
+        ],
+        "family": "nursing"
+    },
+    "nurse-midwives": {
+        "similar": [
+            {
+                "slug": "obstetricians-and-gynecologists",
+                "name": "Obstetricians and Gynecologists",
+                "relationship": "Similar women's health focus, different scope"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Foundation nursing role"
+            },
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Fellow advanced practice nurses"
+            }
+        ],
+        "family": "nursing"
+    },
+    "licensed-practical-and-licensed-vocational-nurses": {
         "similar": [
             {
                 "slug": "medical-assistants",
                 "name": "Medical Assistants",
                 "relationship": "Similar entry-level patient care"
+            },
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Similar support role"
             }
         ],
         "progression": [
@@ -83,9 +144,43 @@
         ],
         "related": [
             {
-                "slug": "nursing-assistants",
-                "name": "Nursing Assistants",
-                "relationship": "Entry-level nursing support"
+                "slug": "home-health-and-personal-care-aides",
+                "name": "Home Health Aides",
+                "relationship": "Entry-level care support"
+            }
+        ],
+        "family": "nursing"
+    },
+    "nursing-assistants": {
+        "similar": [
+            {
+                "slug": "home-health-and-personal-care-aides",
+                "name": "Home Health Aides",
+                "relationship": "Similar patient care support"
+            },
+            {
+                "slug": "orderlies",
+                "name": "Orderlies",
+                "relationship": "Similar hospital support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "licensed-practical-and-licensed-vocational-nurses",
+                "name": "Licensed Practical Nurses",
+                "relationship": "Next step in nursing career"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Advanced nursing career path"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Clinical support services"
             }
         ],
         "family": "nursing"
@@ -101,12 +196,12 @@
         "progression": [],
         "related": [
             {
-                "slug": "physicians",
+                "slug": "physicians-and-surgeons",
                 "name": "Physicians",
                 "relationship": "Collaborative practice partners"
             },
             {
-                "slug": "surgeons",
+                "slug": "surgeons-all-other",
                 "name": "Surgeons",
                 "relationship": "Surgical team collaboration"
             }
@@ -132,6 +227,64 @@
                 "slug": "athletic-trainers",
                 "name": "Athletic Trainers",
                 "relationship": "Sports medicine and rehabilitation"
+            },
+            {
+                "slug": "exercise-physiologists",
+                "name": "Exercise Physiologists",
+                "relationship": "Exercise and movement science"
+            }
+        ],
+        "family": "therapy"
+    },
+    "physical-therapist-assistants": {
+        "similar": [
+            {
+                "slug": "occupational-therapy-assistants",
+                "name": "Occupational Therapy Assistants",
+                "relationship": "Similar therapy support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Advanced practice in physical therapy"
+            }
+        ],
+        "related": [
+            {
+                "slug": "physical-therapist-aides",
+                "name": "Physical Therapist Aides",
+                "relationship": "Entry-level PT support"
+            },
+            {
+                "slug": "athletic-trainers",
+                "name": "Athletic Trainers",
+                "relationship": "Rehabilitation and sports medicine"
+            }
+        ],
+        "family": "therapy"
+    },
+    "physical-therapist-aides": {
+        "similar": [
+            {
+                "slug": "occupational-therapy-aides",
+                "name": "Occupational Therapy Aides",
+                "relationship": "Similar therapy support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "physical-therapist-assistants",
+                "name": "Physical Therapist Assistants",
+                "relationship": "Next step in PT career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Supervising therapists"
             }
         ],
         "family": "therapy"
@@ -159,6 +312,54 @@
         ],
         "family": "therapy"
     },
+    "occupational-therapy-assistants": {
+        "similar": [
+            {
+                "slug": "physical-therapist-assistants",
+                "name": "Physical Therapist Assistants",
+                "relationship": "Similar therapy support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Advanced practice in occupational therapy"
+            }
+        ],
+        "related": [
+            {
+                "slug": "occupational-therapy-aides",
+                "name": "Occupational Therapy Aides",
+                "relationship": "Entry-level OT support"
+            }
+        ],
+        "family": "therapy"
+    },
+    "occupational-therapy-aides": {
+        "similar": [
+            {
+                "slug": "physical-therapist-aides",
+                "name": "Physical Therapist Aides",
+                "relationship": "Similar therapy support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "occupational-therapy-assistants",
+                "name": "Occupational Therapy Assistants",
+                "relationship": "Next step in OT career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Supervising therapists"
+            }
+        ],
+        "family": "therapy"
+    },
     "respiratory-therapists": {
         "similar": [],
         "progression": [],
@@ -169,9 +370,106 @@
                 "relationship": "Collaborative patient care"
             },
             {
-                "slug": "pulmonologists",
-                "name": "Pulmonologists",
-                "relationship": "Physician collaboration"
+                "slug": "emergency-medical-technicians",
+                "name": "Emergency Medical Technicians",
+                "relationship": "Emergency respiratory care"
+            },
+            {
+                "slug": "anesthesia-technicians",
+                "name": "Anesthesia Technicians",
+                "relationship": "Airway management collaboration"
+            }
+        ],
+        "family": "therapy"
+    },
+    "speech-language-pathologists": {
+        "similar": [
+            {
+                "slug": "audiologists",
+                "name": "Audiologists",
+                "relationship": "Communication disorders specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Rehabilitation team collaboration"
+            },
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Multidisciplinary rehabilitation"
+            }
+        ],
+        "family": "therapy"
+    },
+    "recreational-therapists": {
+        "similar": [
+            {
+                "slug": "therapists-all-other",
+                "name": "Therapists All Other",
+                "relationship": "Therapeutic intervention specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Rehabilitation and activity therapy"
+            },
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Therapeutic activities"
+            }
+        ],
+        "family": "therapy"
+    },
+    "massage-therapists": {
+        "similar": [
+            {
+                "slug": "chiropractors",
+                "name": "Chiropractors",
+                "relationship": "Manual therapy and musculoskeletal care"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Complementary pain management"
+            },
+            {
+                "slug": "athletic-trainers",
+                "name": "Athletic Trainers",
+                "relationship": "Sports injury treatment"
+            }
+        ],
+        "family": "therapy"
+    },
+    "athletic-trainers": {
+        "similar": [
+            {
+                "slug": "exercise-physiologists",
+                "name": "Exercise Physiologists",
+                "relationship": "Sports and exercise science"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Sports medicine and rehabilitation"
+            },
+            {
+                "slug": "orthopedic-surgeons-except-pediatric",
+                "name": "Orthopedic Surgeons",
+                "relationship": "Sports injury collaboration"
             }
         ],
         "family": "therapy"
@@ -179,9 +477,14 @@
     "medical-assistants": {
         "similar": [
             {
-                "slug": "licensed-practical-nurses",
+                "slug": "licensed-practical-and-licensed-vocational-nurses",
                 "name": "Licensed Practical Nurses",
                 "relationship": "Similar clinical support role"
+            },
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Similar patient care support"
             }
         ],
         "progression": [
@@ -196,21 +499,26 @@
                 "slug": "phlebotomists",
                 "name": "Phlebotomists",
                 "relationship": "Clinical support services"
+            },
+            {
+                "slug": "medical-records-specialists",
+                "name": "Medical Records Specialists",
+                "relationship": "Healthcare administrative support"
             }
         ],
         "family": "medical-support"
     },
-    "radiologic-technologists": {
+    "radiologic-technologists-and-technicians": {
         "similar": [
             {
-                "slug": "mri-technologists",
+                "slug": "magnetic-resonance-imaging-technologists",
                 "name": "MRI Technologists",
                 "relationship": "Specialized imaging modality"
             },
             {
-                "slug": "ct-technologists",
-                "name": "CT Technologists",
-                "relationship": "Advanced imaging specialization"
+                "slug": "diagnostic-medical-sonographers",
+                "name": "Diagnostic Medical Sonographers",
+                "relationship": "Diagnostic imaging specialists"
             }
         ],
         "progression": [],
@@ -221,9 +529,152 @@
                 "relationship": "Physician collaboration"
             },
             {
-                "slug": "ultrasound-technicians",
+                "slug": "ultrasound-technician",
                 "name": "Ultrasound Technicians",
                 "relationship": "Diagnostic imaging team"
+            },
+            {
+                "slug": "nuclear-medicine-technologists",
+                "name": "Nuclear Medicine Technologists",
+                "relationship": "Advanced imaging techniques"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "magnetic-resonance-imaging-technologists": {
+        "similar": [
+            {
+                "slug": "radiologic-technologists-and-technicians",
+                "name": "Radiologic Technologists",
+                "relationship": "General imaging specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Physician collaboration"
+            },
+            {
+                "slug": "nuclear-medicine-technologists",
+                "name": "Nuclear Medicine Technologists",
+                "relationship": "Advanced imaging modalities"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "diagnostic-medical-sonographers": {
+        "similar": [
+            {
+                "slug": "ultrasound-technician",
+                "name": "Ultrasound Technicians",
+                "relationship": "Ultrasound imaging specialists"
+            },
+            {
+                "slug": "cardiovascular-technologists-and-technicians",
+                "name": "Cardiovascular Technologists",
+                "relationship": "Specialized diagnostic imaging"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologic-technologists-and-technicians",
+                "name": "Radiologic Technologists",
+                "relationship": "Diagnostic imaging team"
+            },
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Physician collaboration"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "ultrasound-technician": {
+        "similar": [
+            {
+                "slug": "diagnostic-medical-sonographers",
+                "name": "Diagnostic Medical Sonographers",
+                "relationship": "Ultrasound imaging specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologic-technologists-and-technicians",
+                "name": "Radiologic Technologists",
+                "relationship": "Diagnostic imaging team"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "nuclear-medicine-technologists": {
+        "similar": [
+            {
+                "slug": "radiation-therapists",
+                "name": "Radiation Therapists",
+                "relationship": "Radiation-based medical procedures"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologic-technologists-and-technicians",
+                "name": "Radiologic Technologists",
+                "relationship": "Imaging team collaboration"
+            },
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Physician collaboration"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "cardiovascular-technologists-and-technicians": {
+        "similar": [
+            {
+                "slug": "diagnostic-medical-sonographers",
+                "name": "Diagnostic Medical Sonographers",
+                "relationship": "Cardiac imaging specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "cardiologists",
+                "name": "Cardiologists",
+                "relationship": "Physician collaboration"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Cardiac care team"
+            }
+        ],
+        "family": "diagnostic-imaging"
+    },
+    "radiation-therapists": {
+        "similar": [
+            {
+                "slug": "nuclear-medicine-technologists",
+                "name": "Nuclear Medicine Technologists",
+                "relationship": "Radiation-based procedures"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "medical-dosimetrists",
+                "name": "Medical Dosimetrists",
+                "relationship": "Radiation treatment planning"
+            },
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Oncology collaboration"
             }
         ],
         "family": "diagnostic-imaging"
@@ -238,11 +689,1408 @@
                 "relationship": "Support role in pharmacy"
             },
             {
-                "slug": "clinical-pharmacologists",
-                "name": "Clinical Pharmacologists",
-                "relationship": "Medication research and development"
+                "slug": "physicians-and-surgeons",
+                "name": "Physicians",
+                "relationship": "Medication management collaboration"
             }
         ],
         "family": "pharmacy"
+    },
+    "pharmacy-technicians": {
+        "similar": [
+            {
+                "slug": "pharmacy-aides",
+                "name": "Pharmacy Aides",
+                "relationship": "Pharmacy support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "pharmacists",
+                "name": "Pharmacists",
+                "relationship": "Advanced pharmacy practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Healthcare support services"
+            }
+        ],
+        "family": "pharmacy"
+    },
+    "pharmacy-aides": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "pharmacy-technicians",
+                "name": "Pharmacy Technicians",
+                "relationship": "Next step in pharmacy career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "pharmacists",
+                "name": "Pharmacists",
+                "relationship": "Supervising pharmacists"
+            }
+        ],
+        "family": "pharmacy"
+    },
+    "clinical-laboratory-technologists-and-technicians": {
+        "similar": [
+            {
+                "slug": "phlebotomists",
+                "name": "Phlebotomists",
+                "relationship": "Laboratory specimen collection"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physicians-pathologists",
+                "name": "Pathologists",
+                "relationship": "Laboratory medicine collaboration"
+            },
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Clinical support services"
+            }
+        ],
+        "family": "laboratory"
+    },
+    "phlebotomists": {
+        "similar": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Clinical support services"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "clinical-laboratory-technologists-and-technicians",
+                "name": "Clinical Laboratory Technologists",
+                "relationship": "Advanced laboratory career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Patient care support"
+            }
+        ],
+        "family": "laboratory"
+    },
+    "emergency-medical-technicians": {
+        "similar": [
+            {
+                "slug": "paramedics",
+                "name": "Paramedics",
+                "relationship": "Advanced emergency medical care"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "paramedics",
+                "name": "Paramedics",
+                "relationship": "Advanced EMS certification"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Common career transition"
+            }
+        ],
+        "related": [
+            {
+                "slug": "emergency-medicine-physicians",
+                "name": "Emergency Medicine Physicians",
+                "relationship": "Emergency care collaboration"
+            }
+        ],
+        "family": "emergency-medical"
+    },
+    "paramedics": {
+        "similar": [
+            {
+                "slug": "emergency-medical-technicians",
+                "name": "Emergency Medical Technicians",
+                "relationship": "Entry-level emergency care"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Common career advancement"
+            },
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Advanced practice path"
+            }
+        ],
+        "related": [
+            {
+                "slug": "emergency-medicine-physicians",
+                "name": "Emergency Medicine Physicians",
+                "relationship": "Emergency care team"
+            }
+        ],
+        "family": "emergency-medical"
+    },
+    "dental-assistants": {
+        "similar": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Similar clinical support role"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "dental-hygienists",
+                "name": "Dental Hygienists",
+                "relationship": "Advanced dental career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Dental team collaboration"
+            }
+        ],
+        "family": "dental"
+    },
+    "dental-hygienists": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Advanced dental practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "dental-assistants",
+                "name": "Dental Assistants",
+                "relationship": "Dental support team"
+            },
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Collaborative practice"
+            }
+        ],
+        "family": "dental"
+    },
+    "dentists-general": {
+        "similar": [
+            {
+                "slug": "dentists-all-other-specialists",
+                "name": "Dental Specialists",
+                "relationship": "Specialized dental practice"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "orthodontists",
+                "name": "Orthodontists",
+                "relationship": "Dental specialty"
+            },
+            {
+                "slug": "oral-and-maxillofacial-surgeons",
+                "name": "Oral Surgeons",
+                "relationship": "Surgical specialty"
+            }
+        ],
+        "related": [
+            {
+                "slug": "dental-hygienists",
+                "name": "Dental Hygienists",
+                "relationship": "Dental team"
+            },
+            {
+                "slug": "dental-assistants",
+                "name": "Dental Assistants",
+                "relationship": "Support staff"
+            }
+        ],
+        "family": "dental"
+    },
+    "orthodontists": {
+        "similar": [
+            {
+                "slug": "prosthodontists",
+                "name": "Prosthodontists",
+                "relationship": "Dental restoration specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Referral partners"
+            },
+            {
+                "slug": "dental-hygienists",
+                "name": "Dental Hygienists",
+                "relationship": "Orthodontic team"
+            }
+        ],
+        "family": "dental"
+    },
+    "oral-and-maxillofacial-surgeons": {
+        "similar": [
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Referral partners"
+            },
+            {
+                "slug": "anesthesiologists",
+                "name": "Anesthesiologists",
+                "relationship": "Surgical team"
+            }
+        ],
+        "family": "dental"
+    },
+    "prosthodontists": {
+        "similar": [
+            {
+                "slug": "orthodontists",
+                "name": "Orthodontists",
+                "relationship": "Dental restoration specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "Referral partners"
+            }
+        ],
+        "family": "dental"
+    },
+    "dentists-all-other-specialists": {
+        "similar": [
+            {
+                "slug": "dentists-general",
+                "name": "General Dentists",
+                "relationship": "General dental practice"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "dental-hygienists",
+                "name": "Dental Hygienists",
+                "relationship": "Dental team"
+            }
+        ],
+        "family": "dental"
+    },
+    "optometrists": {
+        "similar": [
+            {
+                "slug": "ophthalmologists-except-pediatric",
+                "name": "Ophthalmologists",
+                "relationship": "Eye care specialists, different training"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "opticians-dispensing",
+                "name": "Dispensing Opticians",
+                "relationship": "Eyewear dispensing"
+            },
+            {
+                "slug": "ophthalmic-medical-technicians",
+                "name": "Ophthalmic Medical Technicians",
+                "relationship": "Eye care support"
+            }
+        ],
+        "family": "vision"
+    },
+    "ophthalmologists-except-pediatric": {
+        "similar": [
+            {
+                "slug": "optometrists",
+                "name": "Optometrists",
+                "relationship": "Eye care specialists, different scope"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "ophthalmic-medical-technicians",
+                "name": "Ophthalmic Medical Technicians",
+                "relationship": "Eye care support"
+            },
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical specialists"
+            }
+        ],
+        "family": "vision"
+    },
+    "opticians-dispensing": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "optometrists",
+                "name": "Optometrists",
+                "relationship": "Advanced eye care practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "ophthalmic-medical-technicians",
+                "name": "Ophthalmic Medical Technicians",
+                "relationship": "Eye care team"
+            }
+        ],
+        "family": "vision"
+    },
+    "ophthalmic-medical-technicians": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "optometrists",
+                "name": "Optometrists",
+                "relationship": "Eye care collaboration"
+            },
+            {
+                "slug": "ophthalmologists-except-pediatric",
+                "name": "Ophthalmologists",
+                "relationship": "Medical eye care"
+            }
+        ],
+        "family": "vision"
+    },
+    "audiologists": {
+        "similar": [
+            {
+                "slug": "speech-language-pathologists",
+                "name": "Speech-Language Pathologists",
+                "relationship": "Communication disorders specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "hearing-aid-specialists",
+                "name": "Hearing Aid Specialists",
+                "relationship": "Hearing device fitting"
+            },
+            {
+                "slug": "otolaryngologists",
+                "name": "ENT Physicians",
+                "relationship": "Medical collaboration"
+            }
+        ],
+        "family": "hearing"
+    },
+    "hearing-aid-specialists": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "audiologists",
+                "name": "Audiologists",
+                "relationship": "Advanced audiology practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "opticians-dispensing",
+                "name": "Dispensing Opticians",
+                "relationship": "Similar device dispensing role"
+            }
+        ],
+        "family": "hearing"
+    },
+    "dietitians-and-nutritionists": {
+        "similar": [
+            {
+                "slug": "dietetic-technicians",
+                "name": "Dietetic Technicians",
+                "relationship": "Nutrition support role"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "exercise-physiologists",
+                "name": "Exercise Physiologists",
+                "relationship": "Wellness and health promotion"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Patient nutrition care"
+            }
+        ],
+        "family": "nutrition"
+    },
+    "dietetic-technicians": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "dietitians-and-nutritionists",
+                "name": "Dietitians and Nutritionists",
+                "relationship": "Advanced nutrition practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Healthcare support"
+            }
+        ],
+        "family": "nutrition"
+    },
+    "exercise-physiologists": {
+        "similar": [
+            {
+                "slug": "athletic-trainers",
+                "name": "Athletic Trainers",
+                "relationship": "Exercise and sports science"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Rehabilitation and exercise"
+            },
+            {
+                "slug": "dietitians-and-nutritionists",
+                "name": "Dietitians",
+                "relationship": "Wellness collaboration"
+            }
+        ],
+        "family": "wellness"
+    },
+    "chiropractors": {
+        "similar": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Musculoskeletal care"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "massage-therapists",
+                "name": "Massage Therapists",
+                "relationship": "Manual therapy"
+            },
+            {
+                "slug": "orthopedic-surgeons-except-pediatric",
+                "name": "Orthopedic Surgeons",
+                "relationship": "Musculoskeletal specialists"
+            }
+        ],
+        "family": "alternative-medicine"
+    },
+    "acupuncturists": {
+        "similar": [
+            {
+                "slug": "massage-therapists",
+                "name": "Massage Therapists",
+                "relationship": "Alternative pain management"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "chiropractors",
+                "name": "Chiropractors",
+                "relationship": "Complementary medicine"
+            },
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Pain management collaboration"
+            }
+        ],
+        "family": "alternative-medicine"
+    },
+    "podiatrists": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "orthopedic-surgeons-except-pediatric",
+                "name": "Orthopedic Surgeons",
+                "relationship": "Musculoskeletal specialists"
+            },
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Foot and ankle rehabilitation"
+            }
+        ],
+        "family": "specialty-medicine"
+    },
+    "genetic-counselors": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "obstetricians-and-gynecologists",
+                "name": "OB/GYNs",
+                "relationship": "Prenatal genetic counseling"
+            },
+            {
+                "slug": "pediatricians-general",
+                "name": "Pediatricians",
+                "relationship": "Genetic disorder management"
+            }
+        ],
+        "family": "specialty-medicine"
+    },
+    "orthotists-and-prosthetists": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Rehabilitation collaboration"
+            },
+            {
+                "slug": "orthopedic-surgeons-except-pediatric",
+                "name": "Orthopedic Surgeons",
+                "relationship": "Post-surgical care"
+            }
+        ],
+        "family": "specialty-medicine"
+    },
+    "physicians-and-surgeons": {
+        "similar": [
+            {
+                "slug": "physicians-all-other",
+                "name": "Physicians All Other",
+                "relationship": "Medical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Collaborative practice"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Medical team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "family-medicine-physicians": {
+        "similar": [
+            {
+                "slug": "general-internal-medicine-physicians",
+                "name": "Internal Medicine Physicians",
+                "relationship": "Primary care specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Collaborative primary care"
+            },
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Primary care team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "general-internal-medicine-physicians": {
+        "similar": [
+            {
+                "slug": "family-medicine-physicians",
+                "name": "Family Medicine Physicians",
+                "relationship": "Primary care specialists"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "cardiologists",
+                "name": "Cardiologists",
+                "relationship": "Cardiology specialty"
+            },
+            {
+                "slug": "neurologists",
+                "name": "Neurologists",
+                "relationship": "Neurology specialty"
+            }
+        ],
+        "related": [
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Collaborative practice"
+            }
+        ],
+        "family": "physicians"
+    },
+    "pediatricians-general": {
+        "similar": [
+            {
+                "slug": "family-medicine-physicians",
+                "name": "Family Medicine Physicians",
+                "relationship": "Primary care for all ages"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "pediatric-surgeons",
+                "name": "Pediatric Surgeons",
+                "relationship": "Pediatric surgical specialty"
+            }
+        ],
+        "related": [
+            {
+                "slug": "nurse-practitioners",
+                "name": "Nurse Practitioners",
+                "relationship": "Pediatric care team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "emergency-medicine-physicians": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "paramedics",
+                "name": "Paramedics",
+                "relationship": "Emergency care team"
+            },
+            {
+                "slug": "emergency-medical-technicians",
+                "name": "Emergency Medical Technicians",
+                "relationship": "Pre-hospital care"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Emergency department team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "anesthesiologists": {
+        "similar": [
+            {
+                "slug": "nurse-anesthetists",
+                "name": "Nurse Anesthetists",
+                "relationship": "Anesthesia providers"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "anesthesia-technicians",
+                "name": "Anesthesia Technicians",
+                "relationship": "Anesthesia support"
+            },
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "surgeons-all-other": {
+        "similar": [
+            {
+                "slug": "physicians-and-surgeons",
+                "name": "Physicians and Surgeons",
+                "relationship": "Surgical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "surgical-assistants",
+                "name": "Surgical Assistants",
+                "relationship": "Surgical team support"
+            },
+            {
+                "slug": "surgical-technologists",
+                "name": "Surgical Technologists",
+                "relationship": "Operating room team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "orthopedic-surgeons-except-pediatric": {
+        "similar": [
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Post-surgical rehabilitation"
+            },
+            {
+                "slug": "athletic-trainers",
+                "name": "Athletic Trainers",
+                "relationship": "Sports medicine"
+            }
+        ],
+        "family": "physicians"
+    },
+    "pediatric-surgeons": {
+        "similar": [
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "pediatricians-general",
+                "name": "Pediatricians",
+                "relationship": "Pediatric care team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "obstetricians-and-gynecologists": {
+        "similar": [
+            {
+                "slug": "nurse-midwives",
+                "name": "Nurse Midwives",
+                "relationship": "Women's health specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Labor and delivery team"
+            },
+            {
+                "slug": "genetic-counselors",
+                "name": "Genetic Counselors",
+                "relationship": "Prenatal care"
+            }
+        ],
+        "family": "physicians"
+    },
+    "cardiologists": {
+        "similar": [
+            {
+                "slug": "general-internal-medicine-physicians",
+                "name": "Internal Medicine Physicians",
+                "relationship": "Internal medicine specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "cardiovascular-technologists-and-technicians",
+                "name": "Cardiovascular Technologists",
+                "relationship": "Cardiac diagnostics"
+            },
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Cardiac care team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "dermatologists": {
+        "similar": [
+            {
+                "slug": "physicians-all-other",
+                "name": "Physicians All Other",
+                "relationship": "Medical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Dermatology team"
+            }
+        ],
+        "family": "physicians"
+    },
+    "neurologists": {
+        "similar": [
+            {
+                "slug": "psychiatrists",
+                "name": "Psychiatrists",
+                "relationship": "Brain and mental health specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Neurological rehabilitation"
+            },
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Neuro-rehabilitation"
+            }
+        ],
+        "family": "physicians"
+    },
+    "psychiatrists": {
+        "similar": [
+            {
+                "slug": "neurologists",
+                "name": "Neurologists",
+                "relationship": "Brain specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "psychiatric-technicians",
+                "name": "Psychiatric Technicians",
+                "relationship": "Mental health support"
+            },
+            {
+                "slug": "psychiatric-aides",
+                "name": "Psychiatric Aides",
+                "relationship": "Patient care support"
+            }
+        ],
+        "family": "physicians"
+    },
+    "radiologists": {
+        "similar": [
+            {
+                "slug": "physicians-pathologists",
+                "name": "Pathologists",
+                "relationship": "Diagnostic medicine specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiologic-technologists-and-technicians",
+                "name": "Radiologic Technologists",
+                "relationship": "Imaging team"
+            },
+            {
+                "slug": "magnetic-resonance-imaging-technologists",
+                "name": "MRI Technologists",
+                "relationship": "Advanced imaging"
+            }
+        ],
+        "family": "physicians"
+    },
+    "physicians-pathologists": {
+        "similar": [
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Diagnostic specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "clinical-laboratory-technologists-and-technicians",
+                "name": "Clinical Laboratory Technologists",
+                "relationship": "Laboratory medicine"
+            }
+        ],
+        "family": "physicians"
+    },
+    "physicians-all-other": {
+        "similar": [
+            {
+                "slug": "physicians-and-surgeons",
+                "name": "Physicians and Surgeons",
+                "relationship": "Medical specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Collaborative practice"
+            }
+        ],
+        "family": "physicians"
+    },
+    "surgical-assistants": {
+        "similar": [
+            {
+                "slug": "surgical-technologists",
+                "name": "Surgical Technologists",
+                "relationship": "Operating room support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "physician-assistants",
+                "name": "Physician Assistants",
+                "relationship": "Advanced surgical practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "surgeons-all-other",
+                "name": "Surgeons",
+                "relationship": "Surgical team"
+            }
+        ],
+        "family": "surgical-support"
+    },
+    "surgical-technologists": {
+        "similar": [
+            {
+                "slug": "surgical-assistants",
+                "name": "Surgical Assistants",
+                "relationship": "Surgical team support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "surgical-assistants",
+                "name": "Surgical Assistants",
+                "relationship": "Advanced surgical role"
+            }
+        ],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Operating room team"
+            }
+        ],
+        "family": "surgical-support"
+    },
+    "anesthesia-technicians": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "anesthesiologists",
+                "name": "Anesthesiologists",
+                "relationship": "Anesthesia team"
+            },
+            {
+                "slug": "nurse-anesthetists",
+                "name": "Nurse Anesthetists",
+                "relationship": "Anesthesia providers"
+            }
+        ],
+        "family": "surgical-support"
+    },
+    "medical-dosimetrists": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "radiation-therapists",
+                "name": "Radiation Therapists",
+                "relationship": "Radiation treatment team"
+            },
+            {
+                "slug": "radiologists",
+                "name": "Radiologists",
+                "relationship": "Oncology collaboration"
+            }
+        ],
+        "family": "oncology-support"
+    },
+    "psychiatric-technicians": {
+        "similar": [
+            {
+                "slug": "psychiatric-aides",
+                "name": "Psychiatric Aides",
+                "relationship": "Mental health support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Nursing career advancement"
+            }
+        ],
+        "related": [
+            {
+                "slug": "psychiatrists",
+                "name": "Psychiatrists",
+                "relationship": "Mental health team"
+            }
+        ],
+        "family": "mental-health"
+    },
+    "psychiatric-aides": {
+        "similar": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Patient care support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "psychiatric-technicians",
+                "name": "Psychiatric Technicians",
+                "relationship": "Advanced mental health support"
+            }
+        ],
+        "related": [
+            {
+                "slug": "psychiatrists",
+                "name": "Psychiatrists",
+                "relationship": "Mental health team"
+            }
+        ],
+        "family": "mental-health"
+    },
+    "home-health-and-personal-care-aides": {
+        "similar": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Patient care support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "licensed-practical-and-licensed-vocational-nurses",
+                "name": "Licensed Practical Nurses",
+                "relationship": "Nursing career path"
+            }
+        ],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Home health nursing"
+            }
+        ],
+        "family": "home-health"
+    },
+    "orderlies": {
+        "similar": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Patient care support"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "licensed-practical-and-licensed-vocational-nurses",
+                "name": "Licensed Practical Nurses",
+                "relationship": "Nursing advancement"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-equipment-preparers",
+                "name": "Medical Equipment Preparers",
+                "relationship": "Hospital support services"
+            }
+        ],
+        "family": "hospital-support"
+    },
+    "medical-equipment-preparers": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "surgical-technologists",
+                "name": "Surgical Technologists",
+                "relationship": "Surgical equipment"
+            },
+            {
+                "slug": "orderlies",
+                "name": "Orderlies",
+                "relationship": "Hospital support"
+            }
+        ],
+        "family": "hospital-support"
+    },
+    "health-information-technicians": {
+        "similar": [
+            {
+                "slug": "medical-records-specialists",
+                "name": "Medical Records Specialists",
+                "relationship": "Health information management"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "health-information-technologists-and-medical-registrars",
+                "name": "Health Information Technologists",
+                "relationship": "Advanced HIM practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-transcriptionists",
+                "name": "Medical Transcriptionists",
+                "relationship": "Medical documentation"
+            }
+        ],
+        "family": "health-information"
+    },
+    "health-information-technologists-and-medical-registrars": {
+        "similar": [
+            {
+                "slug": "medical-records-specialists",
+                "name": "Medical Records Specialists",
+                "relationship": "Health information management"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "health-information-technicians",
+                "name": "Health Information Technicians",
+                "relationship": "HIM team"
+            }
+        ],
+        "family": "health-information"
+    },
+    "medical-records-specialists": {
+        "similar": [
+            {
+                "slug": "health-information-technicians",
+                "name": "Health Information Technicians",
+                "relationship": "Medical records management"
+            }
+        ],
+        "progression": [
+            {
+                "slug": "health-information-technologists-and-medical-registrars",
+                "name": "Health Information Technologists",
+                "relationship": "Advanced HIM role"
+            }
+        ],
+        "related": [
+            {
+                "slug": "medical-transcriptionists",
+                "name": "Medical Transcriptionists",
+                "relationship": "Medical documentation"
+            }
+        ],
+        "family": "health-information"
+    },
+    "medical-transcriptionists": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "medical-records-specialists",
+                "name": "Medical Records Specialists",
+                "relationship": "Health information career"
+            }
+        ],
+        "related": [
+            {
+                "slug": "health-information-technicians",
+                "name": "Health Information Technicians",
+                "relationship": "Documentation team"
+            }
+        ],
+        "family": "health-information"
+    },
+    "veterinarians": {
+        "similar": [],
+        "progression": [],
+        "related": [
+            {
+                "slug": "veterinary-technologists-and-technicians",
+                "name": "Veterinary Technologists",
+                "relationship": "Veterinary support"
+            },
+            {
+                "slug": "veterinary-assistants-and-laboratory-animal-caretakers",
+                "name": "Veterinary Assistants",
+                "relationship": "Animal care support"
+            }
+        ],
+        "family": "veterinary"
+    },
+    "veterinary-technologists-and-technicians": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "veterinarians",
+                "name": "Veterinarians",
+                "relationship": "Advanced veterinary practice"
+            }
+        ],
+        "related": [
+            {
+                "slug": "veterinary-assistants-and-laboratory-animal-caretakers",
+                "name": "Veterinary Assistants",
+                "relationship": "Veterinary support team"
+            }
+        ],
+        "family": "veterinary"
+    },
+    "veterinary-assistants-and-laboratory-animal-caretakers": {
+        "similar": [],
+        "progression": [
+            {
+                "slug": "veterinary-technologists-and-technicians",
+                "name": "Veterinary Technologists",
+                "relationship": "Advanced veterinary support"
+            }
+        ],
+        "related": [
+            {
+                "slug": "veterinarians",
+                "name": "Veterinarians",
+                "relationship": "Veterinary team"
+            }
+        ],
+        "family": "veterinary"
+    },
+    "healthcare-diagnosing-or-treating-practitioners-all-other": {
+        "similar": [
+            {
+                "slug": "healthcare-practitioners-and-technical-workers-all-other",
+                "name": "Healthcare Practitioners All Other",
+                "relationship": "Healthcare professionals"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physicians-and-surgeons",
+                "name": "Physicians",
+                "relationship": "Medical team"
+            }
+        ],
+        "family": "general-healthcare"
+    },
+    "healthcare-practitioners-and-technical-workers-all-other": {
+        "similar": [
+            {
+                "slug": "health-technologists-and-technicians-all-other",
+                "name": "Health Technologists All Other",
+                "relationship": "Healthcare technical workers"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "registered-nurses",
+                "name": "Registered Nurses",
+                "relationship": "Healthcare team"
+            }
+        ],
+        "family": "general-healthcare"
+    },
+    "healthcare-support-workers-all-other": {
+        "similar": [
+            {
+                "slug": "medical-assistants",
+                "name": "Medical Assistants",
+                "relationship": "Healthcare support"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "nursing-assistants",
+                "name": "Nursing Assistants",
+                "relationship": "Patient care support"
+            }
+        ],
+        "family": "general-healthcare"
+    },
+    "health-technologists-and-technicians-all-other": {
+        "similar": [
+            {
+                "slug": "healthcare-practitioners-and-technical-workers-all-other",
+                "name": "Healthcare Practitioners All Other",
+                "relationship": "Healthcare technical roles"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "clinical-laboratory-technologists-and-technicians",
+                "name": "Clinical Laboratory Technologists",
+                "relationship": "Technical healthcare"
+            }
+        ],
+        "family": "general-healthcare"
+    },
+    "therapists-all-other": {
+        "similar": [
+            {
+                "slug": "recreational-therapists",
+                "name": "Recreational Therapists",
+                "relationship": "Therapeutic specialists"
+            }
+        ],
+        "progression": [],
+        "related": [
+            {
+                "slug": "physical-therapists",
+                "name": "Physical Therapists",
+                "relationship": "Therapy team"
+            },
+            {
+                "slug": "occupational-therapists",
+                "name": "Occupational Therapists",
+                "relationship": "Rehabilitation specialists"
+            }
+        ],
+        "family": "therapy"
     }
 }
