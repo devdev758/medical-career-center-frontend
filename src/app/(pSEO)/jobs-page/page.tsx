@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
+import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,12 +75,10 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
-            <div className="mb-6">
-                <Link href="/" className="inline-flex items-center text-sm text-primary hover:underline">
-                    <ArrowLeft className="w-4 h-4 mr-1" />
-                    Back to Home
-                </Link>
-            </div>
+            <Breadcrumb
+                items={getProfessionBreadcrumbs(profession, careerTitle, 'jobs')}
+                className="mb-6"
+            />
 
             {/* Header */}
             <div className="mb-8">
