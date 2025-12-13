@@ -37,7 +37,9 @@ export function middleware(request: NextRequest) {
     const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume)$/i);
     if (spokesMatch) {
         const [, profession, spokeType] = spokesMatch;
-        const url = new URL(`/${spokeType}-page`, request.url);
+        // Map interview-questions to interview for the page directory
+        const pageType = spokeType === 'interview-questions' ? 'interview' : spokeType;
+        const url = new URL(`/${pageType}-page`, request.url);
         url.searchParams.set('profession', profession);
         return NextResponse.rewrite(url);
     }
