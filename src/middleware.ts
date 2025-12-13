@@ -69,11 +69,9 @@ export const config = {
     matcher: [
         '/how-to-become-:path*',
         '/:path*-salary',
-        '/:path*-salary/:state',
-        '/:path*-salary/:state/:city',
+        '/:path*-salary/:path*',
         '/:path*-jobs',
-        '/:path*-jobs/:state',
-        '/:path*-jobs/:state/:city',
+        '/:path*-jobs/:path*',
         '/:path*-schools',
         '/:path*-schools/:path*',
         '/:path*-certification',
