@@ -48,11 +48,15 @@ export function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/how-to-become-:path*',
-        '/:profession-salary*',
-        '/:profession-jobs*',
-        '/:profession-schools',
-        '/:profession-certification',
-        '/:profession-interview-questions',
-        '/:profession-resume',
+        '/:path*-salary',
+        '/:path*-salary/:state',
+        '/:path*-salary/:state/:city',
+        '/:path*-jobs',
+        '/:path*-jobs/:state',
+        '/:path*-jobs/:state/:city',
+        '/:path*-schools',
+        '/:path*-certification',
+        '/:path*-interview-questions',
+        '/:path*-resume',
     ],
 };
