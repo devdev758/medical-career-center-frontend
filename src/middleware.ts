@@ -34,12 +34,12 @@ export function middleware(request: NextRequest) {
     }
 
     // Handle school pages with optional state (must come before general spokes)
-    const schoolMatch = pathname.match(/^\/([a-z0-9-]+)-schools(?:\/([a-z-]+))?$/i);
+    const schoolMatch = pathname.match(/^\/([a-z0-9-]+)-schools(?:\/([a-z]{2}))?$/i);
     if (schoolMatch) {
         const [, profession, state] = schoolMatch;
         const url = new URL('/schools-page', request.url);
         url.searchParams.set('profession', profession);
-        if (state) url.searchParams.set('state', state);
+        if (state) url.searchParams.set('location', state); // Use 'location' like salary/jobs
         return NextResponse.rewrite(url);
     }
 

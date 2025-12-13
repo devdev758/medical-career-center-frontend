@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 interface PageProps {
     searchParams: {
         profession?: string;
-        state?: string;
+        location?: string; // 2-letter state code like "ca", "tx"
     };
 }
 
@@ -23,23 +23,24 @@ function formatCareerTitle(slug: string): string {
     return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-function formatStateName(slug: string): string {
-    const state = statesList.find(s => s.slug === slug);
-    return state ? state.name : slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+function formatLocationName(location: string): string {
+    // Convert state abbreviation to full name
+    const state = statesList.find(s => s.abbr.toLowerCase() === location.toLowerCase());
+    return state ? state.name : location.toUpperCase();
 }
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
     const profession = searchParams.profession || 'registered-nurses';
-    const stateSlug = searchParams.state;
+    const location = searchParams.location;
     const careerTitle = formatCareerTitle(profession);
 
-    if (stateSlug) {
-        const stateName = formatStateName(stateSlug);
+    if (location) {
+        const stateName = formatLocationName(location);
         return {
             title: `${careerTitle} Schools in ${stateName} 2025: Accredited Programs`,
             description: `Find accredited ${careerTitle.toLowerCase()} programs in ${stateName}. Compare schools, tuition costs, admission requirements, and financial aid options.`,
             alternates: {
-                canonical: `https://medicalcareercenter.org/${profession}-schools/${stateSlug}`
+                canonical: `https://medicalcareercenter.org/${profession}-schools/${location.toLowerCase()}`
             },
         };
     }
@@ -55,9 +56,9 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
 export default async function SchoolsPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
-    const stateSlug = searchParams.state;
+    const location = searchParams.location;
     const careerTitle = formatCareerTitle(profession);
-    const stateName = stateSlug ? formatStateName(stateSlug) : null;
+    const stateName = location ? formatLocationName(location) : null;
 
     const breadcrumbItems = stateName
         ? [
@@ -221,8 +222,8 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
                             {statesList.map((state) => (
                                 <Link
-                                    key={state.slug}
-                                    href={`/${profession}-schools/${state.slug}`}
+                                    key={state.abbr}
+                                    href={`/${profession}-schools/${state.abbr.toLowerCase()}`}
                                     className="text-sm text-primary hover:underline"
                                 >
                                     {state.name}
@@ -246,13 +247,13 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
                         </Link>
                     </Button>
                     <Button asChild variant="outline">
-                        <Link href={stateName ? `/${profession}-salary/${stateSlug}` : `/${profession}-salary`}>
+                        <Link href={stateName ? `/${profession}-salary/${location}` : `/${profession}-salary`}>
                             <DollarSign className="w-4 h-4 mr-2" />
                             Salary Data{stateName && ` in ${stateName}`}
                         </Link>
                     </Button>
                     <Button asChild variant="outline">
-                        <Link href={stateName ? `/${profession}-jobs/${stateSlug}` : `/${profession}-jobs`}>
+                        <Link href={stateName ? `/${profession}-jobs/${location}` : `/${profession}-jobs`}>
                             Browse Jobs{stateName && ` in ${stateName}`}
                         </Link>
                     </Button>
