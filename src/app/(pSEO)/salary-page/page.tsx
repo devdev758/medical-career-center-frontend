@@ -10,6 +10,7 @@ import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatC
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
 import { getSalaryPageMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
+import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
 
 export const dynamic = 'force-dynamic';
 
@@ -326,6 +327,15 @@ export default async function SalaryPage({ searchParams }: PageProps) {
                 profession={profession}
                 state={location}
                 city={city}
+            />
+
+            {/* Cross-Page Spoke Links */}
+            <CrossPageLinks
+                profession={profession}
+                state={location}
+                city={city}
+                currentPage="salary"
+                className="mt-8"
             />
 
             <script
