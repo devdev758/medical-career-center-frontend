@@ -4,36 +4,41 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Handle how-to-become career guide pages
-    const careerGuideMatch = pathname.match(/^\/how-to-become-([a-z0-9-]+)$/i);
-    if (careerGuideMatch) {
-        const [, profession] = careerGuideMatch;
-        const url = request.nextUrl.clone();
-        url.pathname = `/career-guide/${profession}`;
-        return NextResponse.rewrite(url);
+    // Handle how-to-become URLs
+    const howToMatch = pathname.match(/^\/how-to-become-([a-z0-9-]+)$/i);
+    if (howToMatch) {
+        const profession = howToMatch[1];
+        return NextResponse.rewrite(new URL(`/career-guide/${profession}`, request.url));
     }
 
-    // Handle salary pages (existing)
-    const salaryMatch = pathname.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z]{2})(?:\/([a-z0-9-]+))?)?$/i);
+    // Handle salary pages
+    const salaryMatch = pathname.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z]{2}))?(?:\/([a-z0-9-]+))?$/i);
     if (salaryMatch) {
         const [, profession, state, city] = salaryMatch;
-        const url = request.nextUrl.clone();
-        url.pathname = '/salary-page';
+        const url = new URL('/salary-page', request.url);
         url.searchParams.set('profession', profession);
         if (state) url.searchParams.set('location', state);
         if (city) url.searchParams.set('city', city);
         return NextResponse.rewrite(url);
     }
 
-    // Handle job pages (new)
-    const jobMatch = pathname.match(/^\/([a-z0-9-]+)-jobs(?:\/([a-z]{2})(?:\/([a-z0-9-]+))?)?$/i);
-    if (jobMatch) {
-        const [, profession, state, city] = jobMatch;
-        const url = request.nextUrl.clone();
-        url.pathname = '/jobs-page';
+    // Handle job pages
+    const jobsMatch = pathname.match(/^\/([a-z0-9-]+)-jobs(?:\/([a-z]{2}))?(?:\/([a-z0-9-]+))?$/i);
+    if (jobsMatch) {
+        const [, profession, state, city] = jobsMatch;
+        const url = new URL('/jobs-page', request.url);
         url.searchParams.set('profession', profession);
         if (state) url.searchParams.set('location', state);
         if (city) url.searchParams.set('city', city);
+        return NextResponse.rewrite(url);
+    }
+
+    // Handle profession spoke pages
+    const spokesMatch = pathname.match(/^\/([a-z0-9-]+)-(schools|certification|interview-questions|resume)$/i);
+    if (spokesMatch) {
+        const [, profession, spokeType] = spokesMatch;
+        const url = new URL(`/${spokeType}-page`, request.url);
+        url.searchParams.set('profession', profession);
         return NextResponse.rewrite(url);
     }
 
@@ -43,7 +48,11 @@ export function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/how-to-become-:path*',
-        '/:path*-salary/:path*',
-        '/:path*-jobs/:path*'
-    ]
+        '/:profession-salary*',
+        '/:profession-jobs*',
+        '/:profession-schools',
+        '/:profession-certification',
+        '/:profession-interview-questions',
+        '/:profession-resume',
+    ],
 };
