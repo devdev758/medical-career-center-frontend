@@ -4,6 +4,15 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // Handle how-to-become career guide pages
+    const careerGuideMatch = pathname.match(/^\/how-to-become-([a-z0-9-]+)$/i);
+    if (careerGuideMatch) {
+        const [, profession] = careerGuideMatch;
+        const url = request.nextUrl.clone();
+        url.pathname = `/career-guide/${profession}`;
+        return NextResponse.rewrite(url);
+    }
+
     // Handle salary pages (existing)
     const salaryMatch = pathname.match(/^\/([a-z0-9-]+)-salary(?:\/([a-z]{2})(?:\/([a-z0-9-]+))?)?$/i);
     if (salaryMatch) {
@@ -33,6 +42,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
+        '/how-to-become-:path*',
         '/:path*-salary/:path*',
         '/:path*-jobs/:path*'
     ]
