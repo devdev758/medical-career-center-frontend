@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,12 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function InterviewPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    // Fetch career guide data for AI-generated content
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { interviewContent: true }
+    });
 
     const commonQuestions = [
         "Why did you choose to become a " + careerTitle.toLowerCase() + "?",
@@ -76,197 +83,205 @@ export default async function InterviewPage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="interview" />
 
-            <Card className="my-12">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Lightbulb className="w-5 h-5" />
-                        Common Interview Questions
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {commonQuestions.map((question, idx) => (
-                            <div key={idx} className="border-l-4 border-primary pl-4 py-2">
-                                <p className="font-semibold text-foreground">{question}</p>
-                                <p className="text-sm text-muted-foreground mt-2">
-                                    <strong>Tip:</strong> Use the STAR method (Situation, Task, Action, Result) to structure your answer.
-                                </p>
+            {/* Render AI-generated content if available, otherwise show placeholder content */}
+            {careerGuide?.interviewContent ? (
+                <MarkdownContent content={careerGuide.interviewContent} />
+            ) : (
+                <>
+                    <Card className="my-12">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Lightbulb className="w-5 h-5" />
+                                Common Interview Questions
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {commonQuestions.map((question, idx) => (
+                                    <div key={idx} className="border-l-4 border-primary pl-4 py-2">
+                                        <p className="font-semibold text-foreground">{question}</p>
+                                        <p className="text-sm text-muted-foreground mt-2">
+                                            <strong>Tip:</strong> Use the STAR method (Situation, Task, Action, Result) to structure your answer.
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid md:grid-cols-2 gap-8 my-12">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <CheckCircle className="w-5 h-5" />
+                                    Interview Preparation Checklist
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold">Research the Organization</p>
+                                            <p className="text-sm text-muted-foreground">Learn about their mission, values, and recent news</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold">Review the Job Description</p>
+                                            <p className="text-sm text-muted-foreground">Match your skills to their requirements</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold">Prepare Your Documents</p>
+                                            <p className="text-sm text-muted-foreground">Bring extra copies of resume, certifications, references</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold">Practice Your Answers</p>
+                                            <p className="text-sm text-muted-foreground">Rehearse responses to common questions</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold">Plan Your Route</p>
+                                            <p className="text-sm text-muted-foreground">Arrive 10-15 minutes early</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <AlertCircle className="w-5 h-5" />
+                                    What to Wear
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="font-semibold mb-2">Professional Attire:</h4>
+                                        <ul className="space-y-2 text-sm text-muted-foreground">
+                                            <li>• Business professional or business casual</li>
+                                            <li>• Clean, pressed clothing</li>
+                                            <li>• Conservative colors (navy, black, gray)</li>
+                                            <li>• Minimal jewelry and accessories</li>
+                                            <li>• Well-groomed appearance</li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-yellow-50 dark:bg-yellow-950/20 p-4 rounded-lg">
+                                        <p className="text-sm font-semibold mb-1">Pro Tip:</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            When in doubt, dress one level more formal than the workplace dress code.
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
-                </CardContent>
-            </Card>
 
-            <div className="grid md:grid-cols-2 gap-8 my-12">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5" />
-                            Interview Preparation Checklist
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            <div className="flex items-start gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <Card className="mb-12">
+                        <CardHeader>
+                            <CardTitle>Questions to Ask the Interviewer</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground mb-4">
+                                Asking thoughtful questions shows your interest and helps you evaluate if the position is right for you.
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <p className="font-semibold">Research the Organization</p>
-                                    <p className="text-sm text-muted-foreground">Learn about their mission, values, and recent news</p>
+                                    <h4 className="font-semibold mb-2">About the Role:</h4>
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
+                                        <li>• What does a typical day look like?</li>
+                                        <li>• What are the biggest challenges in this role?</li>
+                                        <li>• How is success measured?</li>
+                                        <li>• What opportunities for growth exist?</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold mb-2">About the Organization:</h4>
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
+                                        <li>• What is the team culture like?</li>
+                                        <li>• What are the organization's goals for the next year?</li>
+                                        <li>• How do you support professional development?</li>
+                                        <li>• What are the next steps in the hiring process?</li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div className="flex items-start gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold">Review the Job Description</p>
-                                    <p className="text-sm text-muted-foreground">Match your skills to their requirements</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold">Prepare Your Documents</p>
-                                    <p className="text-sm text-muted-foreground">Bring extra copies of resume, certifications, references</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold">Practice Your Answers</p>
-                                    <p className="text-sm text-muted-foreground">Rehearse responses to common questions</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold">Plan Your Route</p>
-                                    <p className="text-sm text-muted-foreground">Arrive 10-15 minutes early</p>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <AlertCircle className="w-5 h-5" />
-                            What to Wear
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div>
-                                <h4 className="font-semibold mb-2">Professional Attire:</h4>
-                                <ul className="space-y-2 text-sm text-muted-foreground">
-                                    <li>• Business professional or business casual</li>
-                                    <li>• Clean, pressed clothing</li>
-                                    <li>• Conservative colors (navy, black, gray)</li>
-                                    <li>• Minimal jewelry and accessories</li>
-                                    <li>• Well-groomed appearance</li>
-                                </ul>
+                    <Card className="mb-12">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <DollarSign className="w-5 h-5" />
+                                Salary Negotiation Tips
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div>
+                                    <h4 className="font-semibold mb-2">Before Negotiating:</h4>
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
+                                        <li>• Research market rates for your role and location</li>
+                                        <li>• Know your minimum acceptable salary</li>
+                                        <li>• Consider total compensation (benefits, PTO, etc.)</li>
+                                        <li>• Wait for them to make the first offer</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold mb-2">During Negotiation:</h4>
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
+                                        <li>• Express enthusiasm for the role first</li>
+                                        <li>• Use data to support your request</li>
+                                        <li>• Be professional and confident</li>
+                                        <li>• Consider negotiating other benefits if salary is fixed</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div className="bg-yellow-50 dark:bg-yellow-950/20 p-4 rounded-lg">
-                                <p className="text-sm font-semibold mb-1">Pro Tip:</p>
-                                <p className="text-sm text-muted-foreground">
-                                    When in doubt, dress one level more formal than the workplace dress code.
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                        </CardContent>
+                    </Card>
 
-            <Card className="mb-12">
-                <CardHeader>
-                    <CardTitle>Questions to Ask the Interviewer</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                        Asking thoughtful questions shows your interest and helps you evaluate if the position is right for you.
-                    </p>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 className="font-semibold mb-2">About the Role:</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li>• What does a typical day look like?</li>
-                                <li>• What are the biggest challenges in this role?</li>
-                                <li>• How is success measured?</li>
-                                <li>• What opportunities for growth exist?</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-2">About the Organization:</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li>• What is the team culture like?</li>
-                                <li>• What are the organization's goals for the next year?</li>
-                                <li>• How do you support professional development?</li>
-                                <li>• What are the next steps in the hiring process?</li>
-                            </ul>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-8 mb-12">
+                        <h2 className="text-2xl font-bold mb-4">Ready to Apply?</h2>
+                        <p className="text-muted-foreground mb-6">
+                            Browse current {careerTitle.toLowerCase()} job openings and prepare your resume.
+                        </p>
+                        <div className="flex flex-wrap gap-4">
+                            <Button asChild>
+                                <Link href={`/${profession}-jobs`}>
+                                    <Briefcase className="w-4 h-4 mr-2" />
+                                    Browse Jobs
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href={`/${profession}-resume`}>
+                                    Resume Examples
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href={`/${profession}-salary`}>
+                                    <DollarSign className="w-4 h-4 mr-2" />
+                                    Salary Data
+                                </Link>
+                            </Button>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
 
-            <Card className="mb-12">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <DollarSign className="w-5 h-5" />
-                        Salary Negotiation Tips
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div>
-                            <h4 className="font-semibold mb-2">Before Negotiating:</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li>• Research market rates for your role and location</li>
-                                <li>• Know your minimum acceptable salary</li>
-                                <li>• Consider total compensation (benefits, PTO, etc.)</li>
-                                <li>• Wait for them to make the first offer</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-2">During Negotiation:</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li>• Express enthusiasm for the role first</li>
-                                <li>• Use data to support your request</li>
-                                <li>• Be professional and confident</li>
-                                <li>• Consider negotiating other benefits if salary is fixed</li>
-                            </ul>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
 
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-8 mb-12">
-                <h2 className="text-2xl font-bold mb-4">Ready to Apply?</h2>
-                <p className="text-muted-foreground mb-6">
-                    Browse current {careerTitle.toLowerCase()} job openings and prepare your resume.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                    <Button asChild>
-                        <Link href={`/${profession}-jobs`}>
-                            <Briefcase className="w-4 h-4 mr-2" />
-                            Browse Jobs
-                        </Link>
-                    </Button>
-                    <Button asChild variant="outline">
-                        <Link href={`/${profession}-resume`}>
-                            Resume Examples
-                        </Link>
-                    </Button>
-                    <Button asChild variant="outline">
-                        <Link href={`/${profession}-salary`}>
-                            <DollarSign className="w-4 h-4 mr-2" />
-                            Salary Data
-                        </Link>
-                    </Button>
-                </div>
-            </div>
-
+                </>
+            )}
 
             {/* Related Professions */}
-            <RelatedProfessions 
+            <RelatedProfessions
                 profession={profession}
                 currentPageType="interview"
                 maxItems={6}
