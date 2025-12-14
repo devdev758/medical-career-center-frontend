@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // POST /api/resumes/ai-suggestions
 export async function POST(request: NextRequest) {
@@ -19,32 +14,64 @@ export async function POST(request: NextRequest) {
     const { type, data } = body;
 
     console.log('[AI Suggestions] Request:', { type, userId: session.user.id });
+    console.log('[AI Suggestions] API Key exists:', !!process.env.OPENAI_API_KEY);
+    console.log('[AI Suggestions] API Key prefix:', process.env.OPENAI_API_KEY?.substring(0, 10));
 
-    let suggestion = '';
+    // Direct fetch to OpenAI API instead of using SDK
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a professional resume writer specializing in healthcare careers.'
+          },
+          {
+            role: 'user',
+            content: `Generate a brief professional summary for a ${data.profession || 'healthcare professional'} with the following background:\n\nExperience: ${data.workExperience?.map((exp: any) => exp.title).join(', ') || 'Not specified'}\nEducation: ${data.education?.map((edu: any) => edu.degree).join(', ') || 'Not specified'}\nSkills: ${data.skills?.join(', ') || 'Not specified'}\n\nWrite a 2-3 sentence professional summary.`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 200,
+      }),
+    });
 
-    switch (type) {
-      case 'summary':
-        suggestion = await generateProfessionalSummary(data);
-        break;
-      case 'bulletPoints':
-        suggestion = await enhanceBulletPoints(data);
-        break;
-      case 'skills':
-        suggestion = await recommendSkills(data);
-        break;
-      default:
-        return NextResponse.json({ error: 'Invalid suggestion type' }, { status: 400 });
+    console.log('[AI Suggestions] OpenAI status:', openaiResponse.status);
+
+    const responseText = await openaiResponse.text();
+    console.log('[AI Suggestions] OpenAI raw response:', responseText.substring(0, 500));
+
+    if (!openaiResponse.ok) {
+      console.error('[AI Suggestions] OpenAI error response:', responseText);
+      return NextResponse.json(
+        {
+          error: 'OpenAI API error',
+          details: responseText,
+          status: openaiResponse.status
+        },
+        { status: 500 }
+      );
     }
 
-    console.log('[AI Suggestions] Success:', { type, suggestionLength: suggestion.length });
+    const result = JSON.parse(responseText);
+    const suggestion = result.choices?.[0]?.message?.content || '';
+
+    console.log('[AI Suggestions] Success:', {
+      suggestionLength: suggestion.length,
+      finishReason: result.choices?.[0]?.finish_reason
+    });
 
     return NextResponse.json({ suggestion });
   } catch (error: any) {
     console.error('[AI Suggestions] Error:', {
       message: error.message,
       name: error.name,
-      stack: error.stack,
-      response: error.response?.data,
+      stack: error.stack?.substring(0, 500),
     });
 
     return NextResponse.json(
@@ -55,133 +82,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-async function generateProfessionalSummary(data: any): Promise<string> {
-  const { workExperience, education, skills, profession } = data;
-
-  const prompt = `Generate a compelling professional summary for a ${profession || 'healthcare professional'} resume based on the following information:
-
-Work Experience:
-${workExperience?.map((exp: any) => `- ${exp.title} at ${exp.company} (${exp.years || 'current'})`).join('\n') || 'No experience provided'}
-
-Education:
-${education?.map((edu: any) => `- ${edu.degree} from ${edu.institution}`).join('\n') || 'No education provided'}
-
-Skills:
-${skills?.join(', ') || 'No skills provided'}
-
-Write a 3-4 sentence professional summary that:
-1. Highlights key qualifications and experience
-2. Emphasizes relevant skills and achievements
-3. Shows career progression and expertise
-4. Uses strong action words and quantifiable results where possible
-5. Is tailored for the medical/healthcare field
-
-Return only the summary text, no additional formatting or explanations.`;
-
-  console.log('[AI] Calling OpenAI for summary generation...');
-
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a professional resume writer specializing in healthcare and medical careers. Generate compelling, concise professional summaries.'
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    temperature: 0.7,
-    max_tokens: 300,
-  });
-
-  console.log('[AI] OpenAI response:', {
-    choices: completion.choices.length,
-    finishReason: completion.choices[0]?.finish_reason,
-    hasContent: !!completion.choices[0]?.message?.content
-  });
-
-  const result = completion.choices[0]?.message?.content;
-
-  if (!result || result.trim().length === 0) {
-    console.error('[AI] Empty response from OpenAI');
-    throw new Error('OpenAI returned an empty response. Please try again.');
-  }
-
-  console.log('[AI] Summary generated:', { length: result.length });
-  return result;
-}
-
-async function enhanceBulletPoints(data: any): Promise<string> {
-  const { description, title, company } = data;
-
-  const prompt = `Enhance the following job description bullet points for a ${title} position at ${company}:
-
-Current description:
-${description}
-
-Improve these bullet points by:
-1. Starting with strong action verbs
-2. Adding quantifiable metrics where appropriate
-3. Highlighting achievements and impact
-4. Using concise, professional language
-5. Focusing on results and outcomes
-
-Return 3-5 enhanced bullet points, each on a new line starting with a dash (-). Return only the bullet points, no additional text.`;
-
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a professional resume writer. Enhance job descriptions with strong action verbs and quantifiable achievements.'
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    temperature: 0.7,
-    max_tokens: 400,
-  });
-
-  return completion.choices[0]?.message?.content || '';
-}
-
-async function recommendSkills(data: any): Promise<string> {
-  const { profession, currentSkills, experience } = data;
-
-  const prompt = `Based on the following information for a ${profession}:
-
-Current Skills: ${currentSkills?.join(', ') || 'None listed'}
-Experience Level: ${experience || 'Not specified'}
-
-Recommend 5-10 additional relevant skills that would strengthen this resume. Focus on:
-1. Technical skills specific to ${profession}
-2. Soft skills valued in healthcare
-3. Certifications or specialized knowledge
-4. Industry-standard tools and technologies
-
-Return only a comma-separated list of skills, no explanations.`;
-
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a career advisor specializing in healthcare professions. Recommend relevant skills for resumes.'
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    temperature: 0.7,
-    max_tokens: 200,
-  });
-
-  return completion.choices[0]?.message?.content || '';
 }
