@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { DataReview } from './DataReview';
 import { ResumePreview } from './ResumePreview';
+import { AIAssistant } from './AIAssistant';
 
 interface ResumeEditorProps {
     resume: any;
@@ -116,7 +117,27 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="summary">Summary</Label>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <Label htmlFor="summary">Summary</Label>
+                                            <AIAssistant
+                                                type="summary"
+                                                data={{
+                                                    workExperience: userData.workExperience.map((exp: any) => ({
+                                                        title: exp.title,
+                                                        company: exp.company,
+                                                        years: exp.isCurrent ? 'current' : `${new Date(exp.endDate).getFullYear() - new Date(exp.startDate).getFullYear()} years`
+                                                    })),
+                                                    education: userData.education.map((edu: any) => ({
+                                                        degree: edu.degree,
+                                                        institution: edu.institution
+                                                    })),
+                                                    skills: userData.skills.map((s: any) => s.name),
+                                                    profession: resume.professionSlug || 'healthcare professional'
+                                                }}
+                                                onApply={(suggestion) => setFormData({ ...formData, customSummary: suggestion })}
+                                                buttonText="Generate with AI"
+                                            />
+                                        </div>
                                         <Textarea
                                             id="summary"
                                             rows={6}
