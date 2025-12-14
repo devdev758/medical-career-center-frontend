@@ -31,7 +31,7 @@ export async function generateResumePDF(userId: string, resumeId: string): Promi
     const template = React.createElement(ProfessionalTemplate, {
         userData,
         resumeData: resume,
-    });
+    }) as React.ReactElement;
 
     const pdfBuffer = await renderToBuffer(template);
 
