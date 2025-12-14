@@ -89,11 +89,33 @@ export function ResumeCard({ resume }: ResumeCardProps) {
         }
     };
 
-    const handleDownload = () => {
-        if (resume.pdfUrl) {
-            window.open(resume.pdfUrl, '_blank');
-        } else {
-            alert('PDF not generated yet. Please edit and save the resume first.');
+    const handleDownload = async () => {
+        try {
+            const response = await fetch(`/api/resumes/${resume.id}/pdf`);
+
+            if (!response.ok) {
+                alert('Failed to generate PDF');
+                return;
+            }
+
+            // Get the PDF blob
+            const blob = await response.blob();
+
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${resume.name.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            // Refresh to update download count
+            router.refresh();
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            alert('Failed to download PDF');
         }
     };
 
@@ -132,7 +154,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
                                 <Eye className="w-4 h-4 mr-2" />
                                 Preview
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleDownload} disabled={!resume.pdfUrl}>
+                            <DropdownMenuItem onClick={handleDownload}>
                                 <Download className="w-4 h-4 mr-2" />
                                 Download PDF
                             </DropdownMenuItem>
