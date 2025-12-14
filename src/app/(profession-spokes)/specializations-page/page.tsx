@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { specializationsContent: true }
+    });
+
     return {
         title: `${careerTitle} Specializations 2025: Career Paths & Opportunities`,
         description: `Explore ${careerTitle.toLowerCase()} specialization options, requirements, salary potential, and career paths. Find the right specialty for your career goals.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function SpecializationsPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { specializationsContent: true }
+    });
 
     const specializations = [
         { name: "Critical Care", description: "Work in intensive care units with critically ill patients", demand: "High", salary: "+15-20%" },
@@ -74,6 +85,10 @@ export default async function SpecializationsPage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="specializations" />
 
+            {careerGuide?.specializationsContent ? (
+                <MarkdownContent content={careerGuide.specializationsContent} />
+            ) : (
+                <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 my-12">
                 {specializations.map((spec, idx) => (
                     <Card key={idx}>
@@ -187,6 +202,10 @@ export default async function SpecializationsPage({ searchParams }: PageProps) {
             </div>
 
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions 
                 profession={profession}

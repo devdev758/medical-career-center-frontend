@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { skillsContent: true }
+    });
+
     return {
         title: `${careerTitle} Skills Guide 2025: Essential & Technical Skills`,
         description: `Essential skills for ${careerTitle.toLowerCase()}s. Technical skills, soft skills, and how to develop them for career success.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function SkillsPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { skillsContent: true }
+    });
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
@@ -65,6 +76,10 @@ export default async function SkillsPage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="skills" />
 
+            {careerGuide?.skillsContent ? (
+                <MarkdownContent content={careerGuide.skillsContent} />
+            ) : (
+                <>
             <div className="grid md:grid-cols-2 gap-8 my-12">
                 <Card>
                     <CardHeader>
@@ -227,6 +242,10 @@ export default async function SkillsPage({ searchParams }: PageProps) {
             </div>
 
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions 
                 profession={profession}

@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { certificationContent: true }
+    });
+
     return {
         title: `${careerTitle} Certification & Licensing 2025: Requirements by State`,
         description: `${careerTitle} certification and licensing requirements. State-by-state guide, exam prep, renewal process, and continuing education requirements.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function CertificationPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { certificationContent: true }
+    });
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
@@ -65,6 +76,10 @@ export default async function CertificationPage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="certification" />
 
+            {careerGuide?.certificationContent ? (
+                <MarkdownContent content={careerGuide.certificationContent} />
+            ) : (
+                <>
             <div className="grid md:grid-cols-2 gap-8 my-12">
                 <Card>
                     <CardHeader>
@@ -217,6 +232,10 @@ export default async function CertificationPage({ searchParams }: PageProps) {
                 </div>
             </div>
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions
                 profession={profession}

@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { workLifeBalanceContent: true }
+    });
+
     return {
         title: `${careerTitle} Work-Life Balance 2025: Schedules, Stress & Lifestyle`,
         description: `Real insights into ${careerTitle.toLowerCase()} work-life balance. Typical schedules, stress levels, burnout prevention, and lifestyle considerations.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function WorkLifeBalancePage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { workLifeBalanceContent: true }
+    });
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
@@ -65,6 +76,10 @@ export default async function WorkLifeBalancePage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="work-life" />
 
+            {careerGuide?.workLifeBalanceContent ? (
+                <MarkdownContent content={careerGuide.workLifeBalanceContent} />
+            ) : (
+                <>
             <div className="grid md:grid-cols-2 gap-8 my-12">
                 <Card>
                     <CardHeader>
@@ -250,6 +265,10 @@ export default async function WorkLifeBalancePage({ searchParams }: PageProps) {
             </div>
 
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions 
                 profession={profession}

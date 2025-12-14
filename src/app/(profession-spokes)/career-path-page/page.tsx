@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { careerPathContent: true }
+    });
+
     return {
         title: `${careerTitle} Career Path 2025: Progression & Advancement Opportunities`,
         description: `${careerTitle} career progression from entry-level to senior positions. Timeline, salary growth, and advancement opportunities at each stage.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function CareerPathPage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { careerPathContent: true }
+    });
 
     const careerStages = [
         {
@@ -116,6 +127,10 @@ export default async function CareerPathPage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="career-path" />
 
+            {careerGuide?.careerPathContent ? (
+                <MarkdownContent content={careerGuide.careerPathContent} />
+            ) : (
+                <>
             <div className="space-y-6 my-12">
                 {careerStages.map((stage, idx) => (
                     <Card key={idx}>
@@ -254,6 +269,10 @@ export default async function CareerPathPage({ searchParams }: PageProps) {
             </div>
 
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions 
                 profession={profession}

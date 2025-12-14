@@ -10,6 +10,7 @@ import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb
 import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
 import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
 import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
 
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { resumeContent: true }
+    });
+
     return {
         title: `${careerTitle} Resume Examples & Templates 2025: Get Hired Faster`,
         description: `Professional ${careerTitle.toLowerCase()} resume examples and templates. Keywords to include, common mistakes to avoid, and ATS optimization tips.`,
@@ -39,6 +45,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function ResumePage({ searchParams }: PageProps) {
     const profession = searchParams.profession || 'registered-nurses';
     const careerTitle = formatCareerTitle(profession);
+
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: profession },
+        select: { resumeContent: true }
+    });
 
     const resumeKeywords = [
         "Patient care", "Clinical skills", "Medical terminology", "Healthcare protocols",
@@ -71,6 +82,10 @@ export default async function ResumePage({ searchParams }: PageProps) {
 
             <SpokeNavigation profession={profession} currentSpoke="resume" />
 
+            {careerGuide?.resumeContent ? (
+                <MarkdownContent content={careerGuide.resumeContent} />
+            ) : (
+                <>
             <div className="grid md:grid-cols-3 gap-6 my-12">
                 <Card>
                     <CardHeader>
@@ -262,6 +277,10 @@ export default async function ResumePage({ searchParams }: PageProps) {
             </div>
 
 
+                </>
+            )}
+
+            
             {/* Related Professions */}
             <RelatedProfessions 
                 profession={profession}
