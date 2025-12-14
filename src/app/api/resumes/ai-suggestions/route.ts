@@ -59,12 +59,27 @@ export async function POST(request: NextRequest) {
     }
 
     const result = JSON.parse(responseText);
-    const suggestion = result.choices?.[0]?.message?.content || '';
+    const suggestion = result.choices?.[0]?.message?.content?.trim() || '';
+    const finishReason = result.choices?.[0]?.finish_reason;
 
     console.log('[AI Suggestions] Success:', {
       suggestionLength: suggestion.length,
-      finishReason: result.choices?.[0]?.finish_reason
+      finishReason,
+      hasContent: !!suggestion
     });
+
+    // If OpenAI returns empty content, provide a helpful fallback
+    if (!suggestion || suggestion.length === 0) {
+      console.warn('[AI Suggestions] Empty response from OpenAI, using fallback');
+
+      // Generate a basic fallback summary
+      const fallbackSummary = `Experienced ${data.profession || 'healthcare professional'} with expertise in ${data.skills?.slice(0, 3).join(', ') || 'patient care'}. ${data.workExperience?.[0]?.title ? `Currently working as ${data.workExperience[0].title}` : 'Dedicated to providing excellent service'} with a strong educational background in ${data.education?.[0]?.degree || 'healthcare'}.`;
+
+      return NextResponse.json({
+        suggestion: fallbackSummary,
+        isFallback: true
+      });
+    }
 
     return NextResponse.json({ suggestion });
   } catch (error: any) {
