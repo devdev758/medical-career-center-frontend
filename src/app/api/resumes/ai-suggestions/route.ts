@@ -80,6 +80,8 @@ Write a 3-4 sentence professional summary that:
 
 Return only the summary text, no additional formatting or explanations.`;
 
+  console.log('[AI] Calling OpenAI for summary generation...');
+
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
@@ -96,7 +98,19 @@ Return only the summary text, no additional formatting or explanations.`;
     max_tokens: 300,
   });
 
-  const result = completion.choices[0]?.message?.content || '';
+  console.log('[AI] OpenAI response:', {
+    choices: completion.choices.length,
+    finishReason: completion.choices[0]?.finish_reason,
+    hasContent: !!completion.choices[0]?.message?.content
+  });
+
+  const result = completion.choices[0]?.message?.content;
+
+  if (!result || result.trim().length === 0) {
+    console.error('[AI] Empty response from OpenAI');
+    throw new Error('OpenAI returned an empty response. Please try again.');
+  }
+
   console.log('[AI] Summary generated:', { length: result.length });
   return result;
 }
