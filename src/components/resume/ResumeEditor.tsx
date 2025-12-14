@@ -298,4 +298,3 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
         </div>
     );
 }
-```
