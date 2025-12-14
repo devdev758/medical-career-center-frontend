@@ -14,9 +14,10 @@ interface ResumePreviewProps {
         selectedCerts: string[];
         customSkills: string[];
     };
+    enhancedData?: any; // AI-enhanced descriptions
 }
 
-export function ResumePreview({ resume, userData, customData }: ResumePreviewProps) {
+export function ResumePreview({ resume, userData, customData, enhancedData }: ResumePreviewProps) {
     const selectedExperiences = userData.workExperience.filter((exp: any) =>
         customData.selectedExp.includes(exp.id)
     );
@@ -32,6 +33,19 @@ export function ResumePreview({ resume, userData, customData }: ResumePreviewPro
     const selectedCerts = userData.certifications.filter((cert: any) =>
         customData.selectedCerts.includes(cert.id)
     );
+
+    // Helper to get AI-enhanced description
+    const getEnhancedExp = (expId: string) => {
+        return enhancedData?.workExperience?.find((e: any) => e.id === expId);
+    };
+
+    const getEnhancedEdu = (eduId: string) => {
+        return enhancedData?.education?.find((e: any) => e.id === eduId);
+    };
+
+    const getEnhancedCert = (certId: string) => {
+        return enhancedData?.certifications?.find((c: any) => c.id === certId);
+    };
 
     return (
         <Card className="shadow-lg">
@@ -60,19 +74,28 @@ export function ResumePreview({ resume, userData, customData }: ResumePreviewPro
                     <div>
                         <h3 className="font-bold text-lg mb-3 border-b pb-1">Work Experience</h3>
                         <div className="space-y-4">
-                            {selectedExperiences.map((exp: any) => (
-                                <div key={exp.id}>
-                                    <div className="font-semibold">{exp.title}</div>
-                                    <div className="text-sm text-muted-foreground">{exp.company}</div>
-                                    <div className="text-xs text-muted-foreground mb-2">
-                                        {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} -{' '}
-                                        {exp.isCurrent ? 'Present' : new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            {selectedExperiences.map((exp: any) => {
+                                const enhanced = getEnhancedExp(exp.id);
+                                return (
+                                    <div key={exp.id}>
+                                        <div className="font-semibold">{exp.title}</div>
+                                        <div className="text-sm text-muted-foreground">{exp.company}</div>
+                                        <div className="text-xs text-muted-foreground mb-2">
+                                            {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} -{' '}
+                                            {exp.isCurrent ? 'Present' : new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                        </div>
+                                        {/* Show AI-enhanced description if available, otherwise show original */}
+                                        {enhanced?.aiDescription ? (
+                                            <div className="text-sm text-muted-foreground whitespace-pre-wrap bg-blue-50 dark:bg-blue-950 p-2 rounded border border-blue-200 dark:border-blue-800">
+                                                <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">✨ AI-Enhanced</div>
+                                                {enhanced.aiDescription}
+                                            </div>
+                                        ) : exp.description ? (
+                                            <p className="text-sm text-muted-foreground">{exp.description}</p>
+                                        ) : null}
                                     </div>
-                                    {exp.description && (
-                                        <p className="text-sm text-muted-foreground">{exp.description}</p>
-                                    )}
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -82,17 +105,26 @@ export function ResumePreview({ resume, userData, customData }: ResumePreviewPro
                     <div>
                         <h3 className="font-bold text-lg mb-3 border-b pb-1">Education</h3>
                         <div className="space-y-3">
-                            {selectedEducation.map((edu: any) => (
-                                <div key={edu.id}>
-                                    <div className="font-semibold">{edu.degree}</div>
-                                    <div className="text-sm text-muted-foreground">{edu.institution}</div>
-                                    <div className="text-xs text-muted-foreground">
-                                        {edu.fieldOfStudy && `${edu.fieldOfStudy} • `}
-                                        {new Date(edu.startDate).getFullYear()} -{' '}
-                                        {edu.isCurrent ? 'Present' : new Date(edu.endDate).getFullYear()}
+                            {selectedEducation.map((edu: any) => {
+                                const enhanced = getEnhancedEdu(edu.id);
+                                return (
+                                    <div key={edu.id}>
+                                        <div className="font-semibold">{edu.degree}</div>
+                                        <div className="text-sm text-muted-foreground">{edu.institution}</div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {edu.fieldOfStudy && `${edu.fieldOfStudy} • `}
+                                            {new Date(edu.startDate).getFullYear()} -{' '}
+                                            {edu.isCurrent ? 'Present' : new Date(edu.endDate).getFullYear()}
+                                        </div>
+                                        {enhanced?.aiDescription && (
+                                            <div className="text-sm text-muted-foreground mt-1 bg-blue-50 dark:bg-blue-950 p-2 rounded border border-blue-200 dark:border-blue-800">
+                                                <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">✨ AI-Enhanced</div>
+                                                {enhanced.aiDescription}
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -116,14 +148,23 @@ export function ResumePreview({ resume, userData, customData }: ResumePreviewPro
                     <div>
                         <h3 className="font-bold text-lg mb-3 border-b pb-1">Certifications</h3>
                         <div className="space-y-2">
-                            {selectedCerts.map((cert: any) => (
-                                <div key={cert.id} className="text-sm">
-                                    <div className="font-semibold">{cert.name}</div>
-                                    <div className="text-muted-foreground">
-                                        {cert.issuingOrg} • {new Date(cert.issueDate).getFullYear()}
+                            {selectedCerts.map((cert: any) => {
+                                const enhanced = getEnhancedCert(cert.id);
+                                return (
+                                    <div key={cert.id} className="text-sm">
+                                        <div className="font-semibold">{cert.name}</div>
+                                        <div className="text-muted-foreground">
+                                            {cert.issuingOrg} • {new Date(cert.issueDate).getFullYear()}
+                                        </div>
+                                        {enhanced?.aiDescription && (
+                                            <div className="text-sm text-muted-foreground mt-1 bg-blue-50 dark:bg-blue-950 p-2 rounded border border-blue-200 dark:border-blue-800">
+                                                <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">✨ AI-Enhanced</div>
+                                                {enhanced.aiDescription}
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

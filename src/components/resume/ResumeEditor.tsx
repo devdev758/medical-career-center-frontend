@@ -283,15 +283,19 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
 
                 {/* Preview */}
                 {showPreview && (
-                    <div className="sticky top-4 h-fit">
-                        <ResumePreview
-                            resume={resume}
-                            userData={userData}
-                            customData={formData}
-                        />
+                    <div className="lg:col-span-1">
+                        <div className="sticky top-6">
+                            <ResumePreview
+                                resume={resume}
+                                userData={userData}
+                                customData={formData}
+                                enhancedData={enhancedData}
+                            />
+                        </div>
                     </div>
                 )}
             </div>
         </div>
     );
 }
+```
