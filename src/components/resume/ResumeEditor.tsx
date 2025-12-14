@@ -12,6 +12,7 @@ import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { DataReview } from './DataReview';
 import { ResumePreview } from './ResumePreview';
 import { AIAssistant } from './AIAssistant';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResumeEditorProps {
     resume: any;
@@ -20,10 +21,11 @@ interface ResumeEditorProps {
 
 export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
     const router = useRouter();
+    const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [isEnhancing, setIsEnhancing] = useState(false);
-    const [enhancedData, setEnhancedData] = useState<any>(null);
+    const [enhancedData, setEnhancedData] = useState<any>(resume.enhancedContent || null);
 
     const [formData, setFormData] = useState({
         name: resume.name,
@@ -60,13 +62,24 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
             if (response.ok) {
                 const enhanced = await response.json();
                 setEnhancedData(enhanced);
-                alert('Content enhanced with AI! Review the descriptions in the preview.');
+                toast({
+                    title: "✨ Content Enhanced!",
+                    description: "AI has generated professional descriptions. Review them in the preview.",
+                });
             } else {
-                alert('Failed to enhance content');
+                toast({
+                    title: "Enhancement Failed",
+                    description: "Failed to enhance content. Please try again.",
+                    variant: "destructive",
+                });
             }
         } catch (error) {
             console.error('Error enhancing content:', error);
-            alert('Failed to enhance content');
+            toast({
+                title: "Enhancement Failed",
+                description: "An error occurred. Please try again.",
+                variant: "destructive",
+            });
         } finally {
             setIsEnhancing(false);
         }

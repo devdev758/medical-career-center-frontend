@@ -99,6 +99,19 @@ export function ProfessionalTemplate({ userData, resumeData }: ResumePDFProps) {
         resumeData.selectedCerts?.includes(cert.id)
     );
 
+    // Helper to get AI-enhanced description
+    const getEnhancedExp = (expId: string) => {
+        return resumeData.enhancedContent?.workExperience?.find((e: any) => e.id === expId);
+    };
+
+    const getEnhancedEdu = (eduId: string) => {
+        return resumeData.enhancedContent?.education?.find((e: any) => e.id === eduId);
+    };
+
+    const getEnhancedCert = (certId: string) => {
+        return resumeData.enhancedContent?.certifications?.find((c: any) => c.id === certId);
+    };
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -128,19 +141,24 @@ export function ProfessionalTemplate({ userData, resumeData }: ResumePDFProps) {
                 {selectedExperiences.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Work Experience</Text>
-                        {selectedExperiences.map((exp: any) => (
-                            <View key={exp.id} style={styles.experienceItem}>
-                                <Text style={styles.jobTitle}>{exp.title}</Text>
-                                <Text style={styles.company}>{exp.company}</Text>
-                                <Text style={styles.date}>
-                                    {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} -{' '}
-                                    {exp.isCurrent ? 'Present' : new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                </Text>
-                                {exp.description && (
-                                    <Text style={styles.description}>{exp.description}</Text>
-                                )}
-                            </View>
-                        ))}
+                        {selectedExperiences.map((exp: any) => {
+                            const enhanced = getEnhancedExp(exp.id);
+                            const description = enhanced?.aiDescription || exp.description;
+
+                            return (
+                                <View key={exp.id} style={styles.experienceItem}>
+                                    <Text style={styles.jobTitle}>{exp.title}</Text>
+                                    <Text style={styles.company}>{exp.company}</Text>
+                                    <Text style={styles.date}>
+                                        {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} -{' '}
+                                        {exp.isCurrent ? 'Present' : new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                    </Text>
+                                    {description && (
+                                        <Text style={styles.description}>{description}</Text>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
                 )}
 
@@ -148,17 +166,25 @@ export function ProfessionalTemplate({ userData, resumeData }: ResumePDFProps) {
                 {selectedEducation.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Education</Text>
-                        {selectedEducation.map((edu: any) => (
-                            <View key={edu.id} style={styles.experienceItem}>
-                                <Text style={styles.jobTitle}>{edu.degree}</Text>
-                                <Text style={styles.company}>{edu.institution}</Text>
-                                <Text style={styles.date}>
-                                    {edu.fieldOfStudy && `${edu.fieldOfStudy} • `}
-                                    {new Date(edu.startDate).getFullYear()} -{' '}
-                                    {edu.isCurrent ? 'Present' : new Date(edu.endDate).getFullYear()}
-                                </Text>
-                            </View>
-                        ))}
+                        {selectedEducation.map((edu: any) => {
+                            const enhanced = getEnhancedEdu(edu.id);
+                            const description = enhanced?.aiDescription;
+
+                            return (
+                                <View key={edu.id} style={styles.experienceItem}>
+                                    <Text style={styles.jobTitle}>{edu.degree}</Text>
+                                    <Text style={styles.company}>{edu.institution}</Text>
+                                    <Text style={styles.date}>
+                                        {edu.fieldOfStudy && `${edu.fieldOfStudy} • `}
+                                        {new Date(edu.startDate).getFullYear()} -{' '}
+                                        {edu.isCurrent ? 'Present' : new Date(edu.endDate).getFullYear()}
+                                    </Text>
+                                    {description && (
+                                        <Text style={styles.description}>{description}</Text>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
                 )}
 
@@ -180,14 +206,22 @@ export function ProfessionalTemplate({ userData, resumeData }: ResumePDFProps) {
                 {selectedCerts.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Certifications</Text>
-                        {selectedCerts.map((cert: any) => (
-                            <View key={cert.id} style={styles.experienceItem}>
-                                <Text style={styles.jobTitle}>{cert.name}</Text>
-                                <Text style={styles.company}>
-                                    {cert.issuingOrg} • {new Date(cert.issueDate).getFullYear()}
-                                </Text>
-                            </View>
-                        ))}
+                        {selectedCerts.map((cert: any) => {
+                            const enhanced = getEnhancedCert(cert.id);
+                            const description = enhanced?.aiDescription;
+
+                            return (
+                                <View key={cert.id} style={styles.experienceItem}>
+                                    <Text style={styles.jobTitle}>{cert.name}</Text>
+                                    <Text style={styles.company}>
+                                        {cert.issuingOrg} • {new Date(cert.issueDate).getFullYear()}
+                                    </Text>
+                                    {description && (
+                                        <Text style={styles.description}>{description}</Text>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
                 )}
             </Page>

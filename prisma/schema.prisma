@@ -445,6 +445,7 @@ model Resume {
   selectedExp   Json? // Which work experiences to include
   selectedEdu   Json? // Which education entries to include
   selectedCerts Json? // Which certifications to include
+  enhancedContent Json? // AI-generated descriptions for all sections
 
   // Generated Files
   pdfUrl         String? // S3/storage URL for generated PDF
