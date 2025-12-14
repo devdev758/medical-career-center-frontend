@@ -14,27 +14,28 @@ enum UserRole {
 }
 
 model User {
-  id              String           @id @default(cuid())
-  name            String?
-  email           String?          @unique
-  emailVerified   DateTime?
-  image           String?
-  password        String?
-  role            UserRole         @default(JOB_SEEKER)
-  companyId       String?
-  company         Company?         @relation(fields: [companyId], references: [id])
-  accounts        Account[]
-  sessions        Session[]
-  applications    Application[]
-  savedJobs       SavedJob[]
-  profile         Profile?
-  workExperience  WorkExperience[]
-  education       Education[]
-  skills          Skill[]
-  certifications  Certification[]
-  licenses        License[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+  role           UserRole         @default(JOB_SEEKER)
+  companyId      String?
+  company        Company?         @relation(fields: [companyId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  applications   Application[]
+  savedJobs      SavedJob[]
+  profile        Profile?
+  workExperience WorkExperience[]
+  education      Education[]
+  skills         Skill[]
+  certifications Certification[]
+  licenses       License[]
+  resumes        Resume[] // NEW: Resume Builder
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model Account {
@@ -91,44 +92,44 @@ model Company {
 }
 
 model Category {
-  id   String @id @default(cuid())
-  name String @unique
-  slug String @unique
+  id   String  @id @default(cuid())
+  name String  @unique
+  slug String  @unique
   icon String?
   jobs Job[]
 }
 
 model Job {
-  id              String        @id @default(cuid())
+  id              String  @id @default(cuid())
   title           String
-  slug            String        @unique
-  description     String        @db.Text
+  slug            String  @unique
+  description     String  @db.Text
   location        String?
-  type            String        @default("FULL_TIME")
+  type            String  @default("FULL_TIME")
   salary          String?
-  remote          Boolean       @default(false)
-  experienceLevel String        @default("MID")
-  
+  remote          Boolean @default(false)
+  experienceLevel String  @default("MID")
+
   // Internal vs External
-  source          String        @default("INTERNAL") // INTERNAL, INDEED, ZIPRECRUITER
-  externalId      String?
-  externalUrl     String?
-  
+  source      String  @default("INTERNAL") // INTERNAL, INDEED, ZIPRECRUITER
+  externalId  String?
+  externalUrl String?
+
   // Company Info (Optional for External)
-  companyId       String?
-  companyName     String?       // For external jobs
-  companyLogo     String?       // For external jobs
-  
+  companyId   String?
+  companyName String? // For external jobs
+  companyLogo String? // For external jobs
+
   // pSEO Linking
-  careerKeyword   String?
-  
-  categoryId      String?
-  company         Company?      @relation(fields: [companyId], references: [id])
-  category        Category?     @relation(fields: [categoryId], references: [id])
-  applications    Application[]
-  savedBy         SavedJob[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  careerKeyword String?
+
+  categoryId   String?
+  company      Company?      @relation(fields: [companyId], references: [id])
+  category     Category?     @relation(fields: [categoryId], references: [id])
+  applications Application[]
+  savedBy      SavedJob[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@unique([source, externalId])
   @@index([careerKeyword])
@@ -152,7 +153,9 @@ model Application {
   userId      String
   status      String   @default("PENDING")
   phone       String?
-  resumeUrl   String?
+  resumeUrl   String? // Keep for backward compatibility
+  resumeId    String? // NEW: Link to Resume model
+  resume      Resume?  @relation(fields: [resumeId], references: [id]) // NEW
   coverLetter String?  @db.Text
   notes       String?  @db.Text
   job         Job      @relation(fields: [jobId], references: [id])
@@ -199,7 +202,7 @@ model Profile {
   // Job Preferences
   jobTypes          String[]
   desiredSalary     String?
-  willingToRelocate Boolean  @default(false)
+  willingToRelocate Boolean   @default(false)
   availableFrom     DateTime?
 
   // Metadata
@@ -261,7 +264,7 @@ model License {
   id            String    @id @default(cuid())
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  licenseType   String    // e.g., "RN", "LPN", "MD", "NP"
+  licenseType   String // e.g., "RN", "LPN", "MD", "NP"
   licenseNumber String
   state         String
   issueDate     DateTime
@@ -292,15 +295,15 @@ model Certification {
 // Programmatic SEO Models
 
 model Location {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   city      String
-  state     String   // e.g., "CA"
-  stateName String   // e.g., "California"
+  state     String // e.g., "CA"
+  stateName String // e.g., "California"
   zip       String?
-  slug      String   // e.g., "los-angeles-ca"
-  
+  slug      String // e.g., "los-angeles-ca"
+
   // Relations
-  salaries  SalaryData[]
+  salaries SalaryData[]
   // jobs      Job[]    // Future proofing for Phase 8
 
   @@unique([city, state])
@@ -309,119 +312,156 @@ model Location {
 }
 
 model SalaryData {
-  id              String   @id @default(cuid())
-  
-  careerKeyword   String   // e.g., "ultrasound-technician"
-  
-  locationId      String?
-  location        Location? @relation(fields: [locationId], references: [id])
-  
+  id String @id @default(cuid())
+
+  careerKeyword String // e.g., "ultrasound-technician"
+
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
+
   // BLS Data Points
-  hourly10th      Float?
-  hourly25th      Float?
-  hourlyMedian    Float?
-  hourly75th      Float?
-  hourly90th      Float?
-  
-  annual10th      Float?
-  annual25th      Float?
-  annualMedian    Float?
-  annual75th      Float?
-  annual90th      Float?
-  
-  employmentCount Int?     // Number of jobs in this area
-  
-  year            Int      // Data year (e.g., 2024)
-  source          String   // "BLS"
-  
-  updatedAt       DateTime @updatedAt
+  hourly10th   Float?
+  hourly25th   Float?
+  hourlyMedian Float?
+  hourly75th   Float?
+  hourly90th   Float?
+
+  annual10th   Float?
+  annual25th   Float?
+  annualMedian Float?
+  annual75th   Float?
+  annual90th   Float?
+
+  employmentCount Int? // Number of jobs in this area
+
+  year   Int // Data year (e.g., 2024)
+  source String // "BLS"
+
+  updatedAt DateTime @updatedAt
 
   @@unique([careerKeyword, locationId, year])
   @@index([careerKeyword])
 }
 
 model CareerGuide {
-  id                String   @id @default(cuid())
-  professionSlug    String   @unique
-  professionName    String
-  
+  id             String @id @default(cuid())
+  professionSlug String @unique
+  professionName String
+
   // Overview Section
-  overview          String   @db.Text
-  keyStats          Json     // { jobGrowth, medianSalary, jobOpenings, totalEmployed }
-  
+  overview String @db.Text
+  keyStats Json // { jobGrowth, medianSalary, jobOpenings, totalEmployed }
+
   // What Does [Profession] Do? Section
-  rolesDescription  String   @db.Text
-  dailyTasks        Json     // Array of strings: daily responsibilities
-  specializations   Json     // Array of objects: { name, description }
-  workEnvironments  Json     // Array of strings: hospitals, clinics, etc.
-  
+  rolesDescription String @db.Text
+  dailyTasks       Json // Array of strings: daily responsibilities
+  specializations  Json // Array of objects: { name, description }
+  workEnvironments Json // Array of strings: hospitals, clinics, etc.
+
   // Salary Information Section
-  salaryOverview    String   @db.Text
-  nationalAverage   String?
-  topPayingStates   Json     // Array of objects: { state, salary }
-  entryLevelRange   String?
-  experiencedRange  String?
-  benefits          Json     // Array of strings: common benefits
-  
+  salaryOverview   String  @db.Text
+  nationalAverage  String?
+  topPayingStates  Json // Array of objects: { state, salary }
+  entryLevelRange  String?
+  experiencedRange String?
+  benefits         Json // Array of strings: common benefits
+
   // Education & Certification Section
-  educationPath     String   @db.Text
-  requiredDegrees   Json     // Array of objects: { degree, description }
-  certifications    Json     // Array of objects: { name, issuer, description }
-  timeline          String?  // e.g., "2-4 years"
+  educationPath      String  @db.Text
+  requiredDegrees    Json // Array of objects: { degree, description }
+  certifications     Json // Array of objects: { name, issuer, description }
+  timeline           String? // e.g., "2-4 years"
   accreditedPrograms String? @db.Text
-  
+
   // Skills Section
-  technicalSkills   Json     // Array of strings
-  softSkills        Json     // Array of strings
-  technologies      Json     // Array of strings: tools, software, equipment
-  
+  technicalSkills Json // Array of strings
+  softSkills      Json // Array of strings
+  technologies    Json // Array of strings: tools, software, equipment
+
   // Job Outlook Section
-  growthRate        String?  // e.g., "15% (Much faster than average)"
-  projections       String   @db.Text
+  growthRate              String? // e.g., "15% (Much faster than average)"
+  projections             String  @db.Text
   emergingSpecializations Json // Array of strings
-  careerLadder      Json     // Array of objects: { level, title, description }
-  
+  careerLadder            Json // Array of objects: { level, title, description }
+
   // Schools & Programs Section
-  schoolsOverview   String   @db.Text
-  topSchools        Json     // Array of objects: { name, location, programType }
-  programTypes      Json     // Array of objects: { type, description }
-  financialAid      String?  @db.Text
-  
+  schoolsOverview String  @db.Text
+  topSchools      Json // Array of objects: { name, location, programType }
+  programTypes    Json // Array of objects: { type, description }
+  financialAid    String? @db.Text
+
   // Licensing by State Section
-  licensingOverview String   @db.Text
-  stateRequirements Json     // Object: { [state]: { required, details } }
-  examInfo          Json     // Array of objects: { examName, description }
-  renewalProcess    String?  @db.Text
-  
+  licensingOverview String  @db.Text
+  stateRequirements Json // Object: { [state]: { required, details } }
+  examInfo          Json // Array of objects: { examName, description }
+  renewalProcess    String? @db.Text
+
   // Current Job Opportunities Section
-  jobMarketOverview String   @db.Text
-  featuredEmployers Json     // Array of strings: employer names
-  
+  jobMarketOverview String @db.Text
+  featuredEmployers Json // Array of strings: employer names
+
   // Interview & Resume Tips Section
-  interviewTips     String   @db.Text
-  resumeKeywords    Json     // Array of strings
-  portfolioTips     String?  @db.Text
-  
+  interviewTips  String  @db.Text
+  resumeKeywords Json // Array of strings
+  portfolioTips  String? @db.Text
+
   // AI-Generated Content Fields
-  fullContent          String? @db.Text  // Career Guide
-  interviewContent     String? @db.Text  // Interview Prep
-  certificationContent String? @db.Text  // Certification
-  skillsContent        String? @db.Text  // Skills
-  specializationsContent String? @db.Text  // Specializations
-  careerPathContent    String? @db.Text  // Career Path
-  workLifeBalanceContent String? @db.Text  // Work-Life Balance
-  resumeContent        String? @db.Text  // Resume
-  
+  fullContent            String? @db.Text // Career Guide
+  interviewContent       String? @db.Text // Interview Prep
+  certificationContent   String? @db.Text // Certification
+  skillsContent          String? @db.Text // Skills
+  specializationsContent String? @db.Text // Specializations
+  careerPathContent      String? @db.Text // Career Path
+  workLifeBalanceContent String? @db.Text // Work-Life Balance
+  resumeContent          String? @db.Text // Resume
+
   // SEO & Meta
-  metaTitle         String?
-  metaDescription   String?
-  slug              String?  // For /how-to-become-[profession]
-  
+  metaTitle       String?
+  metaDescription String?
+  slug            String? // For /how-to-become-[profession]
+
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  published         Boolean  @default(false)
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  published Boolean  @default(false)
+
   @@index([professionSlug])
   @@index([published])
+}
+
+model Resume {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  name           String // e.g., "Software Engineer Resume", "Nursing Resume"
+  professionSlug String? // Link to profession for AI suggestions
+  templateId     String  @default("professional")
+
+  // Content Customization
+  customSummary String? @db.Text // Override profile bio
+  customSkills  Json? // Reorder/filter skills for this resume
+  selectedExp   Json? // Which work experiences to include
+  selectedEdu   Json? // Which education entries to include
+  selectedCerts Json? // Which certifications to include
+
+  // Generated Files
+  pdfUrl         String? // S3/storage URL for generated PDF
+  pdfGeneratedAt DateTime?
+
+  // Settings
+  isPrimary Boolean @default(false) // Default resume for applications
+  isPublic  Boolean @default(false) // Shareable link
+
+  // Usage Tracking
+  applications  Application[]
+  viewCount     Int           @default(0)
+  downloadCount Int           @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([professionSlug])
 }

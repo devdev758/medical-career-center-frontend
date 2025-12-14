@@ -1,0 +1,37 @@
+
+model Resume {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadata
+  name           String   // e.g., "Software Engineer Resume", "Nursing Resume"
+  professionSlug String?  // Link to profession for AI suggestions
+  templateId     String   @default("professional")
+  
+  // Content Customization
+  customSummary  String?  @db.Text  // Override profile bio
+  customSkills   Json?    // Reorder/filter skills for this resume
+  selectedExp    Json?    // Which work experiences to include
+  selectedEdu    Json?    // Which education entries to include
+  selectedCerts  Json?    // Which certifications to include
+  
+  // Generated Files
+  pdfUrl         String?  // S3/storage URL for generated PDF
+  pdfGeneratedAt DateTime?
+  
+  // Settings
+  isPrimary      Boolean  @default(false)  // Default resume for applications
+  isPublic       Boolean  @default(false)  // Shareable link
+  
+  // Usage Tracking
+  applications   Application[]
+  viewCount      Int      @default(0)
+  downloadCount  Int      @default(0)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([professionSlug])
+}
