@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, data } = body;
 
+    console.log('[AI Suggestions] Request:', { type, userId: session.user.id });
+
     let suggestion = '';
 
     switch (type) {
@@ -34,11 +36,22 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid suggestion type' }, { status: 400 });
     }
 
+    console.log('[AI Suggestions] Success:', { type, suggestionLength: suggestion.length });
+
     return NextResponse.json({ suggestion });
-  } catch (error) {
-    console.error('Error generating AI suggestion:', error);
+  } catch (error: any) {
+    console.error('[AI Suggestions] Error:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+      response: error.response?.data,
+    });
+
     return NextResponse.json(
-      { error: 'Failed to generate suggestion' },
+      {
+        error: 'Failed to generate suggestion',
+        details: error.message
+      },
       { status: 500 }
     );
   }
@@ -83,7 +96,9 @@ Return only the summary text, no additional formatting or explanations.`;
     max_tokens: 300,
   });
 
-  return completion.choices[0]?.message?.content || '';
+  const result = completion.choices[0]?.message?.content || '';
+  console.log('[AI] Summary generated:', { length: result.length });
+  return result;
 }
 
 async function enhanceBulletPoints(data: any): Promise<string> {
