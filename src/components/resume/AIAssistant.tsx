@@ -28,21 +28,29 @@ export function AIAssistant({ type, data, onApply, buttonText }: AIAssistantProp
     const handleGenerate = async () => {
         setIsLoading(true);
         try {
+            console.log('[AIAssistant] Sending request:', { type, data });
+
             const response = await fetch('/api/resumes/ai-suggestions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type, data }),
             });
 
+            console.log('[AIAssistant] Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Failed to generate suggestion');
+                const errorData = await response.json();
+                console.error('[AIAssistant] Error response:', errorData);
+                throw new Error(errorData.details || errorData.error || 'Failed to generate suggestion');
             }
 
             const result = await response.json();
+            console.log('[AIAssistant] Success:', { suggestionLength: result.suggestion?.length });
+
             setSuggestion(result.suggestion);
-        } catch (error) {
-            console.error('Error generating suggestion:', error);
-            alert('Failed to generate AI suggestion. Please try again.');
+        } catch (error: any) {
+            console.error('[AIAssistant] Error:', error);
+            alert(`Failed to generate AI suggestion: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
