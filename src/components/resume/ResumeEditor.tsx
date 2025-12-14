@@ -22,6 +22,8 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    const [isEnhancing, setIsEnhancing] = useState(false);
+    const [enhancedData, setEnhancedData] = useState<any>(null);
 
     const [formData, setFormData] = useState({
         name: resume.name,
@@ -32,13 +34,54 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
         customSkills: resume.customSkills || userData.skills.map((skill: any) => skill.id),
     });
 
+    const handleEnhanceAll = async () => {
+        setIsEnhancing(true);
+        try {
+            const selectedExperiences = userData.workExperience.filter((exp: any) =>
+                formData.selectedExp.includes(exp.id)
+            );
+            const selectedEducation = userData.education.filter((edu: any) =>
+                formData.selectedEdu.includes(edu.id)
+            );
+            const selectedCertifications = userData.certifications.filter((cert: any) =>
+                formData.selectedCerts.includes(cert.id)
+            );
+
+            const response = await fetch('/api/resumes/enhance-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    workExperience: selectedExperiences,
+                    education: selectedEducation,
+                    certifications: selectedCertifications,
+                }),
+            });
+
+            if (response.ok) {
+                const enhanced = await response.json();
+                setEnhancedData(enhanced);
+                alert('Content enhanced with AI! Review the descriptions in the preview.');
+            } else {
+                alert('Failed to enhance content');
+            }
+        } catch (error) {
+            console.error('Error enhancing content:', error);
+            alert('Failed to enhance content');
+        } finally {
+            setIsEnhancing(false);
+        }
+    };
+
     const handleSave = async () => {
         setIsSaving(true);
         try {
             const response = await fetch(`/api/resumes/${resume.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    enhancedContent: enhancedData, // Save AI-enhanced descriptions
+                }),
             });
 
             if (response.ok) {
@@ -71,6 +114,24 @@ export function ResumeEditor({ resume, userData }: ResumeEditorProps) {
                     <p className="text-muted-foreground mt-2">{resume.name}</p>
                 </div>
                 <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={handleEnhanceAll}
+                        disabled={isEnhancing}
+                        className="gap-2"
+                    >
+                        {isEnhancing ? (
+                            <>
+                                <span className="animate-spin">⚡</span>
+                                Enhancing...
+                            </>
+                        ) : (
+                            <>
+                                <span>✨</span>
+                                Enhance All with AI
+                            </>
+                        )}
+                    </Button>
                     <Button
                         variant="outline"
                         onClick={() => setShowPreview(!showPreview)}
