@@ -84,6 +84,21 @@ const spokeNavItems = [
     { id: 'work-life-balance', label: 'Work-Life Balance', icon: Heart, path: '/work-life-balance' },
 ];
 
+// CNA-specific navigation items
+const cnaSpokeNavItems = [
+    { id: 'how-to-become', label: 'Career Guide', icon: BookOpen, path: '/how-to-become' },
+    { id: 'schools', label: 'Schools & Training', icon: GraduationCap, path: '/schools' },
+    { id: 'training', label: 'Training Programs', icon: BookOpen, path: '/training' },
+    { id: 'license', label: 'Certification', icon: Award, path: '/license' },
+    { id: 'registry', label: 'CNA Registry', icon: Users, path: '/registry' },
+    { id: 'practice-test', label: 'Practice Test', icon: Target, path: '/practice-test' },
+    { id: 'interview', label: 'Interview Prep', icon: MessageSquare, path: '/interview' },
+    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume' },
+    { id: 'skills', label: 'Skills', icon: Zap, path: '/skills' },
+    { id: 'career-path', label: 'Career Path', icon: TrendingUp, path: '/career-path' },
+];
+
+
 export default async function ProfessionHubPage({ params }: PageProps) {
     const { profession } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
@@ -126,6 +141,12 @@ export default async function ProfessionHubPage({ params }: PageProps) {
 
     // Check if this is RN (has CRNA specialty)
     const isRegisteredNurse = profession === 'registered-nurse';
+
+    // Check if this is CNA (has special navigation)
+    const isCNA = profession === 'cna';
+
+    // Use appropriate navigation items
+    const navItems = isCNA ? cnaSpokeNavItems : spokeNavItems;
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
@@ -211,7 +232,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
             <div className="bg-muted/50 rounded-lg p-6 mb-12">
                 <h2 className="font-semibold mb-4 text-lg">Quick Navigation</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    {spokeNavItems.map((item) => {
+                    {navItems.map((item) => {
                         const Icon = item.icon;
                         return (
                             <Link

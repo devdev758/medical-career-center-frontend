@@ -88,10 +88,53 @@ export function isValidProfessionSlug(slug: string): boolean {
 }
 
 /**
- * Format a slug for display (Title Case)
+ * Special display names for professions that don't follow standard title-case rules
+ */
+const SPECIAL_DISPLAY_NAMES: Record<string, string> = {
+    'cna': 'Certified Nursing Assistant (CNA)',
+    'emt-paramedic': 'EMT/Paramedic',
+    'lpn': 'Licensed Practical Nurse (LPN)',
+    'rn': 'Registered Nurse (RN)',
+};
+
+/**
+ * Format a slug for display (Title Case with special handling)
  * @example formatSlugForDisplay('registered-nurse') => 'Registered Nurse'
+ * @example formatSlugForDisplay('cna') => 'Certified Nursing Assistant (CNA)'
  */
 export function formatSlugForDisplay(slug: string): string {
+    // Check for special display names first
+    if (SPECIAL_DISPLAY_NAMES[slug]) {
+        return SPECIAL_DISPLAY_NAMES[slug];
+    }
+
+    return slug
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+/**
+ * Short display names for breadcrumbs and navigation
+ */
+const SHORT_DISPLAY_NAMES: Record<string, string> = {
+    'cna': 'CNA',
+    'emt-paramedic': 'EMT/Paramedic',
+    'lpn': 'LPN',
+    'rn': 'RN',
+};
+
+/**
+ * Format a slug for breadcrumb (shorter version)
+ * @example formatSlugForBreadcrumb('cna') => 'CNA'
+ * @example formatSlugForBreadcrumb('registered-nurse') => 'Registered Nurse'
+ */
+export function formatSlugForBreadcrumb(slug: string): string {
+    // Check for short display names first (for breadcrumbs)
+    if (SHORT_DISPLAY_NAMES[slug]) {
+        return SHORT_DISPLAY_NAMES[slug];
+    }
+
     return slug
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
