@@ -145,19 +145,17 @@ export default async function JobsPage({ params }: PageProps) {
         where: { careerKeyword: dbSlug }
     });
 
-    // Build breadcrumb items
-    const breadcrumbItems = [
+    // Build breadcrumb items - last item should not have href
+    const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
         { label: careerTitle, href: `/${profession}` },
-        { label: 'Jobs', href: `/${profession}/jobs`, current: !isJobType },
     ];
 
     if (isJobType && jobTypeMeta) {
-        breadcrumbItems.push({
-            label: jobTypeMeta.title,
-            href: `/${profession}/jobs/${firstParam}`,
-            current: true
-        });
+        breadcrumbItems.push({ label: 'Jobs', href: `/${profession}/jobs` });
+        breadcrumbItems.push({ label: jobTypeMeta.title });
+    } else {
+        breadcrumbItems.push({ label: 'Jobs' });
     }
 
     const isRegisteredNurse = profession === 'registered-nurse';
@@ -196,8 +194,8 @@ export default async function JobsPage({ params }: PageProps) {
                                         key={slug}
                                         href={`/${profession}/jobs/${slug}`}
                                         className={`p-4 rounded-lg border transition-colors text-center ${isActive
-                                                ? 'bg-primary text-primary-foreground border-primary'
-                                                : 'hover:bg-muted'
+                                            ? 'bg-primary text-primary-foreground border-primary'
+                                            : 'hover:bg-muted'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
