@@ -14,13 +14,17 @@ import {
     GraduationCap,
     ArrowRight,
     MapPin,
-    Clock
+    Award,
+    MessageSquare,
+    FileText,
+    Target,
+    Zap,
+    Heart,
+    Building2,
+    Stethoscope
 } from 'lucide-react';
-import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
-import { getProfessionHubMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
-import { SpokeNavigation } from '@/components/profession/SpokeNavigation';
-import { RelatedProfessions } from '@/components/profession/RelatedProfessions';
-import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,14 +36,15 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
 
     const careerGuide = await prisma.careerGuide.findUnique({
-        where: { professionSlug: profession },
+        where: { professionSlug: dbSlug },
         select: { professionName: true, keyStats: true }
     });
 
     const jobCount = await prisma.job.count({
-        where: { careerKeyword: profession }
+        where: { careerKeyword: dbSlug }
     });
 
     if (!careerGuide) {
@@ -50,37 +55,43 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const keyStats = careerGuide.keyStats as any;
-    const metaTags = getProfessionHubMetaTags(
-        careerGuide.professionName,
-        keyStats.medianSalary,
-        jobCount
-    );
-
-    const canonicalUrl = getCanonicalUrl(`/${profession}`);
-    const ogTags = getOpenGraphTags(metaTags.title, metaTags.description, canonicalUrl);
-    const twitterTags = getTwitterCardTags(metaTags.title, metaTags.description);
+    const currentYear = new Date().getFullYear();
 
     return {
-        title: metaTags.title,
-        description: metaTags.description,
+        title: `${careerGuide.professionName} Career Guide: Salary, Jobs & How to Become One | ${currentYear}`,
+        description: `Explore ${careerGuide.professionName.toLowerCase()} careers. Average salary: ${keyStats.medianSalary}. ${jobCount}+ open positions. Learn education requirements, job outlook, and how to start your career today.`,
         alternates: {
-            canonical: canonicalUrl
+            canonical: `https://medicalcareercenter.org/${profession}`
         },
-        openGraph: ogTags,
-        twitter: twitterTags,
-        robots: {
-            index: true,
-            follow: true,
+        openGraph: {
+            title: `${careerGuide.professionName} Career Guide | Medical Career Center`,
+            description: `Complete guide to ${careerGuide.professionName.toLowerCase()} careers including salary data, education requirements, and job opportunities.`,
+            type: 'website',
         },
     };
 }
 
+// Spoke navigation items with new hierarchical URLs
+const spokeNavItems = [
+    { id: 'how-to-become', label: 'Career Guide', icon: BookOpen, path: '/how-to-become' },
+    { id: 'schools', label: 'Schools', icon: GraduationCap, path: '/schools' },
+    { id: 'license', label: 'License & Certification', icon: Award, path: '/license' },
+    { id: 'interview', label: 'Interview Prep', icon: MessageSquare, path: '/interview' },
+    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume' },
+    { id: 'specializations', label: 'Specializations', icon: Target, path: '/specializations' },
+    { id: 'skills', label: 'Skills', icon: Zap, path: '/skills' },
+    { id: 'career-path', label: 'Career Path', icon: TrendingUp, path: '/career-path' },
+    { id: 'work-life-balance', label: 'Work-Life Balance', icon: Heart, path: '/work-life-balance' },
+];
+
 export default async function ProfessionHubPage({ params }: PageProps) {
     const { profession } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
+    const urls = getProfessionUrls(profession);
 
-    // Fetch career guide
+    // Fetch career guide using database slug
     const careerGuide = await prisma.careerGuide.findUnique({
-        where: { professionSlug: profession },
+        where: { professionSlug: dbSlug },
     });
 
     if (!careerGuide) {
@@ -90,7 +101,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
     // Fetch salary data (national average)
     const salaryData = await prisma.salaryData.findFirst({
         where: {
-            careerKeyword: profession,
+            careerKeyword: dbSlug,
             locationId: null, // National data
         },
         orderBy: { year: 'desc' },
@@ -98,12 +109,12 @@ export default async function ProfessionHubPage({ params }: PageProps) {
 
     // Fetch job count
     const jobCount = await prisma.job.count({
-        where: { careerKeyword: profession },
+        where: { careerKeyword: dbSlug },
     });
 
     // Fetch recent jobs (top 3)
     const recentJobs = await prisma.job.findMany({
-        where: { careerKeyword: profession },
+        where: { careerKeyword: dbSlug },
         orderBy: { createdAt: 'desc' },
         take: 3,
     });
@@ -113,15 +124,22 @@ export default async function ProfessionHubPage({ params }: PageProps) {
         ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
         : keyStats.medianSalary;
 
+    // Check if this is RN (has CRNA specialty)
+    const isRegisteredNurse = profession === 'registered-nurse';
+
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
+            {/* Breadcrumb */}
+            <Breadcrumb
+                items={[
+                    { label: 'Home', href: '/' },
+                    { label: careerGuide.professionName }
+                ]}
+                className="mb-4"
+            />
+
             {/* Hero Section */}
             <div className="mb-12">
-                <Breadcrumb
-                    items={getProfessionBreadcrumbs(profession, careerGuide.professionName, 'hub')}
-                    className="mb-4"
-                />
-
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
                     {careerGuide.professionName}
                 </h1>
@@ -190,7 +208,39 @@ export default async function ProfessionHubPage({ params }: PageProps) {
             </div>
 
             {/* Quick Navigation */}
-            <SpokeNavigation profession={profession} />
+            <div className="bg-muted/50 rounded-lg p-6 mb-12">
+                <h2 className="font-semibold mb-4 text-lg">Quick Navigation</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {spokeNavItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <Link
+                                key={item.id}
+                                href={`/${profession}${item.path}`}
+                                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-background hover:bg-primary/10 transition-colors border"
+                            >
+                                <Icon className="w-4 h-4 text-primary" />
+                                <span className="text-sm font-medium">{item.label}</span>
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                {/* CRNA Quick Link for RN */}
+                {isRegisteredNurse && (
+                    <div className="mt-4 pt-4 border-t">
+                        <p className="text-sm text-muted-foreground mb-3">Popular Specialty:</p>
+                        <Link
+                            href={`/${profession}/crna`}
+                            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-colors"
+                        >
+                            <Stethoscope className="w-4 h-4" />
+                            <span className="font-medium">CRNA (Nurse Anesthetist) Guide</span>
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                )}
+            </div>
 
             {/* Main Navigation Cards */}
             <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -219,7 +269,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             </li>
                         </ul>
                         <Button asChild className="w-full">
-                            <Link href={`/how-to-become-${profession}`}>
+                            <Link href={urls.howToBecome}>
                                 Read Full Guide <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                         </Button>
@@ -249,7 +299,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             </div>
                         </div>
                         <Button asChild variant="outline" className="w-full">
-                            <Link href={`/${profession}-salary`}>
+                            <Link href={urls.salary}>
                                 View Salary Data <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                         </Button>
@@ -280,7 +330,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             ))}
                         </div>
                         <Button asChild variant="outline" className="w-full">
-                            <Link href={`/${profession}-jobs`}>
+                            <Link href={urls.jobs}>
                                 View All Jobs <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                         </Button>
@@ -288,20 +338,41 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                 </Card>
             </div>
 
-            {/* Related Professions */}
-            <RelatedProfessions
-                profession={profession}
-                currentPageType="hub"
-                maxItems={6}
-                className="mb-12"
-            />
-
-            {/* Cross-Page Links */}
-            <CrossPageLinks
-                profession={profession}
-                currentPage="hub"
-                className="mb-12"
-            />
+            {/* Jobs Sub-Navigation (for RN with remote, new-grad, etc.) */}
+            {isRegisteredNurse && (
+                <Card className="mb-12">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Briefcase className="w-5 h-5" />
+                            Browse Jobs by Type
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            <Link href={`/${profession}/jobs/remote`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
+                                <p className="font-medium">Remote Jobs</p>
+                                <p className="text-xs text-muted-foreground">Work from home</p>
+                            </Link>
+                            <Link href={`/${profession}/jobs/new-grad`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
+                                <p className="font-medium">New Grad Jobs</p>
+                                <p className="text-xs text-muted-foreground">Entry level</p>
+                            </Link>
+                            <Link href={`/${profession}/jobs/travel`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
+                                <p className="font-medium">Travel Jobs</p>
+                                <p className="text-xs text-muted-foreground">Travel nursing</p>
+                            </Link>
+                            <Link href={`/${profession}/jobs/part-time`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
+                                <p className="font-medium">Part-Time Jobs</p>
+                                <p className="text-xs text-muted-foreground">Flexible hours</p>
+                            </Link>
+                            <Link href={urls.jobs} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center bg-primary/5">
+                                <p className="font-medium">All Jobs</p>
+                                <p className="text-xs text-muted-foreground">{jobCount.toLocaleString()} openings</p>
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Career Overview Section */}
             <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -353,12 +424,12 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <Button asChild size="lg">
-                            <Link href={`/how-to-become-${profession}`}>
+                            <Link href={urls.howToBecome}>
                                 View Career Guide
                             </Link>
                         </Button>
                         <Button asChild variant="outline" size="lg">
-                            <Link href={`/${profession}-jobs`}>
+                            <Link href={urls.jobs}>
                                 Browse Jobs
                             </Link>
                         </Button>

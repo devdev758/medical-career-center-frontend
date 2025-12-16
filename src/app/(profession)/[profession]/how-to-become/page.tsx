@@ -16,6 +16,8 @@ import {
     Users,
     FileText
 } from 'lucide-react';
+import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +29,13 @@ interface PageProps {
 
 export default async function CareerGuideArticlePage({ params }: PageProps) {
     const { profession } = await params;
-    // The profession param is already the slug (e.g., "anesthesia-technicians")
-    const professionSlug = profession;
+    // Convert URL slug (singular) to DB slug (plural)
+    const dbSlug = urlSlugToDbSlug(profession);
+    const urls = getProfessionUrls(profession);
 
-    // Fetch career guide
+    // Fetch career guide using database slug
     const careerGuide = await prisma.careerGuide.findUnique({
-        where: { professionSlug },
+        where: { professionSlug: dbSlug },
     });
 
     if (!careerGuide) {
@@ -41,7 +44,7 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
 
     // Fetch job count for CTAs
     const jobCount = await prisma.job.count({
-        where: { careerKeyword: professionSlug },
+        where: { careerKeyword: dbSlug },
     });
 
     const keyStats = careerGuide.keyStats as any;
@@ -67,13 +70,14 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                <Link href="/" className="hover:text-foreground">Home</Link>
-                <span>/</span>
-                <Link href={`/${professionSlug}`} className="hover:text-foreground">{careerGuide.professionName}</Link>
-                <span>/</span>
-                <span>Career Guide</span>
-            </div>
+            <Breadcrumb
+                items={[
+                    { label: 'Home', href: '/' },
+                    { label: careerGuide.professionName, href: `/${profession}` },
+                    { label: 'Career Guide' }
+                ]}
+                className="mb-6"
+            />
 
             {/* H1 Title */}
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -121,7 +125,7 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
                             </p>
                         </div>
                         <Button asChild>
-                            <Link href={`/${professionSlug}-jobs`}>
+                            <Link href={urls.jobs}>
                                 View Jobs
                             </Link>
                         </Button>
@@ -235,7 +239,7 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
                             </p>
                         </div>
                         <Button asChild variant="outline">
-                            <Link href={`/${professionSlug}-salary`}>
+                            <Link href={urls.salary}>
                                 View Salary Data
                             </Link>
                         </Button>
@@ -483,7 +487,7 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
                             Browse current openings and start your application today
                         </p>
                         <Button asChild size="lg">
-                            <Link href={`/${professionSlug}-jobs`}>
+                            <Link href={urls.jobs}>
                                 View All Jobs →
                             </Link>
                         </Button>
@@ -527,12 +531,12 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <Button asChild size="lg" variant="secondary">
-                            <Link href={`/${professionSlug}-jobs`}>
+                            <Link href={urls.jobs}>
                                 Browse {jobCount.toLocaleString()}+ Jobs
                             </Link>
                         </Button>
                         <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
-                            <Link href={`/${professionSlug}-salary`}>
+                            <Link href={urls.salary}>
                                 View Salary Data
                             </Link>
                         </Button>
@@ -542,7 +546,7 @@ export default async function CareerGuideArticlePage({ params }: PageProps) {
 
             {/* Back to Hub */}
             <div className="mt-8 text-center">
-                <Link href={`/${professionSlug}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                <Link href={`/${profession}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="w-4 h-4" />
                     Back to {careerGuide.professionName} Hub
                 </Link>

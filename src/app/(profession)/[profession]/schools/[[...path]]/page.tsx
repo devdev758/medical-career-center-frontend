@@ -1,0 +1,288 @@
+import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+    GraduationCap,
+    MapPin,
+    Clock,
+    DollarSign,
+    Globe,
+    Zap,
+    BookOpen,
+    ArrowRight
+} from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+    params: {
+        profession: string;
+        path?: string[];  // [[...path]] -> can be [], ['online'], ['accelerated'], ['ca'], etc.
+    };
+}
+
+// School program type slugs
+const PROGRAM_TYPE_SLUGS = ['online', 'accelerated', 'associate', 'bsn', 'msn'];
+
+const PROGRAM_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
+    'online': {
+        title: 'Online',
+        description: 'Flexible online programs for working professionals',
+        icon: Globe,
+    },
+    'accelerated': {
+        title: 'Accelerated',
+        description: 'Fast-track programs for career changers',
+        icon: Zap,
+    },
+    'associate': {
+        title: 'Associate Degree',
+        description: 'ADN programs - 2 year pathway to licensure',
+        icon: BookOpen,
+    },
+    'bsn': {
+        title: 'BSN Programs',
+        description: 'Bachelor of Science in Nursing',
+        icon: GraduationCap,
+    },
+    'msn': {
+        title: 'MSN Programs',
+        description: 'Master of Science in Nursing',
+        icon: GraduationCap,
+    },
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { profession, path } = await params;
+    const careerTitle = formatSlugForDisplay(profession);
+
+    const firstParam = path?.[0];
+    const isProgramType = firstParam && PROGRAM_TYPE_SLUGS.includes(firstParam);
+    const programTypeMeta = isProgramType ? PROGRAM_TYPE_META[firstParam] : null;
+
+    const currentYear = new Date().getFullYear();
+    let title, description, urlPath;
+
+    if (programTypeMeta) {
+        title = `${programTypeMeta.title} ${careerTitle} Programs ${currentYear} | Medical Career Center`;
+        description = `Find ${programTypeMeta.title.toLowerCase()} ${careerTitle.toLowerCase()} programs. ${programTypeMeta.description}. Compare accredited schools and start your career.`;
+        urlPath = `/${profession}/schools/${firstParam}`;
+    } else {
+        title = `${careerTitle} Schools & Programs ${currentYear} | Medical Career Center`;
+        description = `Discover accredited ${careerTitle.toLowerCase()} schools and programs. Compare online, accelerated, and traditional programs. Find the right path for your nursing career.`;
+        urlPath = `/${profession}/schools`;
+    }
+
+    return {
+        title,
+        description,
+        alternates: { canonical: `https://medicalcareercenter.org${urlPath}` },
+        openGraph: { title, description, type: 'website' },
+        robots: { index: true, follow: true },
+    };
+}
+
+export default async function SchoolsPage({ params }: PageProps) {
+    const { profession, path } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
+    const urls = getProfessionUrls(profession);
+    const careerTitle = formatSlugForDisplay(profession);
+
+    const firstParam = path?.[0];
+    const isProgramType = firstParam && PROGRAM_TYPE_SLUGS.includes(firstParam);
+    const programTypeMeta = isProgramType ? PROGRAM_TYPE_META[firstParam] : null;
+
+    // Fetch career guide for school data
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: dbSlug },
+        select: {
+            professionName: true,
+            schoolsOverview: true,
+            topSchools: true,
+            programTypes: true,
+            financialAid: true,
+            educationPath: true,
+        }
+    });
+
+    if (!careerGuide) {
+        notFound();
+    }
+
+    const topSchools = (careerGuide.topSchools as any[]) || [];
+    const programTypes = (careerGuide.programTypes as any[]) || [];
+    const isRegisteredNurse = profession === 'registered-nurse';
+
+    // Build breadcrumb items
+    const breadcrumbItems: { label: string; href?: string }[] = [
+        { label: 'Home', href: '/' },
+        { label: careerGuide.professionName, href: `/${profession}` },
+    ];
+
+    if (isProgramType && programTypeMeta) {
+        breadcrumbItems.push({ label: 'Schools', href: `/${profession}/schools` });
+        breadcrumbItems.push({ label: programTypeMeta.title });
+    } else {
+        breadcrumbItems.push({ label: 'Schools' });
+    }
+
+    return (
+        <main className="container mx-auto py-10 px-4 max-w-5xl">
+            <Breadcrumb items={breadcrumbItems} className="mb-6" />
+
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                    {programTypeMeta ? `${programTypeMeta.title} ` : ''}{careerTitle} Schools & Programs
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                    {programTypeMeta
+                        ? programTypeMeta.description
+                        : 'Find accredited nursing programs to start your healthcare career'}
+                </p>
+            </div>
+
+            {/* Program Type Navigation */}
+            {isRegisteredNurse && (
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle className="text-lg">Browse by Program Type</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            {Object.entries(PROGRAM_TYPE_META).map(([slug, meta]) => {
+                                const Icon = meta.icon;
+                                const isActive = firstParam === slug;
+                                return (
+                                    <Link
+                                        key={slug}
+                                        href={`/${profession}/schools/${slug}`}
+                                        className={`p-4 rounded-lg border transition-colors text-center ${isActive
+                                                ? 'bg-primary text-primary-foreground border-primary'
+                                                : 'hover:bg-muted'
+                                            }`}
+                                    >
+                                        <Icon className="w-5 h-5 mx-auto mb-2" />
+                                        <p className="font-medium text-sm">{meta.title}</p>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                        {isProgramType && (
+                            <div className="mt-4 pt-4 border-t">
+                                <Link href={`/${profession}/schools`} className="text-sm text-primary hover:underline">
+                                    ← View all {careerTitle.toLowerCase()} schools
+                                </Link>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Overview */}
+            <section className="mb-12">
+                <h2 className="text-2xl font-bold mb-4">Education Overview</h2>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                    {careerGuide.schoolsOverview || careerGuide.educationPath}
+                </p>
+            </section>
+
+            {/* Program Types */}
+            {programTypes.length > 0 && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Program Types</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {programTypes.map((type: any, idx: number) => (
+                            <Card key={idx}>
+                                <CardContent className="p-6">
+                                    <h3 className="font-semibold mb-2">{type.type}</h3>
+                                    <p className="text-sm text-muted-foreground">{type.description}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Top Schools */}
+            {topSchools.length > 0 && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Featured Programs</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {topSchools.map((school: any, idx: number) => (
+                            <Card key={idx}>
+                                <CardContent className="p-6">
+                                    <h3 className="font-semibold mb-2">{school.name}</h3>
+                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                        <span className="flex items-center gap-1">
+                                            <MapPin className="w-3 h-3" />
+                                            {school.location}
+                                        </span>
+                                        <Badge variant="outline" className="text-xs">{school.programType}</Badge>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Financial Aid */}
+            {careerGuide.financialAid && (
+                <section className="mb-12">
+                    <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">
+                        <CardContent className="p-6">
+                            <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                <DollarSign className="w-5 h-5 text-green-600" />
+                                Financial Aid & Scholarships
+                            </h3>
+                            <p className="text-muted-foreground">{careerGuide.financialAid}</p>
+                        </CardContent>
+                    </Card>
+                </section>
+            )}
+
+            {/* Quick Navigation */}
+            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
+                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Career Guide</p>
+                    </Link>
+                    <Link href={urls.license} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">License Info</p>
+                    </Link>
+                    <Link href={urls.salary} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Salary Data</p>
+                    </Link>
+                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Browse Jobs</p>
+                    </Link>
+                </div>
+            </div>
+
+            {/* CTA */}
+            <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200">
+                <CardContent className="p-6 text-center">
+                    <h3 className="text-lg font-semibold mb-2">
+                        Ready to Start Your {careerTitle} Career?
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                        Learn about requirements, timeline, and steps to become a {careerTitle.toLowerCase()}.
+                    </p>
+                    <Button asChild>
+                        <Link href={urls.howToBecome}>
+                            Read the Full Career Guide <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </main>
+    );
+}

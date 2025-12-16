@@ -2,32 +2,22 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from 'next';
 import Link from "next/link";
-import { ArrowLeft, Clock, DollarSign, TrendingUp } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, TrendingUp, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
-import { Breadcrumb, getProfessionBreadcrumbs } from '@/components/ui/breadcrumb';
-import { getSalaryPageMetaTags, getCanonicalUrl, getOpenGraphTags, getTwitterCardTags } from '@/lib/meta-tags';
-import { CrossPageLinks } from '@/components/profession/CrossPageLinks';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-    searchParams: {
-        profession?: string;
-        location?: string;
-        city?: string;
+    params: {
+        profession: string;
+        location?: string[];  // [[...location]] -> can be [], ['ca'], or ['ca', 'los-angeles']
     };
-}
-
-// Helper to format career title from slug
-function formatCareerTitle(slug: string): string {
-    return slug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
 }
 
 // Helper to format location name from slug
@@ -38,51 +28,49 @@ function formatLocationName(slug: string): string {
         .join(' ');
 }
 
-export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-    const { profession, location, city } = searchParams;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { profession, location } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
+    const careerTitle = formatSlugForDisplay(profession);
 
-    if (!profession) {
-        return { title: 'Salary Data', description: 'Healthcare salary information' };
-    }
+    const state = location?.[0];
+    const city = location?.[1];
 
-    const careerTitle = formatCareerTitle(profession);
-    const isNational = !location && !city;
     let locationName = 'United States';
-
-    if (city && location) {
-        locationName = `${formatLocationName(city)}, ${location.toUpperCase()}`;
-    } else if (location) {
-        locationName = formatLocationName(location);
+    if (city && state) {
+        locationName = `${formatLocationName(city)}, ${state.toUpperCase()}`;
+    } else if (state) {
+        locationName = formatLocationName(state);
     }
 
     // Fetch salary data for meta description
     let salaryData;
-    if (city && location) {
+    if (city && state) {
         const cityName = formatLocationName(city);
-        const stateAbbr = location.toUpperCase();
+        const stateAbbr = state.toUpperCase();
         const locationRecord = await prisma.location.findFirst({
             where: { city: cityName, state: stateAbbr }
         });
         if (locationRecord) {
             salaryData = await prisma.salaryData.findFirst({
-                where: { careerKeyword: profession, locationId: locationRecord.id },
+                where: { careerKeyword: dbSlug, locationId: locationRecord.id },
                 orderBy: { year: 'desc' }
             });
         }
-    } else if (location) {
-        const stateAbbr = location.toUpperCase();
+    } else if (state) {
+        const stateAbbr = state.toUpperCase();
         const locationRecord = await prisma.location.findFirst({
-            where: { state: stateAbbr }
+            where: { state: stateAbbr, city: '' }
         });
         if (locationRecord) {
             salaryData = await prisma.salaryData.findFirst({
-                where: { careerKeyword: profession, locationId: locationRecord.id },
+                where: { careerKeyword: dbSlug, locationId: locationRecord.id },
                 orderBy: { year: 'desc' }
             });
         }
     } else {
         salaryData = await prisma.salaryData.findFirst({
-            where: { careerKeyword: profession, locationId: null },
+            where: { careerKeyword: dbSlug, locationId: null },
             orderBy: { year: 'desc' }
         });
     }
@@ -91,70 +79,70 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
         ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
         : '$60,000';
 
-    const metaTags = getSalaryPageMetaTags(careerTitle, locationName, medianSalary, isNational);
-    const urlPath = city && location
-        ? `/${profession}-salary/${location}/${city}`
-        : location
-            ? `/${profession}-salary/${location}`
-            : `/${profession}-salary`;
+    const currentYear = new Date().getFullYear();
+    const title = `${careerTitle} Salary ${currentYear}: Average Pay by State & City | Medical Career Center`;
+    const description = `${careerTitle}s earn an average of ${medianSalary} annually in ${locationName}. Explore detailed salary data by experience level, percentiles, and location. Compare top-paying states and cities.`;
 
-    const canonicalUrl = getCanonicalUrl(urlPath);
-    const ogTags = getOpenGraphTags(metaTags.title, metaTags.description, canonicalUrl);
-    const twitterTags = getTwitterCardTags(metaTags.title, metaTags.description);
+    // Build canonical URL
+    let urlPath = `/${profession}/salary`;
+    if (city && state) {
+        urlPath = `/${profession}/salary/${state}/${city}`;
+    } else if (state) {
+        urlPath = `/${profession}/salary/${state}`;
+    }
 
     return {
-        title: metaTags.title,
-        description: metaTags.description,
-        alternates: { canonical: canonicalUrl },
-        openGraph: ogTags,
-        twitter: twitterTags,
+        title,
+        description,
+        alternates: { canonical: `https://medicalcareercenter.org${urlPath}` },
+        openGraph: {
+            title,
+            description,
+            type: 'website',
+        },
         robots: { index: true, follow: true },
     };
 }
 
-export default async function SalaryPage({ searchParams }: PageProps) {
-    const { profession, location, city } = searchParams;
+export default async function SalaryPage({ params }: PageProps) {
+    const { profession, location } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
+    const urls = getProfessionUrls(profession);
+    const careerTitle = formatSlugForDisplay(profession);
 
-    if (!profession) {
-        return notFound();
-    }
+    const state = location?.[0];
+    const city = location?.[1];
 
     // Determine query based on what's provided
     let salaryData;
 
-    if (city && location) {
-        // City-level page: find location by city name and state abbreviation
+    if (city && state) {
+        // City-level page
         const cityName = formatLocationName(city);
-        const stateAbbr = location.toUpperCase(); // URL has state abbreviation (e.g., "ca" → "CA")
+        const stateAbbr = state.toUpperCase();
 
         const cityLocation = await prisma.location.findFirst({
-            where: {
-                city: cityName,
-                state: stateAbbr
-            }
+            where: { city: cityName, state: stateAbbr }
         });
 
         if (cityLocation) {
             salaryData = await prisma.salaryData.findFirst({
                 where: {
-                    careerKeyword: profession,
+                    careerKeyword: dbSlug,
                     locationId: cityLocation.id,
                     year: 2024
                 },
                 include: { location: true }
             });
         }
-    } else if (location) {
-        // State-level page: location is state abbreviation (e.g., "ca")
-        const stateAbbr = location.toUpperCase();
+    } else if (state) {
+        // State-level page
+        const stateAbbr = state.toUpperCase();
 
         salaryData = await prisma.salaryData.findFirst({
             where: {
-                careerKeyword: profession,
-                location: {
-                    state: stateAbbr,
-                    city: ""
-                },
+                careerKeyword: dbSlug,
+                location: { state: stateAbbr, city: "" },
                 year: 2024
             },
             include: { location: true }
@@ -163,7 +151,7 @@ export default async function SalaryPage({ searchParams }: PageProps) {
         // National page
         salaryData = await prisma.salaryData.findFirst({
             where: {
-                careerKeyword: profession,
+                careerKeyword: dbSlug,
                 locationId: null,
                 year: 2024
             }
@@ -174,11 +162,9 @@ export default async function SalaryPage({ searchParams }: PageProps) {
         return notFound();
     }
 
-    const careerTitle = formatCareerTitle(profession);
-
     // Get location name
     let locationName = "United States";
-    if (city || location) {
+    if (city || state) {
         if (salaryData.locationId) {
             const locationData = await prisma.location.findUnique({
                 where: { id: salaryData.locationId }
@@ -186,23 +172,23 @@ export default async function SalaryPage({ searchParams }: PageProps) {
             if (locationData) {
                 locationName = locationData.city
                     ? `${locationData.city}, ${locationData.stateName}`
-                    : locationData.stateName || formatLocationName(location || '');
+                    : locationData.stateName || formatLocationName(state || '');
             }
-        } else if (location) {
-            locationName = formatLocationName(location);
+        } else if (state) {
+            locationName = formatLocationName(state);
         }
     }
 
     const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
-    const careerDescription = getCareerDescription(profession);
+    const careerDescription = getCareerDescription(dbSlug);
 
     // Get national average for comparison (if state page)
     let comparisonText = "";
-    if (location) {
+    if (state) {
         const nationalData = await prisma.salaryData.findFirst({
             where: {
-                careerKeyword: profession,
+                careerKeyword: dbSlug,
                 locationId: null,
                 year: 2024
             }
@@ -215,10 +201,30 @@ export default async function SalaryPage({ searchParams }: PageProps) {
             : "";
     }
 
+    // Build breadcrumb items - last item should not have href
+    const breadcrumbItems: { label: string; href?: string }[] = [
+        { label: 'Home', href: '/' },
+        { label: careerTitle, href: `/${profession}` },
+    ];
+
+    if (state && city) {
+        // City page - show full path with city at end
+        breadcrumbItems.push({ label: 'Salary', href: `/${profession}/salary` });
+        breadcrumbItems.push({ label: state.toUpperCase(), href: `/${profession}/salary/${state}` });
+        breadcrumbItems.push({ label: formatLocationName(city) });
+    } else if (state) {
+        // State page - show path with state at end
+        breadcrumbItems.push({ label: 'Salary', href: `/${profession}/salary` });
+        breadcrumbItems.push({ label: state.toUpperCase() });
+    } else {
+        // National page - Salary at end
+        breadcrumbItems.push({ label: 'Salary' });
+    }
+
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb
-                items={getProfessionBreadcrumbs(profession, careerTitle, 'salary')}
+                items={breadcrumbItems}
                 className="mb-6"
             />
 
@@ -233,7 +239,7 @@ export default async function SalaryPage({ searchParams }: PageProps) {
 
                 {salaryData.employmentCount && (
                     <p className="text-lg">
-                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s {location ? 'in the state' : 'nationwide'}, this occupation plays a vital role in {locationName}'s healthcare system.
+                        With <strong>{salaryData.employmentCount.toLocaleString()}</strong> employed {careerTitle.toLowerCase()}s {state ? 'in the state' : 'nationwide'}, this occupation plays a vital role in {locationName}'s healthcare system.
                     </p>
                 )}
 
@@ -322,26 +328,36 @@ export default async function SalaryPage({ searchParams }: PageProps) {
                 <p className="text-lg">{careerDescription}</p>
             </article>
 
+            {/* Quick Navigation */}
+            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
+                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Browse Jobs</p>
+                    </Link>
+                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Career Guide</p>
+                    </Link>
+                    <Link href={urls.schools} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Find Schools</p>
+                    </Link>
+                    <Link href={urls.resume} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Resume Tips</p>
+                    </Link>
+                </div>
+            </div>
+
             {/* Internal Linking Section */}
             <InternalLinks
-                profession={profession}
-                state={location}
+                profession={dbSlug}
+                state={state}
                 city={city}
-            />
-
-            {/* Cross-Page Spoke Links */}
-            <CrossPageLinks
-                profession={profession}
-                state={location}
-                city={city}
-                currentPage="salary"
-                className="mt-8"
             />
 
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-        </main >
+        </main>
     );
 }

@@ -1,0 +1,319 @@
+import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+    Award,
+    Shield,
+    RefreshCw,
+    Search,
+    BookOpen,
+    MapPin,
+    Clock,
+    ArrowRight
+} from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+    params: {
+        profession: string;
+        path?: string[];  // [[...path]] -> can be [], ['compact'], ['renewal'], ['lookup'], ['lookup', 'ca'], etc.
+    };
+}
+
+// License type slugs
+const LICENSE_TYPE_SLUGS = ['compact', 'renewal', 'lookup', 'continuing-education'];
+
+const LICENSE_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
+    'compact': {
+        title: 'Nurse Licensure Compact',
+        description: 'Practice in multiple states with one license',
+        icon: Shield,
+    },
+    'renewal': {
+        title: 'License Renewal',
+        description: 'How to renew your nursing license',
+        icon: RefreshCw,
+    },
+    'lookup': {
+        title: 'License Lookup',
+        description: 'Verify nursing licenses by state',
+        icon: Search,
+    },
+    'continuing-education': {
+        title: 'Continuing Education',
+        description: 'CE requirements and courses',
+        icon: BookOpen,
+    },
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { profession, path } = await params;
+    const careerTitle = formatSlugForDisplay(profession);
+
+    const firstParam = path?.[0];
+    const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
+    const licenseTypeMeta = isLicenseType ? LICENSE_TYPE_META[firstParam] : null;
+
+    const currentYear = new Date().getFullYear();
+    let title, description, urlPath;
+
+    if (licenseTypeMeta) {
+        title = `${careerTitle} ${licenseTypeMeta.title} ${currentYear} | Medical Career Center`;
+        description = `${licenseTypeMeta.description} for ${careerTitle.toLowerCase()}s. Complete guide to ${licenseTypeMeta.title.toLowerCase()} requirements, process, and resources.`;
+        urlPath = `/${profession}/license/${firstParam}`;
+    } else {
+        title = `${careerTitle} License & Certification Guide ${currentYear} | Medical Career Center`;
+        description = `Everything you need to know about ${careerTitle.toLowerCase()} licensing. State requirements, compact license, renewal, and certification information.`;
+        urlPath = `/${profession}/license`;
+    }
+
+    return {
+        title,
+        description,
+        alternates: { canonical: `https://medicalcareercenter.org${urlPath}` },
+        openGraph: { title, description, type: 'website' },
+        robots: { index: true, follow: true },
+    };
+}
+
+export default async function LicensePage({ params }: PageProps) {
+    const { profession, path } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
+    const urls = getProfessionUrls(profession);
+    const careerTitle = formatSlugForDisplay(profession);
+
+    const firstParam = path?.[0];
+    const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
+    const licenseTypeMeta = isLicenseType ? LICENSE_TYPE_META[firstParam] : null;
+
+    // Fetch career guide for license data
+    const careerGuide = await prisma.careerGuide.findUnique({
+        where: { professionSlug: dbSlug },
+        select: {
+            professionName: true,
+            licensingOverview: true,
+            stateRequirements: true,
+            examInfo: true,
+            renewalProcess: true,
+            certifications: true,
+        }
+    });
+
+    if (!careerGuide) {
+        notFound();
+    }
+
+    const stateReqs = (careerGuide.stateRequirements as Record<string, any>) || {};
+    const examInfo = (careerGuide.examInfo as any[]) || [];
+    const certifications = (careerGuide.certifications as any[]) || [];
+    const isRegisteredNurse = profession === 'registered-nurse';
+
+    // Build breadcrumb items
+    const breadcrumbItems: { label: string; href?: string }[] = [
+        { label: 'Home', href: '/' },
+        { label: careerGuide.professionName, href: `/${profession}` },
+    ];
+
+    if (isLicenseType && licenseTypeMeta) {
+        breadcrumbItems.push({ label: 'License', href: `/${profession}/license` });
+        breadcrumbItems.push({ label: licenseTypeMeta.title });
+    } else {
+        breadcrumbItems.push({ label: 'License & Certification' });
+    }
+
+    return (
+        <main className="container mx-auto py-10 px-4 max-w-5xl">
+            <Breadcrumb items={breadcrumbItems} className="mb-6" />
+
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                    {licenseTypeMeta
+                        ? `${careerTitle} ${licenseTypeMeta.title}`
+                        : `${careerTitle} License & Certification`}
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                    {licenseTypeMeta
+                        ? licenseTypeMeta.description
+                        : 'Everything you need to know about licensing and certification'}
+                </p>
+            </div>
+
+            {/* License Type Navigation */}
+            {isRegisteredNurse && (
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle className="text-lg">License Resources</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {Object.entries(LICENSE_TYPE_META).map(([slug, meta]) => {
+                                const Icon = meta.icon;
+                                const isActive = firstParam === slug;
+                                return (
+                                    <Link
+                                        key={slug}
+                                        href={`/${profession}/license/${slug}`}
+                                        className={`p-4 rounded-lg border transition-colors text-center ${isActive
+                                                ? 'bg-primary text-primary-foreground border-primary'
+                                                : 'hover:bg-muted'
+                                            }`}
+                                    >
+                                        <Icon className="w-5 h-5 mx-auto mb-2" />
+                                        <p className="font-medium text-sm">{meta.title.replace('Nurse Licensure ', '')}</p>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                        {isLicenseType && (
+                            <div className="mt-4 pt-4 border-t">
+                                <Link href={`/${profession}/license`} className="text-sm text-primary hover:underline">
+                                    ← View license overview
+                                </Link>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Overview */}
+            {!isLicenseType && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">Licensing Overview</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        {careerGuide.licensingOverview}
+                    </p>
+                </section>
+            )}
+
+            {/* Compact License Content (for RN) */}
+            {firstParam === 'compact' && isRegisteredNurse && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">Nurse Licensure Compact (NLC)</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        The Nurse Licensure Compact allows registered nurses to practice in multiple states with a single license.
+                        As of 2024, 41 states have enacted compact legislation, making it easier than ever to work across state lines.
+                    </p>
+                    <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 mb-6">
+                        <CardContent className="p-6">
+                            <h3 className="font-semibold mb-3">Compact Nursing License Benefits</h3>
+                            <ul className="space-y-2 text-muted-foreground">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-primary mt-1">✓</span>
+                                    Practice in all compact states with one license
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-primary mt-1">✓</span>
+                                    No additional state license applications needed
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-primary mt-1">✓</span>
+                                    Ideal for travel nurses and telehealth positions
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-primary mt-1">✓</span>
+                                    Save time and money on licensing fees
+                                </li>
+                            </ul>
+                        </CardContent>
+                    </Card>
+                </section>
+            )}
+
+            {/* Renewal Content */}
+            {firstParam === 'renewal' && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">License Renewal Process</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        {careerGuide.renewalProcess || 'Most states require nursing license renewal every 1-2 years. Requirements typically include completing continuing education hours and paying a renewal fee.'}
+                    </p>
+                </section>
+            )}
+
+            {/* Certification Exams */}
+            {examInfo.length > 0 && !isLicenseType && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Certification Exams</h2>
+                    <div className="space-y-4">
+                        {examInfo.map((exam: any, idx: number) => (
+                            <Card key={idx}>
+                                <CardContent className="p-6">
+                                    <h3 className="font-semibold mb-2">{exam.examName}</h3>
+                                    <p className="text-sm text-muted-foreground">{exam.description}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Professional Certifications */}
+            {certifications.length > 0 && !isLicenseType && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Professional Certifications</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {certifications.map((cert: any, idx: number) => (
+                            <Card key={idx}>
+                                <CardContent className="p-6">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <h3 className="font-semibold">{cert.name}</h3>
+                                        <Badge variant="outline">{cert.issuer}</Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{cert.description}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* State Requirements */}
+            {Object.keys(stateReqs).length > 0 && !isLicenseType && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">State-Specific Requirements</h2>
+                    <div className="space-y-3">
+                        {Object.entries(stateReqs).slice(0, 6).map(([state, req]: [string, any]) => (
+                            <Card key={state}>
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="font-semibold">{state}</h4>
+                                        <Badge variant={req.required ? "default" : "secondary"}>
+                                            {req.required ? "License Required" : "No License Required"}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{req.details}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Quick Navigation */}
+            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
+                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Link href={urls.schools} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Find Schools</p>
+                    </Link>
+                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Career Guide</p>
+                    </Link>
+                    <Link href={urls.salary} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Salary Data</p>
+                    </Link>
+                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                        <p className="font-medium text-sm">Browse Jobs</p>
+                    </Link>
+                </div>
+            </div>
+        </main>
+    );
+}
