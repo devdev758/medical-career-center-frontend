@@ -33,7 +33,7 @@ export const DB_TO_URL_SLUG: Record<string, string> = {
     'phlebotomists': 'phlebotomist',
     'emt-paramedics': 'emt-paramedic',
     'home-health-aides': 'home-health-aide',
-    'nursing-assistants': 'nursing-assistant',
+    'nursing-assistants': 'cna',  // CNA (Certified Nursing Assistant) - using abbreviation for SEO
     'medical-records-specialists': 'medical-records-specialist',
     'health-information-technicians': 'health-information-technician',
     'medical-coders': 'medical-coder',
@@ -41,9 +41,14 @@ export const DB_TO_URL_SLUG: Record<string, string> = {
 };
 
 // Reverse mapping: URL slug (singular) to database slug (plural)
-export const URL_TO_DB_SLUG: Record<string, string> = Object.fromEntries(
-    Object.entries(DB_TO_URL_SLUG).map(([db, url]) => [url, db])
-);
+export const URL_TO_DB_SLUG: Record<string, string> = {
+    ...Object.fromEntries(
+        Object.entries(DB_TO_URL_SLUG).map(([db, url]) => [url, db])
+    ),
+    // Add aliases for CNA
+    'nursing-assistant': 'nursing-assistants',
+    'certified-nursing-assistant': 'nursing-assistants',
+};
 
 /**
  * Convert a database slug to a URL-friendly slug
@@ -125,25 +130,25 @@ export function getProfessionSubUrls(urlSlug: string) {
         jobsNewGrad: `/${urlSlug}/jobs/new-grad`,
         jobsTravel: `/${urlSlug}/jobs/travel`,
         jobsPartTime: `/${urlSlug}/jobs/part-time`,
-        
+
         // Schools sub-pages
         schoolsOnline: `/${urlSlug}/schools/online`,
         schoolsAccelerated: `/${urlSlug}/schools/accelerated`,
         schoolsAssociate: `/${urlSlug}/schools/associate`,
         schoolsBsn: `/${urlSlug}/schools/bsn`,
-        
+
         // License sub-pages
         licenseCompact: `/${urlSlug}/license/compact`,
         licenseRenewal: `/${urlSlug}/license/renewal`,
         licenseLookup: `/${urlSlug}/license/lookup`,
         licenseCe: `/${urlSlug}/license/continuing-education`,
-        
+
         // Resume sub-pages
         resumeExamples: `/${urlSlug}/resume/examples`,
         resumeTemplate: `/${urlSlug}/resume/template`,
         resumeNewGrad: `/${urlSlug}/resume/new-grad`,
         resumeCoverLetter: `/${urlSlug}/resume/cover-letter`,
-        
+
         // Specialty pages (top-level for RN)
         crna: `/${urlSlug}/crna`,
         crnaSalary: `/${urlSlug}/crna/salary`,

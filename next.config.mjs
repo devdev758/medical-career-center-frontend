@@ -41,6 +41,15 @@ const nextConfig = {
             { old: 'surgical-technologists', new: 'surgical-technologist' },
             { old: 'radiologic-technologists', new: 'radiologic-technologist' },
             { old: 'ultrasound-technicians', new: 'ultrasound-technician' },
+            { old: 'nursing-assistants', new: 'cna' },  // CNA - using abbreviation for SEO
+        ];
+
+        // CNA alias redirects
+        const cnaAliasRedirects = [
+            { source: '/nursing-assistant', destination: '/cna', permanent: true },
+            { source: '/nursing-assistant/:path*', destination: '/cna/:path*', permanent: true },
+            { source: '/certified-nursing-assistant', destination: '/cna', permanent: true },
+            { source: '/certified-nursing-assistant/:path*', destination: '/cna/:path*', permanent: true },
         ];
 
         const redirects = [];
@@ -138,7 +147,7 @@ const nextConfig = {
             });
         }
 
-        return redirects;
+        return [...redirects, ...cnaAliasRedirects];
     },
 };
 
