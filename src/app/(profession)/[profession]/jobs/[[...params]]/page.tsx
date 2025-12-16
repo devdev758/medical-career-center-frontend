@@ -28,13 +28,13 @@ const JOB_TYPE_META: Record<string, { title: string; description: string; icon: 
         title: 'Remote',
         description: 'Work from anywhere positions',
         icon: Home,
-        filter: { OR: [{ isRemote: true }, { location: { contains: 'remote', mode: 'insensitive' } }] }
+        filter: { OR: [{ remote: true }, { location: { contains: 'remote', mode: 'insensitive' } }] }
     },
     'work-from-home': {
         title: 'Work From Home',
         description: 'Telehealth and remote nursing positions',
         icon: Home,
-        filter: { OR: [{ isRemote: true }, { location: { contains: 'remote', mode: 'insensitive' } }] }
+        filter: { OR: [{ remote: true }, { location: { contains: 'remote', mode: 'insensitive' } }] }
     },
     'new-grad': {
         title: 'New Graduate',
