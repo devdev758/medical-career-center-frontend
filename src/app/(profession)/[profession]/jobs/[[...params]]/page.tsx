@@ -90,7 +90,7 @@ const JOB_TYPE_META: Record<string, { title: string; description: string; icon: 
             OR: [
                 { title: { contains: 'hospital', mode: 'insensitive' } },
                 { title: { contains: 'acute care', mode: 'insensitive' } },
-                { employer: { contains: 'hospital', mode: 'insensitive' } }
+                { companyName: { contains: 'hospital', mode: 'insensitive' } }
             ]
         }
     },
@@ -115,7 +115,7 @@ const JOB_TYPE_META: Record<string, { title: string; description: string; icon: 
                 { title: { contains: 'agency', mode: 'insensitive' } },
                 { title: { contains: 'contract', mode: 'insensitive' } },
                 { title: { contains: 'staffing', mode: 'insensitive' } },
-                { employer: { contains: 'staffing', mode: 'insensitive' } }
+                { companyName: { contains: 'staffing', mode: 'insensitive' } }
             ]
         }
     },
