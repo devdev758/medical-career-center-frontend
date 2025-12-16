@@ -20,7 +20,7 @@ interface PageProps {
 }
 
 // Job type slugs that map to filters
-const JOB_TYPE_SLUGS = ['remote', 'work-from-home', 'new-grad', 'travel', 'part-time'];
+const JOB_TYPE_SLUGS = ['remote', 'work-from-home', 'new-grad', 'travel', 'part-time', 'hospital', 'pediatric', 'agency', 'hospice', 'nicu', 'assisted-living'];
 
 // US State codes for location detection
 const US_STATE_CODES = [
@@ -70,8 +70,8 @@ const JOB_TYPE_META: Record<string, { title: string; description: string; icon: 
         }
     },
     'part-time': {
-        title: 'Part-Time',
-        description: 'Flexible part-time and PRN positions',
+        title: 'Part-Time & PRN',
+        description: 'Flexible part-time, PRN, and per diem positions',
         icon: Clock,
         filter: {
             OR: [
@@ -79,6 +79,78 @@ const JOB_TYPE_META: Record<string, { title: string; description: string; icon: 
                 { title: { contains: 'part-time', mode: 'insensitive' } },
                 { title: { contains: 'prn', mode: 'insensitive' } },
                 { title: { contains: 'per diem', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'hospital': {
+        title: 'Hospital',
+        description: 'Hospital CNA positions in acute care settings',
+        icon: Briefcase,
+        filter: {
+            OR: [
+                { title: { contains: 'hospital', mode: 'insensitive' } },
+                { title: { contains: 'acute care', mode: 'insensitive' } },
+                { employer: { contains: 'hospital', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'pediatric': {
+        title: 'Pediatric',
+        description: 'Pediatric CNA jobs working with children',
+        icon: GraduationCap,
+        filter: {
+            OR: [
+                { title: { contains: 'pediatric', mode: 'insensitive' } },
+                { title: { contains: 'peds', mode: 'insensitive' } },
+                { title: { contains: 'children', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'agency': {
+        title: 'Agency & Contract',
+        description: 'Staffing agency and contract CNA positions',
+        icon: Briefcase,
+        filter: {
+            OR: [
+                { title: { contains: 'agency', mode: 'insensitive' } },
+                { title: { contains: 'contract', mode: 'insensitive' } },
+                { title: { contains: 'staffing', mode: 'insensitive' } },
+                { employer: { contains: 'staffing', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'hospice': {
+        title: 'Hospice',
+        description: 'Hospice and end-of-life care CNA positions',
+        icon: Home,
+        filter: {
+            OR: [
+                { title: { contains: 'hospice', mode: 'insensitive' } },
+                { title: { contains: 'palliative', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'nicu': {
+        title: 'NICU',
+        description: 'Neonatal intensive care unit positions',
+        icon: GraduationCap,
+        filter: {
+            OR: [
+                { title: { contains: 'nicu', mode: 'insensitive' } },
+                { title: { contains: 'neonatal', mode: 'insensitive' } }
+            ]
+        }
+    },
+    'assisted-living': {
+        title: 'Assisted Living',
+        description: 'Assisted living and long-term care positions',
+        icon: Home,
+        filter: {
+            OR: [
+                { title: { contains: 'assisted living', mode: 'insensitive' } },
+                { title: { contains: 'long term care', mode: 'insensitive' } },
+                { title: { contains: 'nursing home', mode: 'insensitive' } },
+                { title: { contains: 'skilled nursing', mode: 'insensitive' } }
             ]
         }
     }

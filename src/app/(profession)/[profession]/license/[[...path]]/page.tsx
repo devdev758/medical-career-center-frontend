@@ -16,7 +16,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +28,7 @@ interface PageProps {
 }
 
 // License type slugs
-const LICENSE_TYPE_SLUGS = ['compact', 'renewal', 'lookup', 'continuing-education'];
+const LICENSE_TYPE_SLUGS = ['compact', 'renewal', 'lookup', 'reciprocity', 'continuing-education'];
 
 const LICENSE_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
     'compact': {
@@ -38,24 +38,29 @@ const LICENSE_TYPE_META: Record<string, { title: string; description: string; ic
     },
     'renewal': {
         title: 'License Renewal',
-        description: 'How to renew your nursing license',
+        description: 'How to renew your CNA certification online',
         icon: RefreshCw,
     },
     'lookup': {
         title: 'License Lookup',
-        description: 'Verify nursing licenses by state',
+        description: 'Verify CNA certifications and check license status by state',
         icon: Search,
+    },
+    'reciprocity': {
+        title: 'Reciprocity',
+        description: 'Transfer your CNA certification to another state',
+        icon: MapPin,
     },
     'continuing-education': {
         title: 'Continuing Education',
-        description: 'CE requirements and courses',
+        description: 'CEU requirements and approved courses',
         icon: BookOpen,
     },
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, path } = await params;
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = path?.[0];
     const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
@@ -87,7 +92,7 @@ export default async function LicensePage({ params }: PageProps) {
     const { profession, path } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = path?.[0];
     const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
@@ -113,7 +118,8 @@ export default async function LicensePage({ params }: PageProps) {
     const stateReqs = (careerGuide.stateRequirements as Record<string, any>) || {};
     const examInfo = (careerGuide.examInfo as any[]) || [];
     const certifications = (careerGuide.certifications as any[]) || [];
-    const isRegisteredNurse = profession === 'registered-nurse';
+    // Show license navigation for main professions
+    const showLicenseNav = ['registered-nurse', 'cna', 'licensed-practical-nurse'].includes(profession);
 
     // Build breadcrumb items
     const breadcrumbItems: { label: string; href?: string }[] = [
@@ -147,7 +153,7 @@ export default async function LicensePage({ params }: PageProps) {
             </div>
 
             {/* License Type Navigation */}
-            {isRegisteredNurse && (
+            {showLicenseNav && (
                 <Card className="mb-8">
                     <CardHeader>
                         <CardTitle className="text-lg">License Resources</CardTitle>
@@ -162,8 +168,8 @@ export default async function LicensePage({ params }: PageProps) {
                                         key={slug}
                                         href={`/${profession}/license/${slug}`}
                                         className={`p-4 rounded-lg border transition-colors text-center ${isActive
-                                                ? 'bg-primary text-primary-foreground border-primary'
-                                                : 'hover:bg-muted'
+                                            ? 'bg-primary text-primary-foreground border-primary'
+                                            : 'hover:bg-muted'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
@@ -194,7 +200,7 @@ export default async function LicensePage({ params }: PageProps) {
             )}
 
             {/* Compact License Content (for RN) */}
-            {firstParam === 'compact' && isRegisteredNurse && (
+            {firstParam === 'compact' && ['registered-nurse', 'licensed-practical-nurse'].includes(profession) && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Nurse Licensure Compact (NLC)</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
