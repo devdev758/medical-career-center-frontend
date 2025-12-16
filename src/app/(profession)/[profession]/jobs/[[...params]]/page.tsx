@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Briefcase, Home, GraduationCap, Plane, Clock } from 'lucide-react';
 import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -110,7 +110,7 @@ function formatCityName(slug: string): string {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, params: routeParams } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = routeParams?.[0]?.toLowerCase();
     const secondParam = routeParams?.[1];
@@ -162,7 +162,7 @@ export default async function JobsPage({ params }: PageProps) {
     const { profession, params: routeParams } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = routeParams?.[0]?.toLowerCase();
     const secondParam = routeParams?.[1];
@@ -247,7 +247,8 @@ export default async function JobsPage({ params }: PageProps) {
         breadcrumbItems.push({ label: 'Jobs' });
     }
 
-    const isRegisteredNurse = profession === 'registered-nurse';
+    // Show job type navigation for main professions
+    const showJobTypeNav = ['registered-nurse', 'cna', 'licensed-practical-nurse'].includes(profession);
 
     // Determine page title and subtitle
     let pageTitle = `${careerTitle} Jobs`;
@@ -283,7 +284,7 @@ export default async function JobsPage({ params }: PageProps) {
             </div>
 
             {/* Job Type Quick Navigation */}
-            {isRegisteredNurse && !isState && !isCity && (
+            {showJobTypeNav && !isState && !isCity && (
                 <Card className="mb-8">
                     <CardHeader>
                         <CardTitle className="text-lg">Browse by Job Type</CardTitle>
@@ -348,8 +349,8 @@ export default async function JobsPage({ params }: PageProps) {
                                         key={loc.state}
                                         href={`/${profession}/jobs/${loc.state.toLowerCase()}`}
                                         className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${firstParam === loc.state.toLowerCase()
-                                                ? 'bg-primary text-primary-foreground border-primary'
-                                                : 'hover:bg-muted'
+                                            ? 'bg-primary text-primary-foreground border-primary'
+                                            : 'hover:bg-muted'
                                             }`}
                                     >
                                         {loc.stateName || loc.state}

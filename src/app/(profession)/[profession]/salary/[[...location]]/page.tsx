@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +31,7 @@ function formatLocationName(slug: string): string {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, location } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const state = location?.[0];
     const city = location?.[1];
@@ -108,7 +108,7 @@ export default async function SalaryPage({ params }: PageProps) {
     const { profession, location } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
-    const careerTitle = formatSlugForDisplay(profession);
+    const careerTitle = formatSlugForBreadcrumb(profession);
 
     const state = location?.[0];
     const city = location?.[1];
