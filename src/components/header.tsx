@@ -50,6 +50,13 @@ export function Header({ user }: HeaderProps) {
                                     Dashboard
                                 </Link>
                                 <Link
+                                    href="/resume-builder"
+                                    className={`text-sm font-medium transition-colors hover:text-primary ${pathname?.startsWith("/resume-builder") ? "text-primary" : "text-muted-foreground"
+                                        }`}
+                                >
+                                    Resume Builder
+                                </Link>
+                                <Link
                                     href="/dashboard/applications"
                                     className={`text-sm font-medium transition-colors hover:text-primary ${pathname === "/dashboard/applications" ? "text-primary" : "text-muted-foreground"
                                         }`}

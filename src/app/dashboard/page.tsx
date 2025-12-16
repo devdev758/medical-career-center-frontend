@@ -98,6 +98,30 @@ export default async function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow">
                     <CardHeader>
                         <div className="flex items-center gap-2">
+                            <FileText className="w-5 h-5" />
+                            <CardTitle>Resume Builder</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Create and manage professional resumes
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            <p className="text-sm text-muted-foreground">
+                                Build tailored resumes with AI assistance
+                            </p>
+                            <Button asChild className="w-full">
+                                <Link href="/resume-builder">
+                                    Manage Resumes
+                                </Link>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
                             <Briefcase className="w-5 h-5" />
                             <CardTitle>My Applications</CardTitle>
                         </div>
