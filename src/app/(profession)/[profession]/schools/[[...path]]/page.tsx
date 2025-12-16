@@ -30,6 +30,15 @@ interface PageProps {
 // School program type slugs
 const PROGRAM_TYPE_SLUGS = ['online', 'accelerated', 'associate', 'bsn', 'msn'];
 
+// US State codes for location detection
+const US_STATE_CODES = [
+    'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
+    'hi', 'id', 'il', 'in', 'ia', 'ks', 'ky', 'la', 'me', 'md',
+    'ma', 'mi', 'mn', 'ms', 'mo', 'mt', 'ne', 'nv', 'nh', 'nj',
+    'nm', 'ny', 'nc', 'nd', 'oh', 'ok', 'or', 'pa', 'ri', 'sc',
+    'sd', 'tn', 'tx', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy', 'dc', 'pr'
+];
+
 const PROGRAM_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
     'online': {
         title: 'Online',
@@ -58,18 +67,42 @@ const PROGRAM_TYPE_META: Record<string, { title: string; description: string; ic
     },
 };
 
+// Helper to get state name from code
+function getStateName(stateCode: string): string {
+    const stateNames: Record<string, string> = {
+        'al': 'Alabama', 'ak': 'Alaska', 'az': 'Arizona', 'ar': 'Arkansas', 'ca': 'California',
+        'co': 'Colorado', 'ct': 'Connecticut', 'de': 'Delaware', 'fl': 'Florida', 'ga': 'Georgia',
+        'hi': 'Hawaii', 'id': 'Idaho', 'il': 'Illinois', 'in': 'Indiana', 'ia': 'Iowa',
+        'ks': 'Kansas', 'ky': 'Kentucky', 'la': 'Louisiana', 'me': 'Maine', 'md': 'Maryland',
+        'ma': 'Massachusetts', 'mi': 'Michigan', 'mn': 'Minnesota', 'ms': 'Mississippi', 'mo': 'Missouri',
+        'mt': 'Montana', 'ne': 'Nebraska', 'nv': 'Nevada', 'nh': 'New Hampshire', 'nj': 'New Jersey',
+        'nm': 'New Mexico', 'ny': 'New York', 'nc': 'North Carolina', 'nd': 'North Dakota', 'oh': 'Ohio',
+        'ok': 'Oklahoma', 'or': 'Oregon', 'pa': 'Pennsylvania', 'ri': 'Rhode Island', 'sc': 'South Carolina',
+        'sd': 'South Dakota', 'tn': 'Tennessee', 'tx': 'Texas', 'ut': 'Utah', 'vt': 'Vermont',
+        'va': 'Virginia', 'wa': 'Washington', 'wv': 'West Virginia', 'wi': 'Wisconsin', 'wy': 'Wyoming',
+        'dc': 'District of Columbia', 'pr': 'Puerto Rico'
+    };
+    return stateNames[stateCode.toLowerCase()] || stateCode.toUpperCase();
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, path } = await params;
     const careerTitle = formatSlugForDisplay(profession);
 
-    const firstParam = path?.[0];
+    const firstParam = path?.[0]?.toLowerCase();
     const isProgramType = firstParam && PROGRAM_TYPE_SLUGS.includes(firstParam);
+    const isState = firstParam && US_STATE_CODES.includes(firstParam);
     const programTypeMeta = isProgramType ? PROGRAM_TYPE_META[firstParam] : null;
 
     const currentYear = new Date().getFullYear();
     let title, description, urlPath;
 
-    if (programTypeMeta) {
+    if (isState) {
+        const stateName = getStateName(firstParam);
+        title = `${careerTitle} Schools in ${stateName} ${currentYear} | Medical Career Center`;
+        description = `Find accredited ${careerTitle.toLowerCase()} schools and programs in ${stateName}. Compare nursing programs, requirements, and tuition costs.`;
+        urlPath = `/${profession}/schools/${firstParam}`;
+    } else if (programTypeMeta) {
         title = `${programTypeMeta.title} ${careerTitle} Programs ${currentYear} | Medical Career Center`;
         description = `Find ${programTypeMeta.title.toLowerCase()} ${careerTitle.toLowerCase()} programs. ${programTypeMeta.description}. Compare accredited schools and start your career.`;
         urlPath = `/${profession}/schools/${firstParam}`;
@@ -94,8 +127,9 @@ export default async function SchoolsPage({ params }: PageProps) {
     const urls = getProfessionUrls(profession);
     const careerTitle = formatSlugForDisplay(profession);
 
-    const firstParam = path?.[0];
+    const firstParam = path?.[0]?.toLowerCase();
     const isProgramType = firstParam && PROGRAM_TYPE_SLUGS.includes(firstParam);
+    const isState = firstParam && US_STATE_CODES.includes(firstParam);
     const programTypeMeta = isProgramType ? PROGRAM_TYPE_META[firstParam] : null;
 
     // Fetch career guide for school data
@@ -115,6 +149,13 @@ export default async function SchoolsPage({ params }: PageProps) {
         notFound();
     }
 
+    // Get all states from Location table for navigation
+    const allStates = await prisma.location.findMany({
+        where: { city: '' },
+        select: { state: true, stateName: true },
+        orderBy: { stateName: 'asc' }
+    });
+
     const topSchools = (careerGuide.topSchools as any[]) || [];
     const programTypes = (careerGuide.programTypes as any[]) || [];
     const isRegisteredNurse = profession === 'registered-nurse';
@@ -125,13 +166,125 @@ export default async function SchoolsPage({ params }: PageProps) {
         { label: careerGuide.professionName, href: `/${profession}` },
     ];
 
-    if (isProgramType && programTypeMeta) {
+    if (isState) {
+        const stateName = getStateName(firstParam);
+        breadcrumbItems.push({ label: 'Schools', href: `/${profession}/schools` });
+        breadcrumbItems.push({ label: stateName });
+    } else if (isProgramType && programTypeMeta) {
         breadcrumbItems.push({ label: 'Schools', href: `/${profession}/schools` });
         breadcrumbItems.push({ label: programTypeMeta.title });
     } else {
         breadcrumbItems.push({ label: 'Schools' });
     }
 
+    // State-specific page content
+    if (isState) {
+        const stateName = getStateName(firstParam);
+        return (
+            <main className="container mx-auto py-10 px-4 max-w-5xl">
+                <Breadcrumb items={breadcrumbItems} className="mb-6" />
+
+                <div className="mb-8">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                        {careerTitle} Schools in {stateName}
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                        Find accredited nursing programs in {stateName}
+                    </p>
+                </div>
+
+                {/* Coming Soon Notice */}
+                <Card className="mb-8 bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200">
+                    <CardContent className="p-6">
+                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                            <GraduationCap className="w-5 h-5 text-yellow-600" />
+                            School Directory Coming Soon
+                        </h3>
+                        <p className="text-muted-foreground">
+                            We're building a comprehensive directory of {careerTitle.toLowerCase()} schools in {stateName}.
+                            Check back soon for detailed program listings, requirements, and tuition information.
+                        </p>
+                    </CardContent>
+                </Card>
+
+                {/* State Overview */}
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">Nursing Education in {stateName}</h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                        {stateName} offers a variety of nursing education pathways for aspiring {careerTitle.toLowerCase()}s.
+                        From associate degree programs to bachelor's and master's degrees, you can find programs that fit your
+                        schedule and career goals. Many schools also offer online and hybrid options for working professionals.
+                    </p>
+                </section>
+
+                {/* Program Types Available */}
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Program Types in {stateName}</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {Object.entries(PROGRAM_TYPE_META).map(([slug, meta]) => {
+                            const Icon = meta.icon;
+                            return (
+                                <Card key={slug} className="hover:shadow-md transition-shadow">
+                                    <CardContent className="p-6">
+                                        <Icon className="w-6 h-6 mb-3 text-primary" />
+                                        <h3 className="font-semibold mb-2">{meta.title}</h3>
+                                        <p className="text-sm text-muted-foreground">{meta.description}</p>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                {/* Browse Other States */}
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <MapPin className="w-5 h-5" />
+                            Browse Schools by State
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                            {allStates.map((loc) => (
+                                <Link
+                                    key={loc.state}
+                                    href={`/${profession}/schools/${loc.state.toLowerCase()}`}
+                                    className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${firstParam === loc.state.toLowerCase()
+                                            ? 'bg-primary text-primary-foreground border-primary'
+                                            : 'hover:bg-muted'
+                                        }`}
+                                >
+                                    {loc.stateName || loc.state}
+                                </Link>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Quick Navigation */}
+                <div className="mt-12 p-6 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <Link href={`${urls.salary}/${firstParam}`} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                            <p className="font-medium text-sm">{stateName} Salary</p>
+                        </Link>
+                        <Link href={`${urls.jobs}/${firstParam}`} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                            <p className="font-medium text-sm">{stateName} Jobs</p>
+                        </Link>
+                        <Link href={urls.license} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                            <p className="font-medium text-sm">License Info</p>
+                        </Link>
+                        <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
+                            <p className="font-medium text-sm">Career Guide</p>
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    // Default schools page (program types or main)
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
@@ -164,8 +317,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                                         key={slug}
                                         href={`/${profession}/schools/${slug}`}
                                         className={`p-4 rounded-lg border transition-colors text-center ${isActive
-                                                ? 'bg-primary text-primary-foreground border-primary'
-                                                : 'hover:bg-muted'
+                                            ? 'bg-primary text-primary-foreground border-primary'
+                                            : 'hover:bg-muted'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
@@ -184,6 +337,29 @@ export default async function SchoolsPage({ params }: PageProps) {
                     </CardContent>
                 </Card>
             )}
+
+            {/* State Navigation */}
+            <Card className="mb-8">
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <MapPin className="w-5 h-5" />
+                        Browse Schools by State
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                        {allStates.map((loc) => (
+                            <Link
+                                key={loc.state}
+                                href={`/${profession}/schools/${loc.state.toLowerCase()}`}
+                                className="px-3 py-1.5 rounded-full border text-sm hover:bg-muted transition-colors"
+                            >
+                                {loc.stateName || loc.state}
+                            </Link>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Overview */}
             <section className="mb-12">
