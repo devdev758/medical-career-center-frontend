@@ -319,15 +319,18 @@ model SalaryData {
   locationId String?
   location   Location? @relation(fields: [locationId], references: [id])
 
-  // BLS Data Points
+  // BLS Data Points - Hourly wages
   hourly10th   Float?
   hourly25th   Float?
+  hourlyMean   Float?  // Mean (average) hourly wage
   hourlyMedian Float?
   hourly75th   Float?
   hourly90th   Float?
 
+  // BLS Data Points - Annual wages
   annual10th   Float?
   annual25th   Float?
+  annualMean   Float?  // Mean (average) annual wage
   annualMedian Float?
   annual75th   Float?
   annual90th   Float?
