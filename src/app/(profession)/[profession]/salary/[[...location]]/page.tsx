@@ -3,7 +3,16 @@ import { notFound } from "next/navigation";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { generateWageNarrative, generateFAQSchema, getCareerDescription, formatCurrency } from "@/lib/content-generator";
+import {
+    generateWageNarrative,
+    generateFAQSchema,
+    getCareerDescription,
+    formatCurrency,
+    generateFactorsAffectingSalary,
+    generateStateSalaryNarrative,
+    generateCitySalaryNarrative,
+    generateIndustrySalaryNarrative
+} from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
@@ -234,20 +243,38 @@ export default async function SalaryPage({ params }: PageProps) {
             }));
     }
 
-    // Fetch industry data for national page
+    // Fetch industry data for national page - Corrected filtering
     let industries: { naicsCode: string; naicsTitle: string; employment: number; meanAnnual: number | null }[] = [];
     if (!state && !city) {
         const industryRecords = await prisma.industryEmployment.findMany({
-            where: { careerKeyword: dbSlug, year: 2024, employment: { not: null } },
-            orderBy: { employment: 'desc' },
-            take: 10
+            where: {
+                careerKeyword: dbSlug,
+                year: 2024,
+                employment: { not: null }
+            },
+            orderBy: { employment: 'desc' }
         });
-        industries = industryRecords.map(i => ({
-            naicsCode: i.naicsCode,
-            naicsTitle: i.naicsTitle,
-            employment: i.employment || 0,
-            meanAnnual: i.meanAnnual,
-        }));
+
+        // Filter out broad sectors (2-3 digit NAICS and special cross-industry codes)
+        // We generally want 4-6 digit NAICS codes for specific industries
+        industries = industryRecords
+            .filter(i => {
+                // Exclude Sector 62 (Health Care and Social Assistance) which is too broad
+                // Exclude codes starting with 00 (Total, Cross-industry) or 99 (Govt totals)
+                // Prefer longer NAICS codes which are more specific (4+ digits)
+                const isBroadSector = i.naicsCode.length < 4;
+                const isTotalOrGovt = i.naicsCode.startsWith('00') || i.naicsCode.startsWith('99');
+                const isHealthcareSector = i.naicsCode === '62';
+
+                return !isBroadSector && !isTotalOrGovt && !isHealthcareSector;
+            })
+            .slice(0, 8) // Limit to top 8 specific industries
+            .map(i => ({
+                naicsCode: i.naicsCode,
+                naicsTitle: i.naicsTitle,
+                employment: i.employment || 0,
+                meanAnnual: i.meanAnnual,
+            }));
     }
 
     // Location name for display
@@ -258,9 +285,21 @@ export default async function SalaryPage({ params }: PageProps) {
         locationName = locationData.stateName;
     }
 
+    // Generate Content Narratives
     const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
     const careerDescription = getCareerDescription(dbSlug);
+
+    // New Content Generators
+    const factorsContent = generateFactorsAffectingSalary(careerTitle);
+
+    const topStateForNarrative = allStates.length > 0 ? { name: allStates[0].stateName, salary: allStates[0].median } : undefined;
+    const stateNarrative = generateStateSalaryNarrative(careerTitle, topStateForNarrative);
+
+    const topCityForNarrative = topCitiesNational.length > 0 ? { name: topCitiesNational[0].city, salary: topCitiesNational[0].median } : undefined;
+    const cityNarrative = generateCitySalaryNarrative(careerTitle, topCityForNarrative);
+
+    const industryNarrative = generateIndustrySalaryNarrative(careerTitle);
 
     // Breadcrumbs
     const breadcrumbItems: { label: string; href?: string }[] = [
@@ -298,6 +337,19 @@ export default async function SalaryPage({ params }: PageProps) {
 
             <Separator className="my-8" />
 
+            {/* Narrative Overview */}
+            <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
+                <h2 className="text-3xl font-bold mb-4">{careerTitle} Salary in {locationName} – Overview</h2>
+                <p className="text-lg mb-4">{narrative.intro}</p>
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 my-6">
+                    <ul className="space-y-3 text-lg m-0">
+                        {narrative.distribution.map((item: string, index: number) => (
+                            <li key={index} className="pl-2">{item}</li>
+                        ))}
+                    </ul>
+                </div>
+            </article>
+
             {/* Wage Distribution Chart */}
             <section className="mb-12">
                 <WageDistributionChart
@@ -305,6 +357,17 @@ export default async function SalaryPage({ params }: PageProps) {
                     showHourly={true}
                 />
             </section>
+
+            {/* Factors Affecting Salary Content */}
+            <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
+                <h2 className="text-3xl font-bold mb-4">{factorsContent.title}</h2>
+                <p className="text-lg">{factorsContent.content}</p>
+                <ul className="space-y-2 mt-4">
+                    {factorsContent.factors.map((factor, i) => (
+                        <li key={i} dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                    ))}
+                </ul>
+            </article>
 
             {/* Location Insight for state/city pages */}
             {(state || city) && (salaryData.locationQuotient || salaryData.jobsPer1000) && (
@@ -318,9 +381,58 @@ export default async function SalaryPage({ params }: PageProps) {
                 </section>
             )}
 
+            {/* State Comparison Section - National page */}
+            {!state && !city && allStates.length > 0 && (
+                <section className="mb-12">
+                    <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
+                        <h2 className="text-3xl font-bold mb-4">{stateNarrative.title}</h2>
+                        <p className="text-lg">{stateNarrative.content}</p>
+                    </article>
+                    <StateComparisonTable
+                        states={allStates}
+                        nationalMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
+                        profession={profession}
+                        limit={10}
+                    />
+                </section>
+            )}
+
+            {/* City Comparison Section - State page or National */}
+            {((!state && !city && topCitiesNational.length > 0) || (state && !city && stateCities.length > 0)) && (
+                <section className="mb-12">
+                    <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
+                        <h2 className="text-3xl font-bold mb-4">{cityNarrative.title}</h2>
+                        <p className="text-lg">{cityNarrative.content}</p>
+                    </article>
+
+                    {state ? (
+                        <CityComparisonTable
+                            cities={stateCities}
+                            baselineMedian={salaryData.annualMedian || 0}
+                            profession={profession}
+                            stateCode={state}
+                            limit={10}
+                            title={`Top Paying Cities in ${locationData?.stateName || state.toUpperCase()}`}
+                        />
+                    ) : (
+                        <CityComparisonTable
+                            cities={topCitiesNational}
+                            baselineMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
+                            profession={profession}
+                            limit={10}
+                            title="Highest Paying Cities"
+                        />
+                    )}
+                </section>
+            )}
+
             {/* Industry Breakdown - National page only */}
             {!state && !city && industries.length > 0 && (
                 <section className="mb-12">
+                    <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
+                        <h2 className="text-3xl font-bold mb-4">{industryNarrative.title}</h2>
+                        <p className="text-lg">{industryNarrative.content}</p>
+                    </article>
                     <IndustryBreakdown
                         industries={industries}
                         professionName={careerTitle}
@@ -331,71 +443,7 @@ export default async function SalaryPage({ params }: PageProps) {
 
             <Separator className="my-8" />
 
-            {/* State Comparison Table - National page */}
-            {!state && !city && allStates.length > 0 && (
-                <section className="mb-12">
-                    <StateComparisonTable
-                        states={allStates}
-                        nationalMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
-                        profession={profession}
-                        limit={10}
-                    />
-                </section>
-            )}
-
-            {/* City Comparison Table - State page */}
-            {state && !city && stateCities.length > 0 && (
-                <section className="mb-12">
-                    <CityComparisonTable
-                        cities={stateCities}
-                        baselineMedian={salaryData.annualMedian || 0}
-                        profession={profession}
-                        stateCode={state}
-                        limit={10}
-                        title={`Top Paying Cities in ${locationData?.stateName || state.toUpperCase()}`}
-                    />
-                </section>
-            )}
-
-            {/* Top Cities National - National page */}
-            {!state && !city && topCitiesNational.length > 0 && (
-                <section className="mb-12">
-                    <CityComparisonTable
-                        cities={topCitiesNational}
-                        baselineMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
-                        profession={profession}
-                        limit={10}
-                        title="Highest Paying Cities"
-                    />
-                </section>
-            )}
-
-            <Separator className="my-8" />
-
-            {/* Narrative Content */}
             <article className="prose prose-lg dark:prose-invert max-w-none">
-                <h2 className="text-3xl font-bold mb-4">{careerTitle} Salary in {locationName} – Overview</h2>
-                <p className="text-lg mb-4">{narrative.overview}</p>
-
-                <ul className="space-y-2 text-lg">
-                    {narrative.distribution.map((item: string, index: number) => (
-                        <li key={index}>{item}</li>
-                    ))}
-                </ul>
-
-                <Separator className="my-8" />
-
-                <h2 className="text-3xl font-bold mb-4">Wage Distribution: How Do Salaries Vary?</h2>
-                <div className="space-y-4 text-lg">
-                    <p><strong>Starting Out:</strong> {narrative.wageBreakdown.starting}</p>
-                    <p><strong>Early Career:</strong> {narrative.wageBreakdown.earlyCareer}</p>
-                    <p><strong>Most Common:</strong> {narrative.wageBreakdown.median}</p>
-                    <p><strong>Experienced:</strong> {narrative.wageBreakdown.experienced}</p>
-                    <p><strong>Top Earners:</strong> {narrative.wageBreakdown.topEarners}</p>
-                </div>
-
-                <Separator className="my-8" />
-
                 <h2 className="text-3xl font-bold mb-4">What is a {careerTitle}?</h2>
                 <p className="text-lg">{careerDescription}</p>
             </article>
