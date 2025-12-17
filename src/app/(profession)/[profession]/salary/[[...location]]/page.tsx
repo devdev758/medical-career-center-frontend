@@ -133,6 +133,7 @@ export default async function SalaryPage({ params }: PageProps) {
     // Fetch salary data based on location level
     let salaryData;
     let locationData: { city?: string; state?: string; stateName?: string } | null = null;
+    let availableRelatedSlugs: string[] = [];
 
     if (city && state) {
         const cityName = formatLocationName(city);
@@ -146,6 +147,20 @@ export default async function SalaryPage({ params }: PageProps) {
                 include: { location: true }
             });
             locationData = { city: cityLocation.city, state: cityLocation.state, stateName: cityLocation.stateName };
+
+            // Check availability of related professions for this city
+            const targetSlugs = ['registered-nurses', 'nurse-practitioners', 'medical-assistants', 'surgical-technologists']
+                .filter(s => s !== dbSlug);
+
+            const relatedAvailability = await prisma.salaryData.findMany({
+                where: {
+                    locationId: cityLocation.id,
+                    careerKeyword: { in: targetSlugs },
+                    year: 2024
+                },
+                select: { careerKeyword: true }
+            });
+            availableRelatedSlugs = relatedAvailability.map(d => d.careerKeyword);
         }
     } else if (state) {
         const stateAbbr = state.toUpperCase();
@@ -505,6 +520,8 @@ export default async function SalaryPage({ params }: PageProps) {
                 <RelatedSalaries
                     currentProfession={dbSlug}
                     state={state}
+                    city={city}
+                    availableSlugs={availableRelatedSlugs}
                 />
             </section>
 
