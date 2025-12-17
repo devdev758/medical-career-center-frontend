@@ -25,6 +25,8 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { getProfessionFormalName } from '@/lib/content-generator';
+import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,40 +36,55 @@ interface PageProps {
     };
 }
 
+// Helper to ensure data exists (Self-Healing)
+async function getOrSeedCareerGuide(slug: string) {
+    const existing = await prisma.careerGuide.findUnique({
+        where: { professionSlug: slug }
+    });
+
+    if (existing) return existing;
+
+    // Try to find in static data
+    const staticData = professionGuides.find(g => g.slug === slug);
+    if (staticData) {
+        try {
+            console.log(`Self-healing: Seeding ${slug} on demand...`);
+            const defaults = getCareerGuideDefaults(staticData);
+            return await prisma.careerGuide.upsert({
+                where: { professionSlug: slug },
+                update: {},
+                create: defaults
+            });
+        } catch (error) {
+            console.error(`Failed to self-heal ${slug}:`, error);
+            return null;
+        }
+    }
+    return null;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
+    const formalName = getProfessionFormalName(profession);
 
-    const careerGuide = await prisma.careerGuide.findUnique({
-        where: { professionSlug: dbSlug },
-        select: { professionName: true, keyStats: true }
-    });
-
-    const jobCount = await prisma.job.count({
-        where: { careerKeyword: dbSlug }
-    });
+    // Try to get guide (with self-healing fallback)
+    const careerGuide = await getOrSeedCareerGuide(dbSlug);
 
     if (!careerGuide) {
         return {
             title: 'Profession Not Found',
-            description: 'The requested profession could not be found.'
+            description: 'The requested profession guide could not be found.'
         };
     }
 
-    const keyStats = careerGuide.keyStats as any;
-    const currentYear = new Date().getFullYear();
-
+    // ... existing metadata logic uses careerGuide ...
     return {
-        title: `${careerGuide.professionName} Career Guide: Salary, Jobs & How to Become One | ${currentYear}`,
-        description: `Explore ${careerGuide.professionName.toLowerCase()} careers. Average salary: ${keyStats.medianSalary}. ${jobCount}+ open positions. Learn education requirements, job outlook, and how to start your career today.`,
+        title: careerGuide.metaTitle || `${formalName} Career Guide & Salary (2026)`,
+        description: careerGuide.metaDescription || `Everything you need to know about becoming a ${formalName}. Salary, requirements, and job outlook updated for 2026.`,
         alternates: {
-            canonical: `https://medicalcareercenter.org/${profession}`
-        },
-        openGraph: {
-            title: `${careerGuide.professionName} Career Guide | Medical Career Center`,
-            description: `Complete guide to ${careerGuide.professionName.toLowerCase()} careers including salary data, education requirements, and job opportunities.`,
-            type: 'website',
-        },
+            canonical: `/${profession}`
+        }
     };
 }
 

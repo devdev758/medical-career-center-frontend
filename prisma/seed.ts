@@ -31,7 +31,7 @@ async function main() {
     const professionGuides = [
         {
             name: "Certified Nursing Assistant",
-            slug: "cna",
+            slug: "nursing-assistants",
             overview: "Certified Nursing Assistants (CNAs) provide basic care and help patients with activities of daily living.",
             salary: "$38,000",
             growth: "4%",
@@ -39,7 +39,7 @@ async function main() {
         },
         {
             name: "Registered Nurse",
-            slug: "registered-nurse",
+            slug: "registered-nurses",
             overview: "Registered Nurses (RNs) provide and coordinate patient care, educate patients and the public about various health conditions.",
             salary: "$86,000",
             growth: "6%",
@@ -47,7 +47,7 @@ async function main() {
         },
         {
             name: "Nurse Practitioner",
-            slug: "nurse-practitioner",
+            slug: "nurse-practitioners",
             overview: "Nurse Practitioners (NPs) serve as primary and specialty care providers, delivering advanced nursing services.",
             salary: "$126,000",
             growth: "38%",
@@ -55,7 +55,7 @@ async function main() {
         },
         {
             name: "Physician Assistant",
-            slug: "physician-assistant",
+            slug: "physician-assistants",
             overview: "Physician Assistants (PAs) practice medicine on teams with physicians and other healthcare professionals.",
             salary: "$130,000",
             growth: "27%",
@@ -63,7 +63,7 @@ async function main() {
         },
         {
             name: "Medical Assistant",
-            slug: "medical-assistant",
+            slug: "medical-assistants",
             overview: "Medical Assistants complete administrative and clinical tasks in the offices of physicians, hospitals, and other healthcare facilities.",
             salary: "$42,000",
             growth: "14%",
@@ -71,7 +71,7 @@ async function main() {
         },
         {
             name: "Surgical Technologist",
-            slug: "surgical-technologist",
+            slug: "surgical-technologists",
             overview: "Surgical Technologists assist in surgical operations. They prepare operating rooms, arrange equipment, and help doctors.",
             salary: "$56,000",
             growth: "5%",
@@ -79,7 +79,7 @@ async function main() {
         },
         {
             name: "Dental Hygienist",
-            slug: "dental-hygienist",
+            slug: "dental-hygienists",
             overview: "Dental Hygienists examine patients for signs of oral diseases and provide preventive care, including oral hygiene.",
             salary: "$87,000",
             growth: "7%",
@@ -87,7 +87,7 @@ async function main() {
         },
         {
             name: "Ultrasound Technician",
-            slug: "ultrasound-technician",
+            slug: "ultrasound-technicians",
             overview: "Diagnostic Medical Sonographers operate special imaging equipment to create images or conduct tests.",
             salary: "$84,000",
             growth: "10%",
