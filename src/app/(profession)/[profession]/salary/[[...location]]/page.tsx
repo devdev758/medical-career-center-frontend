@@ -546,7 +546,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         </div>
                     </Link>
 
-                    <Link href={`${urls.howToBecome}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 shadow-lg text-white">
+                    <Link href={urls.howToBecome} className="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 shadow-lg text-white">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <BookOpen className="w-24 h-24" />
                         </div>
