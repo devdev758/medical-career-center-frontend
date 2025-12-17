@@ -105,30 +105,6 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
 
     return (
         <div className="space-y-8 mt-12 not-prose">
-            {/* Related Professions */}
-            {relatedProfessions.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-xl">
-                            Related Healthcare Careers{locationText ? ` in ${locationText}` : ''}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {relatedProfessions.map(slug => (
-                                <Link
-                                    key={slug}
-                                    href={`/${slug}-salary${state ? `/${state.toLowerCase()}` : ''}${city ? `/${createCitySlug(city)}` : ''}`}
-                                    className="text-primary hover:underline font-medium"
-                                >
-                                    {formatProfessionTitle(slug)}
-                                </Link>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
             {/* Major Cities (for state pages) */}
             {state && !city && verifiedMajorCities.length > 0 && (
                 <Card>
@@ -200,25 +176,6 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
                     </CardContent>
                 </Card>
             )}
-
-            {/* Job Listings CTA */}
-            <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-                <CardContent className="p-8">
-                    <div className="text-center">
-                        <h3 className="text-2xl font-bold mb-3">
-                            Looking for {professionTitle} Jobs?
-                        </h3>
-                        <p className="text-muted-foreground mb-6 text-lg">
-                            Browse open positions and apply today{locationText ? ` in ${locationText}` : ''}
-                        </p>
-                        <Button size="lg" asChild className="text-lg px-8">
-                            <Link href={`/${profession}-jobs${state ? `/${state.toLowerCase()}` : ''}${city ? `/${createCitySlug(city)}` : ''}`}>
-                                View {professionTitle} Jobs →
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

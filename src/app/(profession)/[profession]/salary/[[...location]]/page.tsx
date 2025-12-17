@@ -339,9 +339,24 @@ export default async function SalaryPage({ params }: PageProps) {
         breadcrumbItems.push({ label: 'Salary' });
     }
 
+    // Top Stats for Hero Cards
+    const formalName = getProfessionFormalName(profession);
+    const topStateObj = allStates.length > 0 ? { name: allStates[0].stateName, salary: allStates[0].median } : undefined;
+    let topCityObj = topCitiesNational.length > 0 ? { name: topCitiesNational[0].city, salary: topCitiesNational[0].median } : undefined;
+
+    // If on a State page, use the top city in that state
+    if (state && stateCities.length > 0) {
+        topCityObj = { name: stateCities[0].city, salary: stateCities[0].median };
+    }
+
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
+
+            {/* Main H1 Title */}
+            <h1 className="text-3xl md:text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100 text-center md:text-left">
+                How much does a {formalName} make{locationData ? ` in ${locationName}` : ''}?
+            </h1>
 
             {/* Hero Stats Section */}
             <SalaryHeroStats
@@ -354,6 +369,8 @@ export default async function SalaryPage({ params }: PageProps) {
                 vsNational={state ? vsNational : undefined}
                 jobsPer1000={salaryData.jobsPer1000}
                 locationQuotient={salaryData.locationQuotient}
+                topState={!state ? topStateObj : undefined} // Only show top state on national page
+                topCity={topCityObj}
             />
 
             <Separator className="my-8" />
