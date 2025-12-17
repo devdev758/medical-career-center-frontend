@@ -80,20 +80,28 @@ export const OES_DATA_TYPES = {
 
 /**
  * Build a BLS OES series ID
- * Format: OEUS[STATE][AREA][OCCUPATION][DATATYPE]
  * 
- * @param stateCode - FIPS state code (2 digits)
+ * National format: OEUN0000000000000[OCCUPATION][DATATYPE] (26 chars)
+ * State format:    OEUS[STATE]000000000000[OCCUPATION][DATATYPE] (26 chars)
+ * 
+ * @param stateCode - 'national' or state FIPS code (2 digits)
  * @param socCode - SOC occupation code (6 digits, no hyphen)
  * @param dataType - Data type code (2 digits)
- * @param areaCode - Area code (5 digits), defaults to statewide
  */
 export function buildSeriesId(
     stateCode: string,
     socCode: string,
-    dataType: string,
-    areaCode: string = '00000'
+    dataType: string
 ): string {
-    return `OEUS${stateCode}${areaCode}${socCode}${dataType}`;
+    // Both formats produce 25-character series IDs
+    // OEUN/OEUS (4) + area code (13) + occupation (6) + datatype (2) = 25 chars
+    if (stateCode === '00') {
+        // National data: OEUN + 13 zeros + SOC (6) + type (2)
+        return `OEUN0000000000000${socCode}${dataType}`;
+    } else {
+        // State data: OEUS + state (2) + 11 zeros + SOC (6) + type (2)
+        return `OEUS${stateCode}00000000000${socCode}${dataType}`;
+    }
 }
 
 /**

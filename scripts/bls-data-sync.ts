@@ -112,47 +112,48 @@ async function saveWageData(wageData: WageData[]): Promise<number> {
         try {
             const locationId = await getOrCreateLocation(data.stateCode);
 
-            // Upsert salary data
-            await prisma.salaryData.upsert({
+            // For national data (null locationId), we can't use the compound unique constraint
+            // So we need to use findFirst + create/update pattern
+            const existing = await prisma.salaryData.findFirst({
                 where: {
-                    careerKeyword_locationId_year: {
-                        careerKeyword: data.professionSlug,
-                        locationId: locationId,
-                        year: data.year,
-                    },
-                },
-                update: {
-                    hourly10th: data.hourly10th,
-                    hourly25th: data.hourly25th,
-                    hourlyMedian: data.hourlyMedian,
-                    hourly75th: data.hourly75th,
-                    hourly90th: data.hourly90th,
-                    annual10th: data.annual10th,
-                    annual25th: data.annual25th,
-                    annualMedian: data.annualMedian,
-                    annual75th: data.annual75th,
-                    annual90th: data.annual90th,
-                    employmentCount: data.employment,
-                    source: 'BLS',
-                },
-                create: {
                     careerKeyword: data.professionSlug,
                     locationId: locationId,
                     year: data.year,
-                    hourly10th: data.hourly10th,
-                    hourly25th: data.hourly25th,
-                    hourlyMedian: data.hourlyMedian,
-                    hourly75th: data.hourly75th,
-                    hourly90th: data.hourly90th,
-                    annual10th: data.annual10th,
-                    annual25th: data.annual25th,
-                    annualMedian: data.annualMedian,
-                    annual75th: data.annual75th,
-                    annual90th: data.annual90th,
-                    employmentCount: data.employment,
-                    source: 'BLS',
                 },
             });
+
+            const salaryFields = {
+                hourlyMean: data.hourlyMean,
+                hourlyMedian: data.hourlyMedian,
+                hourly10th: data.hourly10th,
+                hourly25th: data.hourly25th,
+                hourly75th: data.hourly75th,
+                hourly90th: data.hourly90th,
+                annualMean: data.annualMean,
+                annualMedian: data.annualMedian,
+                annual10th: data.annual10th,
+                annual25th: data.annual25th,
+                annual75th: data.annual75th,
+                annual90th: data.annual90th,
+                employmentCount: data.employment,
+                source: 'BLS',
+            };
+
+            if (existing) {
+                await prisma.salaryData.update({
+                    where: { id: existing.id },
+                    data: salaryFields,
+                });
+            } else {
+                await prisma.salaryData.create({
+                    data: {
+                        careerKeyword: data.professionSlug,
+                        locationId: locationId,
+                        year: data.year,
+                        ...salaryFields,
+                    },
+                });
+            }
 
             savedCount++;
         } catch (error) {
