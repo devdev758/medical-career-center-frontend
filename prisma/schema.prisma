@@ -337,12 +337,38 @@ model SalaryData {
 
   employmentCount Int? // Number of jobs in this area
 
+  // Extended BLS data
+  jobsPer1000      Float?   // Jobs per 1,000 in the area
+  locationQuotient Float?   // LQ vs national (>1 = higher concentration)
+  meanErrorMargin  Float?   // PRSE for mean wage estimate
+  empErrorMargin   Float?   // PRSE for employment estimate
+
   year   Int // Data year (e.g., 2024)
   source String // "BLS"
 
   updatedAt DateTime @updatedAt
 
   @@unique([careerKeyword, locationId, year])
+  @@index([careerKeyword])
+}
+
+// Industry employment breakdown by NAICS code
+model IndustryEmployment {
+  id String @id @default(cuid())
+  
+  careerKeyword String      // e.g., "registered-nurse"
+  naicsCode     String      // e.g., "622" for Hospitals
+  naicsTitle    String      // e.g., "Hospitals"
+  
+  employment    Int?        // Total employed in this industry
+  meanAnnual    Float?      // Mean annual wage in this industry
+  medianAnnual  Float?      // Median annual wage
+  meanHourly    Float?      // Mean hourly wage
+  pctOfTotal    Float?      // % of occupation employed in this industry
+  
+  year Int                  // Data year (e.g., 2024)
+  
+  @@unique([careerKeyword, naicsCode, year])
   @@index([careerKeyword])
 }
 
