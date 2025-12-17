@@ -144,7 +144,7 @@ async function generateSalaryPageHTML(profession: string, location?: string) {
             <hr class="my-8">
 
             <h2 class="text-3xl font-bold mb-4">${careerTitle} Salary in ${locationName} – Overview</h2>
-            <div class="whitespace-pre-line text-lg mb-4">${narrative.intro}</div>
+            <div class="whitespace-pre-line text-lg mb-4">${narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>
 
             <p class="text-lg mt-6">Let's dive deeper into the wage distribution:</p>
 

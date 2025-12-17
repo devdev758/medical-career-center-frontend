@@ -17,6 +17,7 @@ import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 import { calculatePercentChange } from '@/lib/salary-utils';
+import { Search, GraduationCap, BookOpen, FileText } from 'lucide-react';
 
 // New enhanced components
 import { SalaryHeroStats } from '@/components/salary/SalaryHeroStats';
@@ -25,6 +26,7 @@ import { StateComparisonTable } from '@/components/salary/StateComparisonTable';
 import { CityComparisonTable } from '@/components/salary/CityComparisonTable';
 import { IndustryBreakdown } from '@/components/salary/IndustryBreakdown';
 import { LocationInsightCard } from '@/components/salary/LocationInsightCard';
+import { RelatedSalaries } from '@/components/salary/RelatedSalaries';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,10 +44,16 @@ function formatLocationName(slug: string): string {
         .join(' ');
 }
 
+// Helper for CNA capitalization in Titles
+function formatTitleForDisplay(slug: string): string {
+    if (slug.includes('nursing-assistant') || slug.includes('cna')) return "CNA";
+    return formatSlugForBreadcrumb(slug);
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, location } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
-    const careerTitle = formatSlugForBreadcrumb(profession);
+    const careerTitle = formatTitleForDisplay(profession);
 
     const state = location?.[0];
     const city = location?.[1];
@@ -92,9 +100,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
         : '$60,000';
 
-    const currentYear = new Date().getFullYear();
-    const title = `${careerTitle} Salary ${currentYear}: Average Pay by State & City | Medical Career Center`;
-    const description = `${careerTitle}s earn an average of ${medianSalary} annually in ${locationName}. Explore detailed salary data by experience level, percentiles, and location. Compare top-paying states and cities.`;
+    const year = 2026;
+    const title = `${careerTitle} Salary ${year}: Ultimate Guide to Pay Rates in ${locationName}`;
+    const description = `How much do ${careerTitle}s make in ${locationName}? Comprehensive ${year} salary guide with median, hourly, and top-tier pay rates. Compare salaries by state, city, and experience level.`;
 
     let urlPath = `/${profession}/salary`;
     if (city && state) {
@@ -116,7 +124,7 @@ export default async function SalaryPage({ params }: PageProps) {
     const { profession, location } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
-    const careerTitle = formatSlugForBreadcrumb(profession);
+    const careerTitle = formatTitleForDisplay(profession);
 
     const state = location?.[0];
     const city = location?.[1];
@@ -243,7 +251,7 @@ export default async function SalaryPage({ params }: PageProps) {
             }));
     }
 
-    // Fetch industry data for national page
+    // Fetch industry data with filtering
     let industries: { naicsCode: string; naicsTitle: string; employment: number; meanAnnual: number | null }[] = [];
     if (!state && !city) {
         const industryRecords = await prisma.industryEmployment.findMany({
@@ -255,19 +263,14 @@ export default async function SalaryPage({ params }: PageProps) {
             orderBy: { employment: 'desc' }
         });
 
-        // Revised Filtering Logic to exclude broad sectors
         industries = industryRecords
             .filter((i: any) => {
-                // Exclude Sector 62 (Health Care and Social Assistance) which is too broad
-                // Exclude codes starting with 00 (Total, Cross-industry) or 99 (Govt totals)
-                // Prefer longer NAICS codes which are more specific (4+ digits)
                 const isBroadSector = i.naicsCode.length < 4;
                 const isTotalOrGovt = i.naicsCode.startsWith('00') || i.naicsCode.startsWith('99');
                 const isHealthcareSector = i.naicsCode === '62';
-
                 return !isBroadSector && !isTotalOrGovt && !isHealthcareSector;
             })
-            .slice(0, 8) // Limit to top 8 specific industries
+            .slice(0, 8)
             .map((i: any) => ({
                 naicsCode: i.naicsCode,
                 naicsTitle: i.naicsTitle,
@@ -285,18 +288,9 @@ export default async function SalaryPage({ params }: PageProps) {
     }
 
     // Top performers for Narrative Generation
-    // We fetch these even for state/city pages just to have context if needed, 
-    // but primarily for National page.
-    // If we are on national page, we already fetched allStates.
     let topStateName = "California";
-    // Default fallback if query fails or array empty
     if (allStates.length > 0) {
-        // allStates is sorted by salary desc
         topStateName = allStates[0].stateName;
-    } else if (state || city) {
-        // If on state/city page, we might want to fetch national top state for context
-        // But for now, let's keep it simple or async fetch only if needed.
-        // Let's stick to defaults or pass generic context.
     }
 
     let topCityName = "San Francisco";
@@ -314,7 +308,6 @@ export default async function SalaryPage({ params }: PageProps) {
     );
 
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
-    const careerDescription = getCareerDescription(dbSlug);
 
     // New Content Generators
     const factorsContent = generateFactorsAffectingSalary(careerTitle);
@@ -368,11 +361,10 @@ export default async function SalaryPage({ params }: PageProps) {
 
             {/* Narrative Overview (Story) */}
             <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
-                <h2 className="text-3xl font-bold mb-4">How much do {careerTitle.toLowerCase()}s make in {locationName}?</h2>
-                {/* Render the rich text narrative line by line/paragraph */}
-                <div className="whitespace-pre-line text-lg text-gray-700 dark:text-gray-300">
-                    {narrative.intro.trim()}
-                </div>
+                <div
+                    className="whitespace-pre-line text-lg text-gray-700 dark:text-gray-300"
+                    dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+                />
             </article>
 
             {/* Wage Distribution Chart */}
@@ -412,14 +404,13 @@ export default async function SalaryPage({ params }: PageProps) {
             {!state && !city && allStates.length > 0 && (
                 <section className="mb-12">
                     <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
-                        <h2 className="text-3xl font-bold mb-4">{stateNarrative.title}</h2>
-                        <p className="text-lg">{stateNarrative.content}</p>
+                        <div dangerouslySetInnerHTML={{ __html: stateNarrative.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                     </article>
                     <StateComparisonTable
                         states={allStates}
                         nationalMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
                         profession={profession}
-                        limit={10} // Initial collapsed view
+                        limit={10}
                     />
                 </section>
             )}
@@ -428,8 +419,7 @@ export default async function SalaryPage({ params }: PageProps) {
             {((!state && !city && topCitiesNational.length > 0) || (state && !city && stateCities.length > 0)) && (
                 <section className="mb-12">
                     <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
-                        <h2 className="text-3xl font-bold mb-4">{cityNarrative.title}</h2>
-                        <p className="text-lg">{cityNarrative.content}</p>
+                        <div dangerouslySetInnerHTML={{ __html: cityNarrative.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                     </article>
 
                     {state ? (
@@ -457,10 +447,8 @@ export default async function SalaryPage({ params }: PageProps) {
             {!state && !city && industries.length > 0 && (
                 <section className="mb-12">
                     <article className="prose prose-lg dark:prose-invert max-w-none mb-6">
-                        <h2 className="text-3xl font-bold mb-4">{industryNarrative.title}</h2>
-                        <p className="text-lg">{industryNarrative.content}</p>
+                        <div dangerouslySetInnerHTML={{ __html: industryNarrative.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                     </article>
-                    {/* Passing explicit total employment to ensure correct percentages */}
                     <IndustryBreakdown
                         industries={industries}
                         professionName={careerTitle}
@@ -471,26 +459,63 @@ export default async function SalaryPage({ params }: PageProps) {
 
             <Separator className="my-8" />
 
-            <article className="prose prose-lg dark:prose-invert max-w-none">
-                <h2 className="text-3xl font-bold mb-4">What is a {careerTitle}?</h2>
-                <p className="text-lg">{careerDescription}</p>
-            </article>
+            {/* Related Salaries Section */}
+            <section className="mb-12">
+                <RelatedSalaries currentProfession={dbSlug} />
+            </section>
 
-            {/* Quick Navigation */}
-            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Browse Jobs</p>
+            {/* Visual CTAs for Resources */}
+            <div className="mt-12">
+                <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+                    Explore ${careerTitle} Resources
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Link href={urls.jobs} className="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 shadow-lg text-white">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Search className="w-24 h-24" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="mb-4 bg-white/20 w-fit p-3 rounded-xl backdrop-blur-sm">
+                                <Search className="w-6 h-6 text-white" />
+                            </div>
+                            <h4 className="text-xl font-bold mb-2">Browse Jobs</h4>
+                            <p className="text-blue-100 mb-4 text-sm">Find ${careerTitle} positions near you with competitive salaries.</p>
+                            <span className="inline-flex items-center font-semibold text-sm bg-white text-blue-600 px-4 py-2 rounded-lg group-hover:bg-blue-50 transition-colors">
+                                Search Now
+                            </span>
+                        </div>
                     </Link>
-                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Career Guide</p>
+
+                    <Link href={urls.schools} className="group relative overflow-hidden bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-6 shadow-lg text-white">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <GraduationCap className="w-24 h-24" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="mb-4 bg-white/20 w-fit p-3 rounded-xl backdrop-blur-sm">
+                                <GraduationCap className="w-6 h-6 text-white" />
+                            </div>
+                            <h4 className="text-xl font-bold mb-2">Find Schools</h4>
+                            <p className="text-indigo-100 mb-4 text-sm">Discover top-rated programs to launch your career.</p>
+                            <span className="inline-flex items-center font-semibold text-sm bg-white text-indigo-600 px-4 py-2 rounded-lg group-hover:bg-indigo-50 transition-colors">
+                                Begin Search
+                            </span>
+                        </div>
                     </Link>
-                    <Link href={urls.schools} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Find Schools</p>
-                    </Link>
-                    <Link href={urls.resume} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Resume Tips</p>
+
+                    <Link href={urls.howToBecome} className="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 shadow-lg text-white">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <BookOpen className="w-24 h-24" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="mb-4 bg-white/20 w-fit p-3 rounded-xl backdrop-blur-sm">
+                                <BookOpen className="w-6 h-6 text-white" />
+                            </div>
+                            <h4 className="text-xl font-bold mb-2">Career Guide</h4>
+                            <p className="text-purple-100 mb-4 text-sm">Step-by-step guide to becoming a ${careerTitle}.</p>
+                            <span className="inline-flex items-center font-semibold text-sm bg-white text-purple-600 px-4 py-2 rounded-lg group-hover:bg-purple-50 transition-colors">
+                                Read Guide
+                            </span>
+                        </div>
                     </Link>
                 </div>
             </div>
