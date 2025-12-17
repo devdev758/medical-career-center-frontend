@@ -24,7 +24,7 @@ export function formatCurrency(amount: number) {
     }).format(amount);
 }
 
-export function generateWageNarrative(salary: any, careerTitle: string, locationName: string) {
+export function generateWageNarrative(salary: any, careerTitle: string, locationName: string, topStateName: string = "California", topCityName: string = "San Francisco") {
     const hourlyMedian = salary.hourlyMedian ? `$${salary.hourlyMedian.toFixed(2)}` : "N/A";
     const annualMedian = formatCurrency(salary.annualMedian || 0);
 
@@ -41,24 +41,40 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
     const annual90th = salary.annual90th ? formatCurrency(salary.annual90th) : "N/A";
 
     const employmentCount = salary.employmentCount ? salary.employmentCount.toLocaleString() : "N/A";
-    const professionName = getProfessionDisplayName(careerTitle);
+    const profession = getProfessionDisplayName(careerTitle);
+    const professionLower = profession.toLowerCase();
+
+    // Context-aware introduction
+    const roleDescription = getCareerDescription(careerTitle.toLowerCase().replace(/ /g, '-'));
+
+    // Main "Story" Narrative
+    const overview = `
+        ${roleDescription} As interest in this career continues to grow, many prospective ${professionLower}s wonder – how much do ${professionLower}s make? Here's an overview of typical ${professionLower} salary data in ${locationName}:
+
+        The average annual salary for ${professionLower}s is ${annualMedian} per year or ${hourlyMedian} per hour, according to latest data from the U.S. Bureau of Labor Statistics (BLS).
+
+        Entry-level ${professionLower}s with less than 1 year of experience can expect to earn an average base pay of around ${annual10th} annually or ${hourly10th} hourly.
+
+        Experienced ${professionLower}s with 5-10 years of experience can earn closer to ${annual75th} annually or ${hourly75th} per hour.
+
+        The top 10% of ${professionLower}s earn over ${annual90th} annually or ${hourly90th} hourly.
+        
+        ${locationName === 'United States' ? `Some of the top paying states for ${professionLower}s include ${topStateName}, where salaries are significantly higher than the national average.` : ''}
+        
+        Major metropolitan areas like ${topCityName} also offer competitive salaries for ${professionLower}s.
+    `;
 
     return {
-        intro: `The average salary for a **${careerTitle}** in **${locationName}** is **${annualMedian}** per year (or **${hourlyMedian}** per hour).`,
-        overview: `The median hourly salary for ${careerTitle.toLowerCase()}s in ${locationName} is ${hourlyMedian}.`,
+        intro: overview, // This is now a rich markdown string
         distribution: [
-            `${professionName}s in the bottom 10% earn ${hourly10th} per hour or ${annual10th} annually.`,
-            `Those in the bottom 25% earn ${hourly25th} per hour or ${annual25th} per year.`,
-            `The median or average salary is ${hourlyMedian} per hour or ${annualMedian} annually.`,
-            `In the top 25%, ${locationName} ${professionName.toLowerCase()}s make ${hourly75th} per hour or ${annual75th} per year.`,
-            `The highest paid ${professionName.toLowerCase()}s in the top 10% earn ${hourly90th} per hour or ${annual90th} annually.`
+            // Kept for backward compatibility if needed, but primary content is above
         ],
         wageBreakdown: {
-            starting: `If you're starting as a ${professionName.toLowerCase()}, you might find yourself earning around ${hourly10th} per hour or ${annual10th} per year.`,
-            earlyCareer: `With a bit more experience, earnings around ${hourly25th} per hour or ${annual25th} per year are common.`,
-            median: `The median wage sits at ${hourlyMedian} per hour or ${annualMedian} per year. This means half of the ${professionName.toLowerCase()}s in ${locationName} earn more than this, while the other half earns less.`,
-            experienced: `Those in the top 25% of earners take home around ${hourly75th} per hour or ${annual75th} per year.`,
-            topEarners: `The highest earners, the top 10%, make about ${hourly90th} per hour or ${annual90th} per year.`
+            starting: `Entry-Level (${annual10th})`,
+            earlyCareer: `Early Career (${annual25th})`,
+            median: `Median (${annualMedian})`,
+            experienced: `Experienced (${annual75th})`,
+            topEarners: `Top Earners (${annual90th})`
         },
         employmentCount: employmentCount
     };
@@ -69,13 +85,15 @@ export function generateFactorsAffectingSalary(careerTitle: string) {
 
     return {
         title: `What factors affect ${profession} salary?`,
-        content: `${profession} salaries can vary significantly based on several key factors. While the median salary provides a baseline, your actual earnings potential depends on:`,
+        content: `${profession} salaries can vary significantly based on factors like:`,
         factors: [
-            `**Geographic Location:** Region and cost of living play a major role in salary ranges. ${profession}s in metropolitan areas and states with higher costs of living (like California or Massachusetts) often earn significantly more than the national average.`,
-            `**Years of Experience:** As with most professions, your salary will typically grow as you gain experience. Entry-level ${profession}s start lower, while those with 5-10+ years of experience can earn 20-30% more.`,
-            `**Industry Setting:** Where you work matters. ${profession}s employed in hospitals or outpatient care centers often earn differently than those in private physician offices or nursing care facilities.`,
-            `**Certifications & Education:** Additional certifications or advanced degrees can qualify you for specialized roles or leadership positions that command higher pay.`,
-            `**Shift Differentials:** Healthcare is a 24/7 industry. ${profession}s willing to work nights, weekends, or holidays often receive "shift differential" pay that boosts their overall income.`
+            `**Geographic location** – Region and cost of living play a major role in salary ranges. ${profession}s earn the highest salaries in metropolitan areas on the coasts with higher costs of living.`,
+            `**Years of experience** – As ${profession}s gain more on-the-job expertise, their salaries increase substantially. The most experienced professionals can make 20-30% higher salaries.`,
+            `**Industry** – Professionals in hospital settings and medical centers typically make more than those in physicians' offices and outpatient clinics.`,
+            `**Employment setting** – Salaries are often higher for those working in private and group practice settings vs. public and government hospitals.`,
+            `**Overtime** – ${profession}s frequently work longer shifts with overtime pay which increases total compensation.`,
+            `**Specialization** – Those who specialize in niche areas can demand higher pay.`,
+            `**Certification** – Professionals who earn additional credentials tend to earn higher salaries than non-certified peers.`
         ]
     };
 }
@@ -83,33 +101,36 @@ export function generateFactorsAffectingSalary(careerTitle: string) {
 export function generateStateSalaryNarrative(careerTitle: string, topState?: { name: string, salary: number }) {
     const profession = getProfessionDisplayName(careerTitle);
     const topStateText = topState
-        ? `States like **${topState.name}** are among the highest paying, with median salaries reaching **${formatCurrency(topState.salary)}**.`
-        : `Coastal states and those with strong healthcare unions often offer the highest compensation.`;
+        ? `${topState.name} leads the pack with a median salary of ${formatCurrency(topState.salary)}.`
+        : `Coastal states often lead in compensation.`;
 
     return {
         title: `Average ${profession} Salary by State`,
-        content: `Location is one of the biggest influencers on multiple variables of a ${profession}'s salary. ${topStateText} However, it's important to weigh these higher salaries against the local cost of living. A higher salary in a expensive city might not go as far as a moderate salary in a more affordable state.`
+        content: `When it comes to location, not all states are created equal. ${topStateText} Costs of living vary wildly, so a higher paycheck in California might not stretch as far as a moderate one in Texas. Below is the full breakdown of ${profession} salaries across all 50 states.`
     };
 }
 
 export function generateCitySalaryNarrative(careerTitle: string, topCity?: { name: string, salary: number }) {
     const profession = getProfessionDisplayName(careerTitle);
     const topCityText = topCity
-        ? `Major metropolitan areas like **${topCity.name}** top the charts with median salaries of **${formatCurrency(topCity.salary)}**.`
-        : `Metropolitan areas typically pay more due to higher demand and cost of living.`;
+        ? `Cities like ${topCity.name} offer some of the highest wages in the country at ${formatCurrency(topCity.salary)}.`
+        : `Major metropolitan hubs typically offer the highest wages.`;
 
     return {
         title: `Average ${profession} Salary by City`,
-        content: `City-level data reveals even more granularity. ${topCityText} Use the table below to compare ${profession} salaries across different metropolitan areas to find the best balance of pay and lifestyle for you.`
+        content: `For many professionals, the specific city can matter even more than the state. ${topCityText} Large metro areas often pay a premium to attract talent, though this usually comes with higher housing costs.`
     };
 }
 
-export function generateIndustrySalaryNarrative(careerTitle: string) {
+export function generateIndustrySalaryNarrative(careerTitle: string, topIndustry?: { name: string, salary: number, employment: number }) {
     const profession = getProfessionDisplayName(careerTitle);
+    const industryText = topIndustry
+        ? `The largest employer of ${profession}s is ${topIndustry.name}, employing over ${topIndustry.employment.toLocaleString()} professionals with an average salary of ${formatCurrency(topIndustry.salary)}.`
+        : `${profession}s work across a wide range of healthcare settings.`;
 
     return {
         title: `Average ${profession} Salary by Industry`,
-        content: `${profession}s work in a variety of healthcare settings, and pay can vary by industry. Hospitals and outpatient care centers typically offer competitive wages, while roles in educational services or residential facilities may vary. The chart below breaks down where ${profession}s work and the average annual mean wage in those specific industries.`
+        content: `${industryText} While hospitals often pay well, other sectors like outpatient care centers or specialized clinics can sometimes offer even higher hourly rates. Understanding where the jobs are can help you target your job search effectively.`
     };
 }
 

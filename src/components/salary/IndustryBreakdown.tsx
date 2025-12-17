@@ -17,12 +17,15 @@ interface IndustryBreakdownProps {
 }
 
 export function IndustryBreakdown({ industries, professionName, totalEmployment }: IndustryBreakdownProps) {
-    // Filter to top 6 industries with employment data
+    // Filter to top 5-6 industries with employment data
     const topIndustries = industries
         .filter(ind => ind.employment > 0)
         .slice(0, 6);
 
-    const total = totalEmployment || topIndustries.reduce((sum, ind) => sum + ind.employment, 0);
+    // Check if totalEmployment seems valid effectively (sometimes BLS sums are tricky)
+    // If sum of top industries > totalEmployment, use sum.
+    const sumOfTop = topIndustries.reduce((sum, ind) => sum + ind.employment, 0);
+    const effectiveTotal = Math.max(totalEmployment || 0, sumOfTop);
 
     // Colors for the pie chart segments
     const colors = [
@@ -47,7 +50,7 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
             <div className="space-y-4">
                 <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 dark:bg-gray-700">
                     {topIndustries.map((ind, i) => {
-                        const percent = (ind.employment / total) * 100;
+                        const percent = (ind.employment / effectiveTotal) * 100;
                         return (
                             <div
                                 key={ind.naicsCode}
@@ -60,9 +63,9 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
                 </div>
 
                 {/* Legend */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {topIndustries.map((ind, i) => {
-                        const percent = (ind.employment / total) * 100;
+                        const percent = (ind.employment / effectiveTotal) * 100;
                         return (
                             <div
                                 key={ind.naicsCode}
@@ -74,7 +77,7 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
                                         {ind.naicsTitle.replace(/\(.*\)/g, '').trim()}
                                     </div>
                                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                                        {percent.toFixed(0)}% • {formatNumber(ind.employment)}
+                                        {percent.toFixed(1)}% • {formatNumber(ind.employment)}
                                     </div>
                                 </div>
                             </div>

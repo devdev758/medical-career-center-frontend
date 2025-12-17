@@ -144,11 +144,7 @@ async function generateSalaryPageHTML(profession: string, location?: string) {
             <hr class="my-8">
 
             <h2 class="text-3xl font-bold mb-4">${careerTitle} Salary in ${locationName} – Overview</h2>
-            <p class="text-lg mb-4">${narrative.overview}</p>
-
-            <ul class="space-y-2 text-lg">
-                ${narrative.distribution.map((item: string) => `<li>${item}</li>`).join('')}
-            </ul>
+            <div class="whitespace-pre-line text-lg mb-4">${narrative.intro}</div>
 
             <p class="text-lg mt-6">Let's dive deeper into the wage distribution:</p>
 

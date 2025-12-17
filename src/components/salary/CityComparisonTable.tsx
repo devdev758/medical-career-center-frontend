@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { formatSalary, formatNumber, calculatePercentChange } from '@/lib/salary-utils';
-import { MapPin, ArrowUpRight, Briefcase } from 'lucide-react';
+import { MapPin, Briefcase } from 'lucide-react';
 
 interface CityData {
     city: string;
@@ -18,7 +18,6 @@ interface CityComparisonTableProps {
     baselineMedian: number; // State or national median for comparison
     profession: string;
     stateCode?: string; // If provided, shows cities in a specific state
-    showAll?: boolean;
     limit?: number;
     title?: string;
 }
@@ -28,11 +27,10 @@ export function CityComparisonTable({
     baselineMedian,
     profession,
     stateCode,
-    showAll = false,
-    limit = 10,
+    limit = 20,
     title = 'Top Paying Cities',
 }: CityComparisonTableProps) {
-    const displayCities = showAll ? cities : cities.slice(0, limit);
+    const displayCities = cities.slice(0, limit);
 
     const createCitySlug = (city: string) => {
         return city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -40,20 +38,9 @@ export function CityComparisonTable({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {title}
-                </h3>
-                {!showAll && cities.length > limit && (
-                    <Link
-                        href={stateCode ? `/${profession}/salary/${stateCode.toLowerCase()}` : `/${profession}/salary`}
-                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center gap-1"
-                    >
-                        View all {cities.length} cities
-                        <ArrowUpRight className="w-4 h-4" />
-                    </Link>
-                )}
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {title}
+            </h3>
 
             <div className="grid gap-3 md:grid-cols-2">
                 {displayCities.map((city, index) => {
@@ -97,17 +84,7 @@ export function CityComparisonTable({
                     );
                 })}
             </div>
-
-            {!showAll && cities.length > limit && (
-                <div className="text-center pt-2">
-                    <Link
-                        href={stateCode ? `/${profession}/salary/${stateCode.toLowerCase()}` : `/${profession}/salary`}
-                        className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                        See all {cities.length} cities →
-                    </Link>
-                </div>
-            )}
+            {/* Removed the "View all" link as it was broken and unnecessary for top 20 list */}
         </div>
     );
 }

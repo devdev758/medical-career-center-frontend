@@ -243,7 +243,7 @@ export default async function SalaryPage({ params }: PageProps) {
             }));
     }
 
-    // Fetch industry data for national page - Corrected filtering
+    // Fetch industry data for national page
     let industries: { naicsCode: string; naicsTitle: string; employment: number; meanAnnual: number | null }[] = [];
     if (!state && !city) {
         const industryRecords = await prisma.industryEmployment.findMany({
@@ -255,10 +255,9 @@ export default async function SalaryPage({ params }: PageProps) {
             orderBy: { employment: 'desc' }
         });
 
-        // Filter out broad sectors (2-3 digit NAICS and special cross-industry codes)
-        // We generally want 4-6 digit NAICS codes for specific industries
+        // Revised Filtering Logic to exclude broad sectors
         industries = industryRecords
-            .filter(i => {
+            .filter((i: any) => {
                 // Exclude Sector 62 (Health Care and Social Assistance) which is too broad
                 // Exclude codes starting with 00 (Total, Cross-industry) or 99 (Govt totals)
                 // Prefer longer NAICS codes which are more specific (4+ digits)
@@ -269,7 +268,7 @@ export default async function SalaryPage({ params }: PageProps) {
                 return !isBroadSector && !isTotalOrGovt && !isHealthcareSector;
             })
             .slice(0, 8) // Limit to top 8 specific industries
-            .map(i => ({
+            .map((i: any) => ({
                 naicsCode: i.naicsCode,
                 naicsTitle: i.naicsTitle,
                 employment: i.employment || 0,
@@ -285,8 +284,35 @@ export default async function SalaryPage({ params }: PageProps) {
         locationName = locationData.stateName;
     }
 
+    // Top performers for Narrative Generation
+    // We fetch these even for state/city pages just to have context if needed, 
+    // but primarily for National page.
+    // If we are on national page, we already fetched allStates.
+    let topStateName = "California";
+    // Default fallback if query fails or array empty
+    if (allStates.length > 0) {
+        // allStates is sorted by salary desc
+        topStateName = allStates[0].stateName;
+    } else if (state || city) {
+        // If on state/city page, we might want to fetch national top state for context
+        // But for now, let's keep it simple or async fetch only if needed.
+        // Let's stick to defaults or pass generic context.
+    }
+
+    let topCityName = "San Francisco";
+    if (topCitiesNational.length > 0) {
+        topCityName = topCitiesNational[0].city;
+    }
+
     // Generate Content Narratives
-    const narrative = generateWageNarrative(salaryData, careerTitle, locationName);
+    const narrative = generateWageNarrative(
+        salaryData,
+        careerTitle,
+        locationName,
+        topStateName,
+        topCityName
+    );
+
     const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
     const careerDescription = getCareerDescription(dbSlug);
 
@@ -299,7 +325,10 @@ export default async function SalaryPage({ params }: PageProps) {
     const topCityForNarrative = topCitiesNational.length > 0 ? { name: topCitiesNational[0].city, salary: topCitiesNational[0].median } : undefined;
     const cityNarrative = generateCitySalaryNarrative(careerTitle, topCityForNarrative);
 
-    const industryNarrative = generateIndustrySalaryNarrative(careerTitle);
+    const topIndustry = industries.length > 0
+        ? { name: industries[0].naicsTitle, salary: industries[0].meanAnnual || 0, employment: industries[0].employment }
+        : undefined;
+    const industryNarrative = generateIndustrySalaryNarrative(careerTitle, topIndustry);
 
     // Breadcrumbs
     const breadcrumbItems: { label: string; href?: string }[] = [
@@ -337,16 +366,12 @@ export default async function SalaryPage({ params }: PageProps) {
 
             <Separator className="my-8" />
 
-            {/* Narrative Overview */}
+            {/* Narrative Overview (Story) */}
             <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
-                <h2 className="text-3xl font-bold mb-4">{careerTitle} Salary in {locationName} – Overview</h2>
-                <p className="text-lg mb-4">{narrative.intro}</p>
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 my-6">
-                    <ul className="space-y-3 text-lg m-0">
-                        {narrative.distribution.map((item: string, index: number) => (
-                            <li key={index} className="pl-2">{item}</li>
-                        ))}
-                    </ul>
+                <h2 className="text-3xl font-bold mb-4">How much do {careerTitle.toLowerCase()}s make in {locationName}?</h2>
+                {/* Render the rich text narrative line by line/paragraph */}
+                <div className="whitespace-pre-line text-lg text-gray-700 dark:text-gray-300">
+                    {narrative.intro.trim()}
                 </div>
             </article>
 
@@ -362,11 +387,13 @@ export default async function SalaryPage({ params }: PageProps) {
             <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
                 <h2 className="text-3xl font-bold mb-4">{factorsContent.title}</h2>
                 <p className="text-lg">{factorsContent.content}</p>
-                <ul className="space-y-2 mt-4">
-                    {factorsContent.factors.map((factor, i) => (
-                        <li key={i} dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    {factorsContent.factors.map((factor: string, i: number) => (
+                        <div key={i} className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-lg border border-slate-100 dark:border-slate-800">
+                            <div dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                        </div>
                     ))}
-                </ul>
+                </div>
             </article>
 
             {/* Location Insight for state/city pages */}
@@ -392,7 +419,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         states={allStates}
                         nationalMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
                         profession={profession}
-                        limit={10}
+                        limit={10} // Initial collapsed view
                     />
                 </section>
             )}
@@ -411,7 +438,7 @@ export default async function SalaryPage({ params }: PageProps) {
                             baselineMedian={salaryData.annualMedian || 0}
                             profession={profession}
                             stateCode={state}
-                            limit={10}
+                            limit={20}
                             title={`Top Paying Cities in ${locationData?.stateName || state.toUpperCase()}`}
                         />
                     ) : (
@@ -419,7 +446,7 @@ export default async function SalaryPage({ params }: PageProps) {
                             cities={topCitiesNational}
                             baselineMedian={nationalData?.annualMedian || salaryData.annualMedian || 0}
                             profession={profession}
-                            limit={10}
+                            limit={20}
                             title="Highest Paying Cities"
                         />
                     )}
@@ -433,6 +460,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         <h2 className="text-3xl font-bold mb-4">{industryNarrative.title}</h2>
                         <p className="text-lg">{industryNarrative.content}</p>
                     </article>
+                    {/* Passing explicit total employment to ensure correct percentages */}
                     <IndustryBreakdown
                         industries={industries}
                         professionName={careerTitle}
