@@ -11,7 +11,12 @@ interface RelatedCareer {
     color: string;
 }
 
-export function RelatedSalaries({ currentProfession }: { currentProfession: string }) {
+interface RelatedSalariesProps {
+    currentProfession: string;
+    state?: string;
+}
+
+export function RelatedSalaries({ currentProfession, state }: RelatedSalariesProps) {
     const careers: RelatedCareer[] = [
         {
             title: 'Registered Nurse',
@@ -55,7 +60,7 @@ export function RelatedSalaries({ currentProfession }: { currentProfession: stri
                 {displayCareers.map((career) => (
                     <Link
                         key={career.slug}
-                        href={`/${career.slug}/salary`}
+                        href={`/${career.slug}/salary${state ? '/' + state.toLowerCase() : ''}`}
                         className="group flex flex-col p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300"
                     >
                         <div className={`w-12 h-12 rounded-lg ${career.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>

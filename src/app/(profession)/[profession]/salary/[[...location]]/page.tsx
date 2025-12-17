@@ -17,6 +17,8 @@ import {
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
+import { getStateName } from '@/lib/geographic-data';
+import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
 import { calculatePercentChange } from '@/lib/salary-utils';
 import { Search, GraduationCap, BookOpen, FileText } from 'lucide-react';
 
@@ -62,9 +64,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     let locationName = 'United States';
     if (city && state) {
-        locationName = `${formatLocationName(city)}, ${state.toUpperCase()}`;
+        locationName = `${formatLocationName(city)}, ${getStateName(state) || state.toUpperCase()}`;
     } else if (state) {
-        locationName = formatLocationName(state);
+        locationName = getStateName(state) || formatLocationName(state);
     }
 
     let salaryData;
@@ -99,8 +101,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const year = 2026;
-    // User Requested Title Format: "How much does a Certified Nursing Assistant make?"
-    const title = `How Much Does a ${formalName} Make in ${locationName}? (${year} Salary Guide)`;
+    // Updated Title Format: "How Much Does a [Profession] Make in [State] in 2026"
+    const title = `How Much Does a ${formalName} Make in ${locationName} in ${year}`;
     const description = `The average ${formalName} salary in ${locationName} is ${salaryData?.annualMedian ? formatCurrency(salaryData.annualMedian) : 'available inside'}. See the highest paying cities in ${locationName}, wage trends, and job outlook for ${year}.`;
 
     let urlPath = `/${profession}/salary`;
@@ -500,7 +502,10 @@ export default async function SalaryPage({ params }: PageProps) {
 
             {/* Related Salaries Section */}
             <section className="mb-12">
-                <RelatedSalaries currentProfession={dbSlug} />
+                <RelatedSalaries
+                    currentProfession={dbSlug}
+                    state={state}
+                />
             </section>
 
             {/* Visual CTAs for Resources */}
@@ -509,7 +514,7 @@ export default async function SalaryPage({ params }: PageProps) {
                     Explore {careerTitle} Resources
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Link href={urls.jobs} className="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 shadow-lg text-white">
+                    <Link href={`${urls.jobs}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 shadow-lg text-white">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Search className="w-24 h-24" />
                         </div>
@@ -525,7 +530,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         </div>
                     </Link>
 
-                    <Link href={urls.schools} className="group relative overflow-hidden bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-6 shadow-lg text-white">
+                    <Link href={`${urls.schools}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-6 shadow-lg text-white">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <GraduationCap className="w-24 h-24" />
                         </div>
@@ -541,7 +546,7 @@ export default async function SalaryPage({ params }: PageProps) {
                         </div>
                     </Link>
 
-                    <Link href={urls.howToBecome} className="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 shadow-lg text-white">
+                    <Link href={`${urls.howToBecome}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 shadow-lg text-white">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <BookOpen className="w-24 h-24" />
                         </div>

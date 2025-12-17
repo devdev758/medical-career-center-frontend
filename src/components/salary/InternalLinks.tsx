@@ -105,29 +105,7 @@ export async function InternalLinks({ profession, state, city }: InternalLinksPr
 
     return (
         <div className="space-y-8 mt-12 not-prose">
-            {/* Major Cities (for state pages) */}
-            {state && !city && verifiedMajorCities.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-xl">
-                            {professionTitle} Salary in Top {stateFullName} Cities
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            {verifiedMajorCities.map(cityName => (
-                                <Link
-                                    key={cityName}
-                                    href={`/${profession}-salary/${state.toLowerCase()}/${createCitySlug(cityName)}`}
-                                    className="text-primary hover:underline"
-                                >
-                                    {cityName}
-                                </Link>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+
 
             {/* Nearby Cities (for city pages) */}
             {city && nearbyCities.length > 0 && (
