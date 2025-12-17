@@ -26,7 +26,7 @@ function getProfessionDisplayName(careerTitle: string): string {
 /**
  * Returns the full formal name for SEO variation (e.g. "Certified Nursing Assistant")
  */
-function getProfessionFormalName(careerTitle: string): string {
+export function getProfessionFormalName(careerTitle: string): string {
     const title = careerTitle.toLowerCase();
     if (title.includes('nursing assistant') || title.includes('cna')) return "Certified Nursing Assistant";
     return getProfessionDisplayName(careerTitle);
@@ -59,7 +59,7 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
     const employmentCount = salary.employmentCount ? salary.employmentCount.toLocaleString() : "N/A";
     const profession = getProfessionDisplayName(careerTitle);
     const formalName = getProfessionFormalName(careerTitle);
-    const year = 2026; // Forward looking branding
+    const year = 2026; // Forward looking branding. User requested 2026.
 
     // Richer, thicker narrative
     const intro = `
@@ -141,7 +141,7 @@ export function generateIndustrySalaryNarrative(careerTitle: string, topIndustry
 
     return {
         title: `Average ${profession} Salary by Industry`,
-        content: `Where you work is just as important as where you live. ${industryText} While hospitals are the most common employer for many, they aren't always the highest paying. Specialized sectors, government facilities, and outpatient centers often compete for top talent with attractive salary packages. Consider the work environment—pace, stress level, and patient type—alongside the paycheck when choosing your industry.`
+        content: `Where you work is just as important as where you live. ${industryText} While hospitals are the most common employer for many, they aren't always the highest paying. Specialized sectors, government facilities, and outpatient centers often compete for top talent with attractive salary packages. Consider the work environment (pace, stress level, and patient type) alongside the paycheck when choosing your industry.`
     };
 }
 

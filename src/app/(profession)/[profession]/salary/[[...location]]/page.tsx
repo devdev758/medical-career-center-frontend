@@ -11,7 +11,8 @@ import {
     generateFactorsAffectingSalary,
     generateStateSalaryNarrative,
     generateCitySalaryNarrative,
-    generateIndustrySalaryNarrative
+    generateIndustrySalaryNarrative,
+    getProfessionFormalName
 } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -53,7 +54,8 @@ function formatTitleForDisplay(slug: string): string {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, location } = await params;
     const dbSlug = urlSlugToDbSlug(profession);
-    const careerTitle = formatTitleForDisplay(profession);
+    // Use Formal Name for Title ("Certified Nursing Assistant" vs "CNA")
+    const formalName = getProfessionFormalName(profession);
 
     const state = location?.[0];
     const city = location?.[1];
@@ -96,13 +98,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         });
     }
 
-    const medianSalary = salaryData?.annualMedian
-        ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
-        : '$60,000';
-
     const year = 2026;
-    const title = `${careerTitle} Salary ${year}: Ultimate Guide to Pay Rates in ${locationName}`;
-    const description = `How much do ${careerTitle}s make in ${locationName}? Comprehensive ${year} salary guide with median, hourly, and top-tier pay rates. Compare salaries by state, city, and experience level.`;
+    // User Requested Title Format: "How much does a Certified Nursing Assistant make?"
+    const title = `How Much Does a ${formalName} Make in ${locationName}? (${year} Salary Guide)`;
+    const description = `The average ${formalName} salary in ${locationName} is ${salaryData?.annualMedian ? formatCurrency(salaryData.annualMedian) : 'available inside'}. View detailed pay rates by experience, city, and state for ${year}.`;
 
     let urlPath = `/${profession}/salary`;
     if (city && state) {
@@ -467,7 +466,7 @@ export default async function SalaryPage({ params }: PageProps) {
             {/* Visual CTAs for Resources */}
             <div className="mt-12">
                 <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-                    Explore ${careerTitle} Resources
+                    Explore {careerTitle} Resources
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Link href={urls.jobs} className="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 shadow-lg text-white">
@@ -479,7 +478,7 @@ export default async function SalaryPage({ params }: PageProps) {
                                 <Search className="w-6 h-6 text-white" />
                             </div>
                             <h4 className="text-xl font-bold mb-2">Browse Jobs</h4>
-                            <p className="text-blue-100 mb-4 text-sm">Find ${careerTitle} positions near you with competitive salaries.</p>
+                            <p className="text-blue-100 mb-4 text-sm">Find {careerTitle} positions near you with competitive salaries.</p>
                             <span className="inline-flex items-center font-semibold text-sm bg-white text-blue-600 px-4 py-2 rounded-lg group-hover:bg-blue-50 transition-colors">
                                 Search Now
                             </span>
@@ -511,7 +510,7 @@ export default async function SalaryPage({ params }: PageProps) {
                                 <BookOpen className="w-6 h-6 text-white" />
                             </div>
                             <h4 className="text-xl font-bold mb-2">Career Guide</h4>
-                            <p className="text-purple-100 mb-4 text-sm">Step-by-step guide to becoming a ${careerTitle}.</p>
+                            <p className="text-purple-100 mb-4 text-sm">Step-by-step guide to becoming a {careerTitle}.</p>
                             <span className="inline-flex items-center font-semibold text-sm bg-white text-purple-600 px-4 py-2 rounded-lg group-hover:bg-purple-50 transition-colors">
                                 Read Guide
                             </span>
