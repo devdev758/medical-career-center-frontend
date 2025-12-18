@@ -197,9 +197,30 @@ export default async function SpecializationsPage({ params }: PageProps) {
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                         {careerTitle} Specializations
                     </h1>
-                    <p className="text-xl text-muted-foreground mb-8">
+                    <p className="text-xl text-muted-foreground mb-6">
                         Explore nursing specialty areas and career paths
                     </p>
+
+                    <div className="prose prose-slate dark:prose-invert max-w-none mb-8">
+                        <p className="text-lg leading-relaxed">
+                            Registered nursing offers diverse career paths through specialization, allowing nurses to focus their expertise
+                            on specific patient populations, clinical settings, or care types. From the high-intensity environment of the ICU
+                            to the rewarding work of pediatric care, each specialty requires unique skills, certifications, and offers distinct
+                            career advantages.
+                        </p>
+                        <p className="text-lg leading-relaxed">
+                            Specializing can significantly enhance your career trajectory—specialty-certified nurses typically earn 15-30% more
+                            than general medical-surgical nurses, enjoy stronger job security, and experience greater professional satisfaction.
+                            Whether you're drawn to critical care, women's health, mental health, or aesthetic medicine, pursuing a specialty
+                            allows you to align your daily work with your passions while advancing your clinical expertise.
+                        </p>
+                        <p className="text-lg leading-relaxed">
+                            Most nursing specialties require 1-2 years of general nursing experience before transitioning, along with specialty
+                            certifications that demonstrate competency. Below you'll find comprehensive guides to the most popular nursing
+                            specializations, including salary data, certification requirements, work environments, and career progression paths
+                            to help you choose the right specialty for your goals.
+                        </p>
+                    </div>
 
                     {/* CRNA Highlight for RN */}
                     {isRegisteredNurse && (

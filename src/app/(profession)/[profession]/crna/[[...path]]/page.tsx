@@ -339,6 +339,38 @@ export default async function CRNAPage({ params }: PageProps) {
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
+            {/* CRNA Resources Navigation */}
+            <Card className="mb-8">
+                <CardHeader>
+                    <CardTitle className="text-lg">CRNA Resources</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <Link
+                            href={`/${profession}/crna/how-to-become`}
+                            className="p-4 rounded-lg border hover:bg-muted transition-colors text-center"
+                        >
+                            <GraduationCap className="w-5 h-5 mx-auto mb-2" />
+                            <p className="font-medium text-sm">How to Become</p>
+                        </Link>
+                        <Link
+                            href={`/${profession}/crna/salary`}
+                            className="p-4 rounded-lg border hover:bg-muted transition-colors text-center"
+                        >
+                            <DollarSign className="w-5 h-5 mx-auto mb-2" />
+                            <p className="font-medium text-sm">Salary Data</p>
+                        </Link>
+                        <Link
+                            href={`/${profession}/crna/schools`}
+                            className="p-4 rounded-lg border hover:bg-muted transition-colors text-center"
+                        >
+                            <Award className="w-5 h-5 mx-auto mb-2" />
+                            <p className="font-medium text-sm">CRNA Schools</p>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
+
             <article className="prose prose-slate dark:prose-invert max-w-none 
                 prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
                 prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
