@@ -55,64 +55,58 @@ Your clinical rotations are valuable experience - format them like professional 
 
 Best for: Diverse rotations across multiple specialties
 
-\`\`\`
-CLINICAL EXPERIENCE
-
-Senior Nursing Practicum
-Methodist Dallas Medical Center, Dallas, TX | Jan 2025 – May 2025
-• Provided comprehensive care for 6-8 medical-surgical patients per 12-hour shift
-• Administered medications via multiple routes with 100% accuracy across 300+ administrations
-• Performed wound assessments and dressing changes using sterile technique
-• Collaborated with interdisciplinary team to coordinate patient care
-• Documented assessments in Epic electronic health record system
-
-ICU Clinical Rotation
-Parkland Hospital, Dallas, TX | Sep 2024 – Dec 2024
-• Cared for critically ill patients in 18-bed medical ICU under RN supervision
-• Monitored hemodynamic parameters, ventilator settings, and vasoactive drips
-• Assisted with central line dressing changes and arterial blood gas draws
-• Participated in rapid response activations and code blue events
-\`\`\`
+> **CLINICAL EXPERIENCE**
+>
+> **Senior Nursing Practicum**  
+> Methodist Dallas Medical Center, Dallas, TX | Jan 2025 – May 2025
+> - Provided comprehensive care for 6-8 medical-surgical patients per 12-hour shift
+> - Administered medications via multiple routes with 100% accuracy across 300+ administrations
+> - Performed wound assessments and dressing changes using sterile technique
+> - Collaborated with interdisciplinary team to coordinate patient care
+> - Documented assessments in Epic electronic health record system
+>
+> **ICU Clinical Rotation**  
+> Parkland Hospital, Dallas, TX | Sep 2024 – Dec 2024
+> - Cared for critically ill patients in 18-bed medical ICU under RN supervision
+> - Monitored hemodynamic parameters, ventilator settings, and vasoactive drips
+> - Assisted with central line dressing changes and arterial blood gas draws
+> - Participated in rapid response activations and code blue events
 
 ### Option 2: Consolidated Clinical Experience
 
 Best for: Similar rotations or limited space
 
-\`\`\`
-CLINICAL EXPERIENCE (600+ Hours)
-University of Texas Dallas Nursing Program | Jan 2024 – May 2025
-
-Rotations: Medical-Surgical (250 hrs), ICU (150 hrs), Pediatrics (120 hrs), Maternity (80 hrs)
-
-• Provided direct patient care for diverse populations in hospital and clinic settings
-• Administered medications, performed assessments, and documented in Epic/Cerner EMR
-• Conducted IV insertions, Foley catheterizations, and wound care procedures
-• Collaborated with RN preceptors, physicians, and interdisciplinary teams
-• Demonstrated proficiency in infection control, patient education, and pain management
-\`\`\`
+> **CLINICAL EXPERIENCE (600+ Hours)**  
+> University of Texas Dallas Nursing Program | Jan 2024 – May 2025
+>
+> Rotations: Medical-Surgical (250 hrs), ICU (150 hrs), Pediatrics (120 hrs), Maternity (80 hrs)
+>
+> - Provided direct patient care for diverse populations in hospital and clinic settings
+> - Administered medications, performed assessments, and documented in Epic/Cerner EMR
+> - Conducted IV insertions, Foley catheterizations, and wound care procedures
+> - Collaborated with RN preceptors, physicians, and interdisciplinary teams
+> - Demonstrated proficiency in infection control, patient education, and pain management
 
 ### Option 3: Skills-Based Format
 
 Best for: Highlighting specific competencies
 
-\`\`\`
-CLINICAL TRAINING & COMPETENCIES
-University Nursing Program Clinical Rotations (600+ Hours) | 2024-2025
-
-Patient Care:
-• Managed care for 6-8 patients per shift across med-surg, ICU, and pediatric units
-• Performed head-to-toe assessments and documented in electronic health records
-
-Technical Skills:
-• IV therapy and venipuncture (50+ successful insertions)
-• Wound care including VAC therapy and sterile dressing changes
-• Medication administration via PO, IV, IM, SubQ routes (300+ administrations)
-• Foley catheter insertion and NG tube placement
-
-Critical Thinking:
-• Identified early signs of patient deterioration requiring intervention
-• Participated in rapid response team activations and emergency situations
-\`\`\`
+> **CLINICAL TRAINING & COMPETENCIES**  
+> University Nursing Program Clinical Rotations (600+ Hours) | 2024-2025
+>
+> **Patient Care:**
+> - Managed care for 6-8 patients per shift across med-surg, ICU, and pediatric units
+> - Performed head-to-toe assessments and documented in electronic health records
+>
+> **Technical Skills:**
+> - IV therapy and venipuncture (50+ successful insertions)
+> - Wound care including VAC therapy and sterile dressing changes
+> - Medication administration via PO, IV, IM, SubQ routes (300+ administrations)
+> - Foley catheter insertion and NG tube placement
+>
+> **Critical Thinking:**
+> - Identified early signs of patient deterioration requiring intervention
+> - Participated in rapid response team activations and emergency situations
 
 ### Quantification Examples for Clinical Rotations
 
