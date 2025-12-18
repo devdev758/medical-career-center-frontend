@@ -17,6 +17,9 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { RN_LICENSE_CONTENT } from '@/lib/rn-license-content';
 
 export const dynamic = 'force-dynamic';
 
@@ -189,8 +192,41 @@ export default async function LicensePage({ params }: PageProps) {
                 </Card>
             )}
 
-            {/* Overview */}
-            {!isLicenseType && (
+            {/* Comprehensive License Guide for RN */}
+            {!isLicenseType && profession === 'registered-nurse' && (
+                <article className="prose prose-slate dark:prose-invert max-w-none mb-12
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    prose-table:my-6 prose-table:border-collapse
+                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
+                    prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
+                    prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                }
+                                return <Link href={href}>{props.children}</Link>;
+                            }
+                        }}
+                    >
+                        {RN_LICENSE_CONTENT}
+                    </ReactMarkdown>
+                </article>
+            )}
+
+            {/* Overview - fallback for non-RN */}
+            {!isLicenseType && profession !== 'registered-nurse' && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Licensing Overview</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
