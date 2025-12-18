@@ -23,12 +23,12 @@ function generateRNContent(salaryData: {
     experienced: string;
     topStates: Array<{ state: string; salary: string; stateCode: string }>;
     topCities: Array<{ city: string; state: string; salary: string; citySlug: string; stateCode: string }>;
-    totalEmployment?: number;
+    employmentCount?: number;
 }) {
     return `
 # How to Become a Registered Nurse: Complete Career Guide 2026
 
-Registered nurses form the backbone of healthcare delivery in the United States, providing essential patient care across hospitals, clinics, long-term care facilities, and community health settings. With over ${salaryData.totalEmployment ? (salaryData.totalEmployment / 1000000).toFixed(1) + ' million' : '3.2 million'} practicing RNs nationwide, nursing represents one of the largest and most respected healthcare professions.
+Registered nurses form the backbone of healthcare delivery in the United States, providing essential patient care across hospitals, clinics, long-term care facilities, and community health settings. With over ${salaryData.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + ' million' : '3.2 million'} practicing RNs nationwide, nursing represents one of the largest and most respected healthcare professions.
 
 The nursing profession offers a unique combination of clinical expertise, patient advocacy, and career flexibility that few other healthcare roles can match. Whether you're drawn to the fast-paced environment of emergency care, the specialized knowledge required in critical care units, or the patient education focus of community health nursing, the RN credential opens doors to diverse career opportunities.
 
@@ -404,7 +404,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
         median: nationalData?.annualMedian ? `$${Math.round(nationalData.annualMedian).toLocaleString()}` : '$93,600',
         entry: nationalData?.annual10th ? `$${Math.round(nationalData.annual10th).toLocaleString()}` : '$63,000',
         experienced: nationalData?.annual90th ? `$${Math.round(nationalData.annual90th).toLocaleString()}` : '$129,000',
-        totalEmployment: nationalData?.totalEmployment || undefined,
+        employmentCount: nationalData?.employmentCount || undefined,
         topStates: topStatesData.map(s => ({
             state: s.location?.stateName || s.location?.state || '',
             salary: `$${Math.round(s.annualMedian || 0).toLocaleString()}`,
@@ -454,7 +454,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg">
                     <GraduationCap className="w-6 h-6 mx-auto mb-2 text-orange-600" />
                     <p className="text-sm text-muted-foreground mb-1">Total RNs</p>
-                    <p className="text-xl font-bold">{salaryData.totalEmployment ? `${(salaryData.totalEmployment / 1000000).toFixed(1)}M` : '3.2M'}</p>
+                    <p className="text-xl font-bold">{salaryData.employmentCount ? `${(salaryData.employmentCount / 1000000).toFixed(1)}M` : '3.2M'}</p>
                 </div>
             </div>
 
