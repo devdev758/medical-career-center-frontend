@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Target, ArrowRight, Stethoscope } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { SPECIALTY_CONTENT_MAP } from '@/lib/specializations';
 
 export const dynamic = 'force-dynamic';
 
@@ -104,69 +107,89 @@ export default async function SpecializationsPage({ params }: PageProps) {
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
             {selectedSpecialty ? (
-                // Individual specialty page
+                // Individual specialty page with full content
                 <>
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                        {selectedSpecialty.name}
-                    </h1>
-                    <p className="text-xl text-muted-foreground mb-8">
-                        {selectedSpecialty.description}
-                    </p>
+                    <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
-                    <Card className="mb-8 bg-green-50 dark:bg-green-950/20 border-green-200">
-                        <CardContent className="p-6">
-                            <h3 className="font-semibold mb-2">Salary Range</h3>
-                            <p className="text-2xl font-bold text-green-600">{selectedSpecialty.salary}</p>
-                        </CardContent>
-                    </Card>
+                    {SPECIALTY_CONTENT_MAP[specialtySlug!] ? (
+                        <article className="prose prose-slate dark:prose-invert max-w-none 
+                            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                            prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                            prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                            prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                            prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                            prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                            prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                            prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                            prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                            mb-12">
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    a: ({ node, ...props }) => {
+                                        const href = props.href || '';
+                                        if (href.startsWith('http')) {
+                                            return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                        }
+                                        return <Link href={href}>{props.children}</Link>;
+                                    }
+                                }}
+                            >
+                                {SPECIALTY_CONTENT_MAP[specialtySlug!]}
+                            </ReactMarkdown>
 
-                    <section className="mb-12">
-                        <h2 className="text-2xl font-bold mb-4">About {selectedSpecialty.name}s</h2>
-                        <p className="text-muted-foreground leading-relaxed">
-                            {selectedSpecialty.name}s are registered nurses who specialize in {selectedSpecialty.description.toLowerCase()}.
-                            This specialty typically requires additional training, certifications, and clinical experience beyond the standard RN education.
-                        </p>
-                    </section>
+                            <div className="flex gap-4 mt-12 not-prose">
+                                <Button asChild>
+                                    <Link href={urls.jobs}>
+                                        Find {selectedSpecialty.name} Jobs <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="outline">
+                                    <Link href={`/${profession}/specializations`}>
+                                        View All Specializations
+                                    </Link>
+                                </Button>
+                            </div>
+                        </article>
+                    ) : (
+                        // Fallback for specialties without detailed content
+                        <>
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                                {selectedSpecialty.name}
+                            </h1>
+                            <p className="text-xl text-muted-foreground mb-8">
+                                {selectedSpecialty.description}
+                            </p>
 
-                    <section className="mb-12">
-                        <h2 className="text-2xl font-bold mb-4">How to Become a {selectedSpecialty.name}</h2>
-                        <ol className="space-y-3">
-                            <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">1</span>
-                                <div>
-                                    <p className="font-medium">Earn your RN license</p>
-                                    <p className="text-sm text-muted-foreground">Complete an accredited nursing program and pass the NCLEX-RN</p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">2</span>
-                                <div>
-                                    <p className="font-medium">Gain clinical experience</p>
-                                    <p className="text-sm text-muted-foreground">Work in a related specialty area for 1-2 years</p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">3</span>
-                                <div>
-                                    <p className="font-medium">Obtain specialty certification</p>
-                                    <p className="text-sm text-muted-foreground">Earn the relevant specialty certification for your area</p>
-                                </div>
-                            </li>
-                        </ol>
-                    </section>
+                            <Card className="mb-8 bg-green-50 dark:bg-green-950/20 border-green-200">
+                                <CardContent className="p-6">
+                                    <h3 className="font-semibold mb-2">Salary Range</h3>
+                                    <p className="text-2xl font-bold text-green-600">{selectedSpecialty.salary}</p>
+                                </CardContent>
+                            </Card>
 
-                    <div className="flex gap-4">
-                        <Button asChild>
-                            <Link href={urls.jobs}>
-                                Find {selectedSpecialty.name} Jobs <ArrowRight className="w-4 h-4 ml-2" />
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline">
-                            <Link href={`/${profession}/specializations`}>
-                                View All Specializations
-                            </Link>
-                        </Button>
-                    </div>
+                            <section className="mb-12">
+                                <h2 className="text-2xl font-bold mb-4">About {selectedSpecialty.name}s</h2>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    {selectedSpecialty.name}s are registered nurses who specialize in {selectedSpecialty.description.toLowerCase()}.
+                                    This specialty typically requires additional training, certifications, and clinical experience beyond the standard RN education.
+                                </p>
+                            </section>
+
+                            <div className="flex gap-4">
+                                <Button asChild>
+                                    <Link href={urls.jobs}>
+                                        Find {selectedSpecialty.name} Jobs <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="outline">
+                                    <Link href={`/${profession}/specializations`}>
+                                        View All Specializations
+                                    </Link>
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </>
             ) : (
                 // Specializations overview page
