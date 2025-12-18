@@ -5,7 +5,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { DollarSign, GraduationCap, Briefcase, TrendingUp, ArrowRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getProfessionUrls } from '@/lib/url-utils';
+import { getProfessionUrls, urlSlugToDbSlug } from '@/lib/url-utils';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +16,19 @@ interface PageProps {
     };
 }
 
-// Full RN Career Guide Content (from pilot - updated links to singular format and 2026)
-const RN_CONTENT = `
+// Function to generate content with live BLS data
+function generateRNContent(salaryData: {
+    median: string;
+    entry: string;
+    experienced: string;
+    topStates: Array<{ state: string; salary: string; stateCode: string }>;
+    topCities: Array<{ city: string; state: string; salary: string; citySlug: string; stateCode: string }>;
+    totalEmployment?: number;
+}) {
+    return `
 # How to Become a Registered Nurse: Complete Career Guide 2026
 
-Registered nurses form the backbone of healthcare delivery in the United States, providing essential patient care across hospitals, clinics, long-term care facilities, and community health settings. With over 3.2 million practicing RNs nationwide, nursing represents one of the largest and most respected healthcare professions.
+Registered nurses form the backbone of healthcare delivery in the United States, providing essential patient care across hospitals, clinics, long-term care facilities, and community health settings. With over ${salaryData.totalEmployment ? (salaryData.totalEmployment / 1000000).toFixed(1) + ' million' : '3.2 million'} practicing RNs nationwide, nursing represents one of the largest and most respected healthcare professions.
 
 The nursing profession offers a unique combination of clinical expertise, patient advocacy, and career flexibility that few other healthcare roles can match. Whether you're drawn to the fast-paced environment of emergency care, the specialized knowledge required in critical care units, or the patient education focus of community health nursing, the RN credential opens doors to diverse career opportunities.
 
@@ -222,10 +231,10 @@ Specialization typically requires 1-2 years of experience in the specialty area 
 
 ### National Salary Data
 
-According to the [Bureau of Labor Statistics](https://www.bls.gov/oes/current/oes291141.htm) (May 2023):
-- **Median Annual Salary**: $93,600
-- **Entry Level (10th percentile)**: $63,000
-- **Experienced (90th percentile)**: $129,000
+According to the [Bureau of Labor Statistics](https://www.bls.gov/oes/current/oes291141.htm) (May 2023 data):
+- **Median Annual Salary**: ${salaryData.median}
+- **Entry Level (10th percentile)**: ${salaryData.entry}
+- **Experienced (90th percentile)**: ${salaryData.experienced}
 
 Explore detailed [registered nurse salary data](/registered-nurse/salary) by state and city to understand earning potential in your area.
 
@@ -250,18 +259,10 @@ Explore detailed [registered nurse salary data](/registered-nurse/salary) by sta
 ### Geographic Salary Variations
 
 **Highest-Paying States** (median annual salary):
-1. [California](/registered-nurse/salary/ca): $133,340
-2. [Hawaii](/registered-nurse/salary/hi): $106,530
-3. [Oregon](/registered-nurse/salary/or): $98,630
-4. [District of Columbia](/registered-nurse/salary/dc): $98,540
-5. [Alaska](/registered-nurse/salary/ak): $96,990
+${salaryData.topStates.map((s, i) => `${i + 1}. [${s.state}](/registered-nurse/salary/${s.stateCode.toLowerCase()}): ${s.salary}`).join('\n')}
 
 **Highest-Paying Metropolitan Areas**:
-1. [San Francisco, CA](/registered-nurse/salary/ca/san-francisco): $165,450
-2. [San Jose, CA](/registered-nurse/salary/ca/san-jose): $162,810
-3. [Vallejo, CA](/registered-nurse/salary/ca/vallejo): $149,850
-4. [Sacramento, CA](/registered-nurse/salary/ca/sacramento): $137,100
-5. [Salinas, CA](/registered-nurse/salary/ca/salinas): $135,620
+${salaryData.topCities.map((c, i) => `${i + 1}. [${c.city}, ${c.state}](/registered-nurse/salary/${c.stateCode.toLowerCase()}/${c.citySlug}): ${c.salary}`).join('\n')}
 
 ### Additional Compensation
 
@@ -358,10 +359,68 @@ The nursing profession continues to evolve with advancing technology, changing h
 
 Whether you're a recent high school graduate, a career changer, or someone returning to the workforce, nursing offers accessible pathways to enter the profession and clear routes for advancement. With careful planning, dedication to your education, and commitment to lifelong learning, you can build a successful and satisfying career as a registered nurse.
 `;
+}
 
 export default async function RegisteredNurseCareerGuide({ params }: PageProps) {
     const { profession } = await params;
+    const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
+
+    // Fetch live BLS salary data for registered nurses
+    const nationalData = await prisma.salaryData.findFirst({
+        where: {
+            careerKeyword: dbSlug,
+            locationId: null,
+            year: 2024
+        }
+    });
+
+    // Fetch top paying states
+    const topStatesData = await prisma.salaryData.findMany({
+        where: {
+            careerKeyword: dbSlug,
+            location: { city: '' },
+            year: 2024
+        },
+        include: { location: true },
+        orderBy: { annualMedian: 'desc' },
+        take: 5
+    });
+
+    // Fetch top paying cities
+    const topCitiesData = await prisma.salaryData.findMany({
+        where: {
+            careerKeyword: dbSlug,
+            location: { city: { not: '' } },
+            year: 2024
+        },
+        include: { location: true },
+        orderBy: { annualMedian: 'desc' },
+        take: 5
+    });
+
+    // Prepare salary data for content generation
+    const salaryData = {
+        median: nationalData?.annualMedian ? `$${Math.round(nationalData.annualMedian).toLocaleString()}` : '$93,600',
+        entry: nationalData?.annual10th ? `$${Math.round(nationalData.annual10th).toLocaleString()}` : '$63,000',
+        experienced: nationalData?.annual90th ? `$${Math.round(nationalData.annual90th).toLocaleString()}` : '$129,000',
+        totalEmployment: nationalData?.totalEmployment || undefined,
+        topStates: topStatesData.map(s => ({
+            state: s.location?.stateName || s.location?.state || '',
+            salary: `$${Math.round(s.annualMedian || 0).toLocaleString()}`,
+            stateCode: s.location?.state || ''
+        })),
+        topCities: topCitiesData.map(c => ({
+            city: c.location?.city || '',
+            state: c.location?.state || '',
+            salary: `$${Math.round(c.annualMedian || 0).toLocaleString()}`,
+            citySlug: c.location?.slug?.split('/').pop() || '',
+            stateCode: c.location?.state || ''
+        }))
+    };
+
+    // Generate content with live data
+    const content = generateRNContent(salaryData);
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-4xl">
@@ -380,7 +439,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg">
                     <DollarSign className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                     <p className="text-sm text-muted-foreground mb-1">Median Salary</p>
-                    <p className="text-xl font-bold">$93,600</p>
+                    <p className="text-xl font-bold">{salaryData.median}</p>
                 </div>
                 <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg">
                     <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-600" />
@@ -395,7 +454,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg">
                     <GraduationCap className="w-6 h-6 mx-auto mb-2 text-orange-600" />
                     <p className="text-sm text-muted-foreground mb-1">Total RNs</p>
-                    <p className="text-xl font-bold">3.2M</p>
+                    <p className="text-xl font-bold">{salaryData.totalEmployment ? `${(salaryData.totalEmployment / 1000000).toFixed(1)}M` : '3.2M'}</p>
                 </div>
             </div>
 
@@ -424,7 +483,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                         }
                     }}
                 >
-                    {RN_CONTENT}
+                    {content}
                 </ReactMarkdown>
             </article>
 
