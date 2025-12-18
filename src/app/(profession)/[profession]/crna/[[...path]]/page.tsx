@@ -20,6 +20,8 @@ import { urlSlugToDbSlug, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CRNA_HUB_CONTENT } from '@/lib/crna/hub-content';
+import { CRNA_HOWTOBECOME_CONTENT } from '@/lib/crna/how-to-become-content';
+import { CRNA_SCHOOLS_CONTENT } from '@/lib/crna/schools-content';
 
 export const dynamic = 'force-dynamic';
 
@@ -176,49 +178,33 @@ export default async function CRNAPage({ params }: PageProps) {
         return (
             <main className="container mx-auto py-10 px-4 max-w-5xl">
                 <Breadcrumb items={breadcrumbItems} className="mb-6" />
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    CRNA Schools & Nurse Anesthesia Programs
-                </h1>
-                <p className="text-xl text-muted-foreground mb-8">
-                    Find accredited CRNA programs to start your anesthesia career
-                </p>
 
-                <Card className="mb-8 bg-blue-50 dark:bg-blue-950/20 border-blue-200">
-                    <CardContent className="p-6">
-                        <h3 className="font-semibold mb-2">Program Requirements</h3>
-                        <p className="text-muted-foreground">
-                            CRNA programs now require a doctoral degree (DNAP or DNP). Programs typically take 3-4 years and require
-                            1+ year of ICU experience as an RN for admission.
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">What to Look for in a CRNA Program</h2>
-                    <ul className="space-y-3">
-                        {[
-                            'COA (Council on Accreditation) accreditation',
-                            'High NCE pass rate (>90%)',
-                            'Diverse clinical rotation sites',
-                            'Strong faculty-to-student ratio',
-                            'Clinical hours (1,800+ required)',
-                        ].map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-2">
-                                <span className="text-primary mt-1">✓</span>
-                                <span className="text-muted-foreground">{item}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                <div className="flex gap-4">
-                    <Button asChild>
-                        <Link href={`/${profession}/crna/how-to-become`}>How to Become a CRNA <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                    </Button>
-                    <Button asChild variant="outline">
-                        <Link href={`/${profession}/crna/salary`}>CRNA Salary Data</Link>
-                    </Button>
-                </div>
+                <article className="prose prose-slate dark:prose-invert max-w-none 
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    mb-12">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                }
+                                return <Link href={href}>{props.children}</Link>;
+                            }
+                        }}
+                    >
+                        {CRNA_SCHOOLS_CONTENT}
+                    </ReactMarkdown>
+                </article>
             </main>
         );
     }
@@ -227,59 +213,36 @@ export default async function CRNAPage({ params }: PageProps) {
         return (
             <main className="container mx-auto py-10 px-4 max-w-5xl">
                 <Breadcrumb items={breadcrumbItems} className="mb-6" />
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    How to Become a CRNA: Step-by-Step Guide
-                </h1>
-                <p className="text-xl text-muted-foreground mb-8">
-                    The complete path to becoming a Certified Registered Nurse Anesthetist
-                </p>
 
-                <section className="mb-12">
-                    <div className="space-y-6">
-                        {[
-                            { step: 1, title: 'Earn Your BSN', desc: 'Complete a Bachelor of Science in Nursing from an accredited program', time: '4 years' },
-                            { step: 2, title: 'Pass the NCLEX-RN', desc: 'Obtain your RN license by passing the national licensure exam', time: '2-3 months prep' },
-                            { step: 3, title: 'Gain ICU Experience', desc: 'Work in an intensive care unit as a registered nurse', time: '1-2 years minimum' },
-                            { step: 4, title: 'Apply to CRNA Programs', desc: 'Apply to COA-accredited nurse anesthesia doctoral programs', time: '6-12 months' },
-                            { step: 5, title: 'Complete Doctoral Program', desc: 'Earn your DNAP or DNP in nurse anesthesia', time: '3-4 years' },
-                            { step: 6, title: 'Pass the NCE', desc: 'Pass the National Certification Examination', time: '2-3 months prep' },
-                        ].map((item) => (
-                            <Card key={item.step}>
-                                <CardContent className="p-6">
-                                    <div className="flex items-start gap-4">
-                                        <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
-                                            {item.step}
-                                        </span>
-                                        <div>
-                                            <div className="flex items-center gap-3 mb-1">
-                                                <h3 className="font-semibold text-lg">{item.title}</h3>
-                                                <Badge variant="outline">{item.time}</Badge>
-                                            </div>
-                                            <p className="text-muted-foreground">{item.desc}</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </section>
-
-                <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 mb-8">
-                    <CardContent className="p-6 text-center">
-                        <p className="text-sm text-muted-foreground mb-2">Total Time to Become a CRNA</p>
-                        <p className="text-3xl font-bold">7-10 Years</p>
-                        <p className="text-sm text-muted-foreground mt-1">from starting BSN to certification</p>
-                    </CardContent>
-                </Card>
-
-                <div className="flex gap-4">
-                    <Button asChild>
-                        <Link href={`/${profession}/crna/schools`}>Find CRNA Schools <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                    </Button>
-                    <Button asChild variant="outline">
-                        <Link href={`/${profession}/crna/salary`}>CRNA Salary Data</Link>
-                    </Button>
-                </div>
+                <article className="prose prose-slate dark:prose-invert max-w-none 
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    prose-table:my-6
+                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold
+                    prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
+                    mb-12">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                }
+                                return <Link href={href}>{props.children}</Link>;
+                            }
+                        }}
+                    >
+                        {CRNA_HOWTOBECOME_CONTENT}
+                    </ReactMarkdown>
+                </article>
             </main>
         );
     }
