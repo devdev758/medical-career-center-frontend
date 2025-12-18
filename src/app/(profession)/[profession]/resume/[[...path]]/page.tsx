@@ -11,21 +11,25 @@ import {
     Layout,
     GraduationCap,
     Mail,
-    ArrowRight
+    ArrowRight,
+    Sparkles,
+    CheckCircle2
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { RN_RESUME_GUIDE_CONTENT } from '@/lib/resume-content';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: {
         profession: string;
-        path?: string[];  // [[...path]] -> can be [], ['examples'], ['template'], ['new-grad'], ['cover-letter']
+        path?: string[];
     };
 }
 
-// Resume type slugs
 const RESUME_TYPE_SLUGS = ['examples', 'template', 'new-grad', 'icu', 'cover-letter'];
 
 const RESUME_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
@@ -96,7 +100,6 @@ export default async function ResumePage({ params }: PageProps) {
     const isResumeType = firstParam && RESUME_TYPE_SLUGS.includes(firstParam);
     const resumeTypeMeta = isResumeType ? RESUME_TYPE_META[firstParam] : null;
 
-    // Fetch career guide for resume data
     const careerGuide = await prisma.careerGuide.findUnique({
         where: { professionSlug: dbSlug },
         select: {
@@ -116,9 +119,7 @@ export default async function ResumePage({ params }: PageProps) {
     const resumeKeywords = (careerGuide.resumeKeywords as string[]) || [];
     const technicalSkills = (careerGuide.technicalSkills as string[]) || [];
     const softSkills = (careerGuide.softSkills as string[]) || [];
-    const isRegisteredNurse = profession === 'registered-nurse';
 
-    // Build breadcrumb items
     const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
         { label: careerGuide.professionName, href: `/${profession}` },
@@ -135,7 +136,6 @@ export default async function ResumePage({ params }: PageProps) {
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
-            {/* Header */}
             <div className="mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                     {resumeTypeMeta
@@ -145,11 +145,10 @@ export default async function ResumePage({ params }: PageProps) {
                 <p className="text-xl text-muted-foreground">
                     {resumeTypeMeta
                         ? resumeTypeMeta.description
-                        : 'Expert tips to create a standout nursing resume'}
+                        : 'Expert tips to create a standout nursing resume that gets interviews'}
                 </p>
             </div>
 
-            {/* Resume Type Navigation */}
             <Card className="mb-8">
                 <CardHeader>
                     <CardTitle className="text-lg">Resume Resources</CardTitle>
@@ -164,8 +163,8 @@ export default async function ResumePage({ params }: PageProps) {
                                     key={slug}
                                     href={`/${profession}/resume/${slug}`}
                                     className={`p-4 rounded-lg border transition-colors text-center ${isActive
-                                            ? 'bg-primary text-primary-foreground border-primary'
-                                            : 'hover:bg-muted'
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'hover:bg-muted'
                                         }`}
                                 >
                                     <Icon className="w-5 h-5 mx-auto mb-2" />
@@ -184,53 +183,81 @@ export default async function ResumePage({ params }: PageProps) {
                 </CardContent>
             </Card>
 
-            {/* Resume Builder CTA */}
             <Card className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">
-                                📝 Create Your Resume Online
-                            </h3>
-                            <p className="text-muted-foreground">
-                                Use our AI-powered resume builder to create a professional {careerTitle.toLowerCase()} resume in minutes
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                <h3 className="text-lg font-semibold">
+                                    Create Your Resume with AI
+                                </h3>
+                            </div>
+                            <p className="text-muted-foreground mb-3">
+                                Build a professional {careerTitle.toLowerCase()} resume in minutes with our AI-powered builder
                             </p>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                    <span>ATS-Optimized</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                    <span>Keyword Suggestions</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                    <span>Export to PDF</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                    <span>Cover Letter Included</span>
+                                </div>
+                            </div>
                         </div>
-                        <Button asChild>
+                        <Button asChild size="lg" className="w-full md:w-auto">
                             <Link href="/resume-builder">
-                                Build Resume →
+                                Build Resume Now <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                         </Button>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Resume Tips Overview */}
             {!isResumeType && (
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4">Resume Writing Tips</h2>
-                    <div className="prose prose-lg dark:prose-invert max-w-none">
-                        <p className="text-muted-foreground leading-relaxed">
-                            A well-crafted resume is your ticket to landing interviews for {careerTitle.toLowerCase()} positions.
-                            Focus on quantifiable achievements, relevant clinical experience, and key certifications.
-                        </p>
-                        <ul className="space-y-2 mt-4">
-                            <li>Lead with a compelling professional summary</li>
-                            <li>Highlight relevant clinical experience and specializations</li>
-                            <li>Include all licenses, certifications, and credentials</li>
-                            <li>Quantify achievements (e.g., "Managed care for 15+ patients per shift")</li>
-                            <li>Use ATS-friendly formatting and keywords</li>
-                        </ul>
-                    </div>
-                </section>
+                <article className="prose prose-slate dark:prose-invert max-w-none 
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                    mb-12">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                }
+                                return <Link href={href}>{props.children}</Link>;
+                            }
+                        }}
+                    >
+                        {RN_RESUME_GUIDE_CONTENT}
+                    </ReactMarkdown>
+                </article>
             )}
 
-            {/* Resume Keywords */}
-            {resumeKeywords.length > 0 && (
+            {resumeKeywords.length > 0 && !isResumeType && (
                 <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4">Resume Keywords to Include</h2>
+                    <h2 className="text-2xl font-bold mb-4">ATS Resume Keywords for {careerTitle} Positions</h2>
                     <p className="text-muted-foreground mb-4">
-                        Include these keywords to pass ATS screening and highlight relevant skills:
+                        Include these keywords naturally throughout your resume to pass ATS screening. Use the exact terms from job descriptions and incorporate them in your professional summary, work experience, and skills sections.
                     </p>
                     <div className="flex flex-wrap gap-2">
                         {resumeKeywords.map((keyword: string, idx: number) => (
@@ -240,38 +267,47 @@ export default async function ResumePage({ params }: PageProps) {
                 </section>
             )}
 
-            {/* Skills to Highlight */}
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-6">Skills to Highlight</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Technical Skills</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-wrap gap-2">
-                                {technicalSkills.slice(0, 10).map((skill: string, idx: number) => (
-                                    <Badge key={idx} variant="default">{skill}</Badge>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Soft Skills</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-wrap gap-2">
-                                {softSkills.slice(0, 10).map((skill: string, idx: number) => (
-                                    <Badge key={idx} variant="outline">{skill}</Badge>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </section>
+            {!isResumeType && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">Skills to Highlight on Your Resume</h2>
+                    <p className="text-muted-foreground mb-6">
+                        These skills should appear in your resume's skills section and be demonstrated through specific examples in your work experience bullets. Balance technical competencies with soft skills to show you're a well-rounded candidate.
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">Technical Skills</CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Procedures, technologies, and clinical competencies specific to nursing practice
+                                </p>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-wrap gap-2">
+                                    {technicalSkills.slice(0, 15).map((skill: string, idx: number) => (
+                                        <Badge key={idx} variant="default">{skill}</Badge>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">Soft Skills</CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Interpersonal abilities and personal qualities essential for patient care
+                                </p>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-wrap gap-2">
+                                    {softSkills.slice(0, 15).map((skill: string, idx: number) => (
+                                        <Badge key={idx} variant="outline">{skill}</Badge>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </section>
+            )}
 
-            {/* Quick Navigation */}
             <div className="mt-12 p-6 bg-muted/50 rounded-lg">
                 <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
