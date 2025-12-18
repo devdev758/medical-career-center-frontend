@@ -17,6 +17,9 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, getProfessionUrls } from '@/lib/url-utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { CRNA_HUB_CONTENT } from '@/lib/crna/hub-content';
 
 export const dynamic = 'force-dynamic';
 
@@ -281,140 +284,40 @@ export default async function CRNAPage({ params }: PageProps) {
         );
     }
 
-    // Main CRNA hub page
+    // Main CRNA hub page - comprehensive content
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                    <Stethoscope className="w-10 h-10 text-primary" />
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                        CRNA (Nurse Anesthetist)
-                    </h1>
-                </div>
-                <p className="text-xl text-muted-foreground">
-                    Certified Registered Nurse Anesthetist - One of the highest-paying and most prestigious nursing specialties
-                </p>
-            </div>
-
-            {/* Key Stats */}
-            <div className="grid md:grid-cols-4 gap-4 mb-12">
-                <Card>
-                    <CardContent className="p-4 text-center">
-                        <DollarSign className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                        <p className="text-sm text-muted-foreground">Avg. Salary</p>
-                        <p className="text-xl font-bold">$203,090</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 text-center">
-                        <TrendingUp className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                        <p className="text-sm text-muted-foreground">Job Growth</p>
-                        <p className="text-xl font-bold">45%</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 text-center">
-                        <Clock className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                        <p className="text-sm text-muted-foreground">Education</p>
-                        <p className="text-xl font-bold">Doctoral</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 text-center">
-                        <Award className="w-6 h-6 mx-auto mb-2 text-orange-600" />
-                        <p className="text-sm text-muted-foreground">ICU Required</p>
-                        <p className="text-xl font-bold">1+ Years</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Quick Navigation */}
-            <Card className="mb-12">
-                <CardHeader>
-                    <CardTitle>Explore CRNA Topics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <Link href={`/${profession}/crna/how-to-become`} className="p-4 rounded-lg border hover:bg-muted transition-colors">
-                            <GraduationCap className="w-6 h-6 mb-2 text-primary" />
-                            <h3 className="font-semibold">How to Become a CRNA</h3>
-                            <p className="text-sm text-muted-foreground">Step-by-step career guide</p>
-                        </Link>
-                        <Link href={`/${profession}/crna/salary`} className="p-4 rounded-lg border hover:bg-muted transition-colors">
-                            <DollarSign className="w-6 h-6 mb-2 text-primary" />
-                            <h3 className="font-semibold">CRNA Salary</h3>
-                            <p className="text-sm text-muted-foreground">Salary by state & experience</p>
-                        </Link>
-                        <Link href={`/${profession}/crna/schools`} className="p-4 rounded-lg border hover:bg-muted transition-colors">
-                            <GraduationCap className="w-6 h-6 mb-2 text-primary" />
-                            <h3 className="font-semibold">CRNA Schools</h3>
-                            <p className="text-sm text-muted-foreground">Find accredited programs</p>
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Overview */}
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4">What is a CRNA?</h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                    A Certified Registered Nurse Anesthetist (CRNA) is an advanced practice registered nurse (APRN) who
-                    specializes in administering anesthesia. CRNAs provide the same anesthesia services as physician
-                    anesthesiologists, including general anesthesia, regional anesthesia, and sedation.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                    CRNAs are the primary anesthesia providers in rural America and work in every setting where anesthesia
-                    is delivered: hospitals, surgical centers, dental offices, pain clinics, and more.
-                </p>
-            </section>
-
-            {/* Why Become a CRNA */}
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4">Why Become a CRNA?</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                    {[
-                        { title: 'Highest Paying Nursing Specialty', desc: 'Average salary over $200,000' },
-                        { title: 'Autonomous Practice', desc: 'Full practice authority in many states' },
-                        { title: 'High Demand', desc: '45% projected job growth' },
-                        { title: 'Diverse Work Settings', desc: 'Hospitals, surgery centers, offices' },
-                        { title: 'Work-Life Balance', desc: 'Flexible scheduling options' },
-                        { title: 'Prestige', desc: 'Elite advanced practice specialty' },
-                    ].map((item, idx) => (
-                        <Card key={idx}>
-                            <CardContent className="p-4">
-                                <h3 className="font-semibold mb-1">{item.title}</h3>
-                                <p className="text-sm text-muted-foreground">{item.desc}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </section>
-
-            {/* CTA */}
-            <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                <CardContent className="p-8 text-center">
-                    <h2 className="text-2xl font-bold mb-4">
-                        Ready to Start Your CRNA Journey?
-                    </h2>
-                    <p className="text-blue-100 mb-6">
-                        Learn exactly what it takes to become a nurse anesthetist
-                    </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Button asChild size="lg" variant="secondary">
-                            <Link href={`/${profession}/crna/how-to-become`}>
-                                View Career Path
-                            </Link>
-                        </Button>
-                        <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
-                            <Link href={urls.jobs}>
-                                Browse RN Jobs
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+            <article className="prose prose-slate dark:prose-invert max-w-none 
+                prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                prose-table:my-6
+                prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold
+                prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
+                mb-12">
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        a: ({ node, ...props }) => {
+                            const href = props.href || '';
+                            if (href.startsWith('http')) {
+                                return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                            }
+                            return <Link href={href}>{props.children}</Link>;
+                        }
+                    }}
+                >
+                    {CRNA_HUB_CONTENT}
+                </ReactMarkdown>
+            </article>
         </main>
     );
 }
