@@ -54,9 +54,9 @@ Nurse recruiters and hiring managers typically spend **6-10 seconds** on an init
 
 **Example:**
 
-    Sarah Johnson, RN, BSN, CCRN
-    Austin, TX | (512) 555-1234 | sarah.johnson@email.com
-    LinkedIn: linkedin.com/in/sarahjohnsonrn
+> Sarah Johnson, RN, BSN, CCRN  
+> Austin, TX | (512) 555-1234 | sarah.johnson@email.com  
+> LinkedIn: linkedin.com/in/sarahjohnsonrn
 
 ### 2. Professional Summary vs Objective
 
@@ -67,10 +67,10 @@ Nurse recruiters and hiring managers typically spend **6-10 seconds** on an init
 
 **Example - Experienced ICU Nurse:**
 
-    Critical Care Registered Nurse with 6+ years of experience in fast-paced ICU environments. 
-    CCRN-certified with expertise in ventilator management, hemodynamic monitoring, and CRRT. 
-    Proven track record of improving patient outcomes through evidence-based practice and mentoring 
-    new staff. Seeking to leverage advanced critical care skills in a Level I Trauma ICU.
+> Critical Care Registered Nurse with 6+ years of experience in fast-paced ICU environments. 
+> CCRN-certified with expertise in ventilator management, hemodynamic monitoring, and CRRT. 
+> Proven track record of improving patient outcomes through evidence-based practice and mentoring 
+> new staff. Seeking to leverage advanced critical care skills in a Level I Trauma ICU.
 
 **Objective Statement** (For new graduates or career changers):
 - Briefly state your goals and what you offer
@@ -79,9 +79,9 @@ Nurse recruiters and hiring managers typically spend **6-10 seconds** on an init
 
 **Example - New Graduate:**
 
-    Compissionate new graduate nurse with BSN from UT Austin and 500+ clinical hours across med-surg, 
-    ICU, and ER rotations. BLS and ACLS certified. Eager to apply evidence-based nursing practices 
-    and patient-centered care in a dynamic hospital environment.
+> Compissionate new graduate nurse with BSN from UT Austin and 500+ clinical hours across med-surg, 
+> ICU, and ER rotations. BLS and ACLS certified. Eager to apply evidence-based nursing practices 
+> and patient-centered care in a dynamic hospital environment.
 
 ### 3. Licenses & Certifications
 
@@ -89,11 +89,11 @@ Place this section prominently (often right after summary). Hiring managers need
 
 **Format:**
 
-    LICENSES & CERTIFICATIONS
-    - Registered Nurse (RN), Texas Board of Nursing, License #123456, Active through 12/2026
-    - Basic Life Support (BLS), American Heart Association, Exp. 06/2026
-    - Advanced Cardiovascular Life Support (ACLS), AHA, Exp. 06/2026
-    - Critical Care Registered Nurse (CCRN), AACN, Exp. 12/2026
+> LICENSES & CERTIFICATIONS
+> - Registered Nurse (RN), Texas Board of Nursing, License #123456, Active through 12/2026
+> - Basic Life Support (BLS), American Heart Association, Exp. 06/2026
+> - Advanced Cardiovascular Life Support (ACLS), AHA, Exp. 06/2026
+> - Critical Care Registered Nurse (CCRN), AACN, Exp. 12/2026
 
 **Pro Tip**: List certifications in order of importance for the target role (e.g., CCRN first for ICU positions).
 
@@ -103,15 +103,15 @@ This is the heart of your resume. Each position should include:
 
 **Format:**
 
-    Registered Nurse – Medical ICU
-    Memorial Hermann Hospital, Houston, TX
-    January 2020 – Present
+> Registered Nurse – Medical ICU
+> Memorial Hermann Hospital, Houston, TX
+> January 2020 – Present
 
-    - Provide comprehensive nursing care for 12+ critically ill patients per shift in 24-bed MICU
-    - Manage complex ventilator settings (APRV, PRVC, HFOV) for COVID-19 and respiratory failure patients
-    - Titrate vasoactive medications (norepinephrine, vasopressin, epinephrine) based on hemodynamic parameters
-    - Serve as charge nurse for evening shift, overseeing staffing and resource allocation
-    - Precepted 8 new graduate nurses during ICU orientation, improving unit retention by 20%
+> - Provide comprehensive nursing care for 12+ critically ill patients per shift in 24-bed MICU
+> - Manage complex ventilator settings (APRV, PRVC, HFOV) for COVID-19 and respiratory failure patients
+> - Titrate vasoactive medications (norepinephrine, vasopressin, epinephrine) based on hemodynamic parameters
+> - Serve as charge nurse for evening shift, overseeing staffing and resource allocation
+> - Precepted 8 new graduate nurses during ICU orientation, improving unit retention by 20%
 
 **Action Verbs to Use:**
 - **Patient Care**: Assessed, Administered, Assisted, Managed, Monitored, Performed, Provided
@@ -133,19 +133,19 @@ This is the heart of your resume. Each position should include:
 
 **For Nurses with BSN or Higher:**
 
-    Bachelor of Science in Nursing (BSN)
-    University of Texas at Austin, Austin, TX
-    Graduated: May 2019 | GPA: 3.8 (include if 3.5+)
-    Dean's List: Fall 2017, Spring 2018, Fall 2018
+> Bachelor of Science in Nursing (BSN)
+> University of Texas at Austin, Austin, TX
+> Graduated: May 2019 | GPA: 3.8 (include if 3.5+)
+> Dean's List: Fall 2017, Spring 2018, Fall 2018
 
 **For ADN Nurses (especially if pursuing BSN):**
 
-    Associate Degree in Nursing (ADN)
-    Austin Community College, Austin, TX
-    Graduated: May 2021
+> Associate Degree in Nursing (ADN)
+> Austin Community College, Austin, TX
+> Graduated: May 2021
 
-    Bachelor of Science in Nursing (BSN) – In Progress
-    Texas Tech University Health Sciences Center (Expected Graduation: December 2026)
+> Bachelor of Science in Nursing (BSN) – In Progress
+> Texas Tech University Health Sciences Center (Expected Graduation: December 2026)
 
 **When to Include Coursework:**
 - New graduates applying for specialty positions
@@ -189,21 +189,21 @@ Divide into **Technical Skills** and **Soft Skills** (or combine if space is tig
 
 **Professional Affiliations:**
 
-    - American Association of Critical-Care Nurses (AACN), Member since 2020
-    - Emergency Nurses Association (ENA), Active Member
-    - Sigma Theta Tau International Honor Society, Inducted 2019
+> - American Association of Critical-Care Nurses (AACN), Member since 2020
+> - Emergency Nurses Association (ENA), Active Member
+> - Sigma Theta Tau International Honor Society, Inducted 2019
 
 **Volunteer Experience** (especially relevant for new grads):
 
-    Volunteer Patient Care Assistant
-    St. David's Medical Center, Austin, TX (2018-2019)
-    - Assisted nursing staff with patient meals, hygiene, and mobility
-    - Provided companionship and emotional support to 10+ patients daily
+> Volunteer Patient Care Assistant
+> St. David's Medical Center, Austin, TX (2018-2019)
+> - Assisted nursing staff with patient meals, hygiene, and mobility
+> - Provided companionship and emotional support to 10+ patients daily
 
 **Publications/Presentations** (for advanced practice, research, or educator roles):
 
-    - "Reducing CAUTI Rates Through Evidence-Based Practice," Texas Nurse Journal, June 2023
-    - Poster Presentation: "Improving ICU Handoff Communication," AACN National Teaching Institute, 2024
+> - "Reducing CAUTI Rates Through Evidence-Based Practice," Texas Nurse Journal, June 2023
+> - Poster Presentation: "Improving ICU Handoff Communication," AACN National Teaching Institute, 2024
 
 ## ATS Optimization: Getting Past the Bots
 
@@ -262,10 +262,10 @@ Divide into **Technical Skills** and **Soft Skills** (or combine if space is tig
 
 **How to Use Them:**
 
-    Before: "Assessed patients and gave medications"
-    
-    After: "Conducted comprehensive patient assessments and performed medication administration 
-    per physician orders, utilizing electronic health records (Epic) to document evidence-based practice"
+> Before: "Assessed patients and gave medications"
+> 
+> After: "Conducted comprehensive patient assessments and performed medication administration 
+> per physician orders, utilizing electronic health records (Epic) to document evidence-based practice"
 
 ### File Format & Naming
 
@@ -274,11 +274,11 @@ Divide into **Technical Skills** and **Soft Skills** (or combine if space is tig
 
 **File Naming Convention:**
 
-    FirstName_LastName_RN_Resume.pdf
-    
-    Examples:
-    - Sarah_Johnson_RN_Resume.pdf
-    - Michael_Chen_BSN_Resume.pdf
+> FirstName_LastName_RN_Resume.pdf
+> 
+> Examples:
+> - Sarah_Johnson_RN_Resume.pdf
+> - Michael_Chen_BSN_Resume.pdf
 
 **NOT:**
 - Resume.pdf (too generic)
@@ -306,8 +306,8 @@ If you have gaps (raising children, education, travel, illness), briefly address
 
 **Option 1:** Include a line in work history
 
-    Career Break for Family Care (2020-2021)
-    - Maintained active RN license and completed 20 CEUs
+> Career Break for Family Care (2020-2021)
+> - Maintained active RN license and completed 20 CEUs
 
 **Option 2:** Note in cover letter
 "After taking a year for family caregiving, I am eager to return to acute care nursing with renewed energy and updated skills."
