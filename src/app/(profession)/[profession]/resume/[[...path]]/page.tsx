@@ -20,6 +20,7 @@ import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RN_RESUME_GUIDE_CONTENT } from '@/lib/resume-content';
+import { RN_RESUME_EXAMPLES_CONTENT } from '@/lib/resume-examples-content';
 
 export const dynamic = 'force-dynamic';
 
@@ -235,6 +236,7 @@ export default async function ResumePage({ params }: PageProps) {
                     prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
                     prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
                     prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                    prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-950/20 prose-blockquote:py-2 prose-blockquote:my-4
                     mb-12">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -249,6 +251,37 @@ export default async function ResumePage({ params }: PageProps) {
                         }}
                     >
                         {RN_RESUME_GUIDE_CONTENT}
+                    </ReactMarkdown>
+                </article>
+            )}
+
+            {firstParam === 'examples' && (
+                <article className="prose prose-slate dark:prose-invert max-w-none 
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                    prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:not-italic prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-950/20 prose-blockquote:py-2 prose-blockquote:my-4 prose-blockquote:text-gray-800 dark:prose-blockquote:text-gray-200
+                    mb-12">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+                                }
+                                return <Link href={href}>{props.children}</Link>;
+                            }
+                        }}
+                    >
+                        {RN_RESUME_EXAMPLES_CONTENT}
                     </ReactMarkdown>
                 </article>
             )}
