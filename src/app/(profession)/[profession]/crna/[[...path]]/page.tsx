@@ -108,8 +108,36 @@ export default async function CRNAPage({ params }: PageProps) {
         breadcrumbItems.push({ label: 'CRNA (Nurse Anesthetist)' });
     }
 
+
     // CRNA sub-page content
     if (subPage === 'salary') {
+        // Fetch CRNA salary data from database
+        const crnaSalaryData = await prisma.salaryData.findFirst({
+            where: {
+                careerKeyword: 'nurse-anesthetists',
+                location: { state: '', city: '' }, // National data
+                year: 2024
+            }
+        });
+
+        // Fetch top-paying states
+        const topStates = await prisma.salaryData.findMany({
+            where: {
+                careerKeyword: 'nurse-anesthetists',
+                location: { city: '', state: { not: '' } },
+                year: 2024
+            },
+            include: { location: true },
+            orderBy: { annualMedian: 'desc' },
+            take: 10
+        });
+
+        const avgSalary = crnaSalaryData?.annualMean || 203090;
+        const medianSalary = crnaSalaryData?.annualMedian || 202470;
+        const hourlyMedian = crnaSalaryData?.hourlyMedian || 97.64;
+        const salary10th = crnaSalaryData?.annual10th || 171200;
+        const salary90th = crnaSalaryData?.annual90th || 239200;
+
         return (
             <main className="container mx-auto py-10 px-4 max-w-5xl">
                 <Breadcrumb items={breadcrumbItems} className="mb-6" />
@@ -124,21 +152,25 @@ export default async function CRNAPage({ params }: PageProps) {
                     <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">
                         <CardContent className="p-6 text-center">
                             <p className="text-sm text-muted-foreground mb-2">Average Salary</p>
-                            <p className="text-3xl font-bold text-green-600">$203,090</p>
-                            <p className="text-sm text-muted-foreground mt-1">per year</p>
+                            <p className="text-3xl font-bold text-green-600">
+                                ${avgSalary.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">per year (BLS 2024)</p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardContent className="p-6 text-center">
                             <p className="text-sm text-muted-foreground mb-2">Salary Range</p>
-                            <p className="text-2xl font-bold">$160,000 - $250,000+</p>
-                            <p className="text-sm text-muted-foreground mt-1">depending on location</p>
+                            <p className="text-2xl font-bold">
+                                ${Math.round(salary10th / 1000)}K - ${Math.round(salary90th / 1000)}K+
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">10th to 90th percentile</p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardContent className="p-6 text-center">
                             <p className="text-sm text-muted-foreground mb-2">Hourly Rate</p>
-                            <p className="text-2xl font-bold">$97.64/hr</p>
+                            <p className="text-2xl font-bold">${hourlyMedian.toFixed(2)}/hr</p>
                             <p className="text-sm text-muted-foreground mt-1">median hourly</p>
                         </CardContent>
                     </Card>
@@ -146,18 +178,70 @@ export default async function CRNAPage({ params }: PageProps) {
 
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Top-Paying States for CRNAs</h2>
+                    <p className="text-muted-foreground mb-6">
+                        CRNA salaries vary significantly by state, with differences driven by cost of living,
+                        demand, and practice authority laws. Here are the highest-paying states:
+                    </p>
                     <div className="space-y-3">
-                        {[
-                            { state: 'California', salary: '$246,500' },
-                            { state: 'Oregon', salary: '$234,750' },
-                            { state: 'Wyoming', salary: '$223,030' },
-                            { state: 'Wisconsin', salary: '$220,600' },
-                            { state: 'Montana', salary: '$218,120' },
-                        ].map((item, idx) => (
+                        {topStates.slice(0, 10).map((item, idx) => (
                             <div key={idx} className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                                <span className="font-medium">{item.state}</span>
-                                <span className="text-green-600 font-bold">{item.salary}</span>
+                                <div>
+                                    <span className="font-medium">{item.location?.stateName || item.location?.state}</span>
+                                    {item.employmentCount && (
+                                        <span className="text-sm text-muted-foreground ml-2">
+                                            ({item.employmentCount.toLocaleString()} employed)
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="text-green-600 font-bold">
+                                    ${item.annualMedian?.toLocaleString() || 'N/A'}
+                                </span>
                             </div>
+                        ))}
+                    </div>
+                </section>
+
+                <Card className="mb-8 bg-blue-50 dark:bg-blue-950/20 border-blue-200">
+                    <CardContent className="p-6">
+                        <h3 className="font-semibold mb-3">Salary by Experience Level</h3>
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Entry-Level (0-2 years)</span>
+                                <span className="font-semibold">$170,000 - $185,000</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Mid-Career (3-7 years)</span>
+                                <span className="font-semibold">$190,000 - $210,000</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Experienced (8-15 years)</span>
+                                <span className="font-semibold">$210,000 - $230,000</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Senior (15+ years)</span>
+                                <span className="font-semibold">$230,000 - $250,000+</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">Factors Affecting CRNA Salary</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {[
+                            { title: 'Geographic Location', desc: 'Urban vs. rural, state practice laws, cost of living adjustments' },
+                            { title: 'Work Setting', desc: 'Hospital vs. ambulatory surgery center vs. private practice' },
+                            { title: 'Call Requirements', desc: 'Weekend, night, and on-call differentials ($2-5/hr extra)' },
+                            { title: 'Certifications', desc: 'CCRN, specialty certifications increase earning potential' },
+                            { title: 'Practice Authority', desc: 'Independent practice states may offer higher salaries' },
+                            { title: 'Employer Type', desc: 'Academic medical centers, private practices, locum tenens' },
+                        ].map((item, idx) => (
+                            <Card key={idx}>
+                                <CardContent className="p-4">
+                                    <h3 className="font-semibold mb-1">{item.title}</h3>
+                                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                                </CardContent>
+                            </Card>
                         ))}
                     </div>
                 </section>
@@ -168,6 +252,9 @@ export default async function CRNAPage({ params }: PageProps) {
                     </Button>
                     <Button asChild variant="outline">
                         <Link href={`/${profession}/crna/schools`}>Find CRNA Schools</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                        <Link href={`/${profession}/salary`}>RN Salary Comparison</Link>
                     </Button>
                 </div>
             </main>
