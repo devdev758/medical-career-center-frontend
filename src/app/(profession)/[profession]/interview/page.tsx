@@ -411,22 +411,23 @@ ${salaryData.topStates.map((s, i) => `${i + 1}. ${s.state}: ${s.salary}`).join('
   - Mention something specific from conversation
   - Keep it brief (3-4 sentences)
 
+
 **Sample Thank-You Email**:
-```
+
     Subject: Thank You - RN Position Interview
 
-    Dear[Interviewer Name],
+    Dear [Interviewer Name],
 
-Thank you for taking the time to speak with me today about the Registered Nurse position on the Medical - Surgical unit.I enjoyed learning about[specific detail from conversation, e.g., "the unit's focus on patient-centered care and the structured mentorship program for new hires"].
+    Thank you for taking the time to speak with me today about the Registered Nurse position on the Medical-Surgical unit. I enjoyed learning about [specific detail from conversation, e.g., "the unit's focus on patient-centered care and the structured mentorship program for new hires"].
 
-Our discussion reinforced my enthusiasm for joining your team.My experience in [relevant background] aligns well with the unit's needs, and I'm excited about the opportunity to contribute.
+    Our discussion reinforced my enthusiasm for joining your team. My experience in [relevant background] aligns well with the unit's needs, and I'm excited about the opportunity to contribute.
 
-Please don't hesitate to contact me if you need any additional information. I look forward to hearing about next steps.
+    Please don't hesitate to contact me if you need any additional information. I look forward to hearing about next steps.
 
     Sincerely,
-        [Your Name]
-        [Phone Number]
-    ```
+    [Your Name]
+    [Phone Number]
+
 
 ## Common Mistakes to Avoid
 
