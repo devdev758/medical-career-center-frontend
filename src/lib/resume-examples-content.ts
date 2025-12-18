@@ -23,6 +23,9 @@ These resume examples are meant to **inspire and guide** your own resume creatio
 
 **Profile**: Recent BSN graduate with limited professional experience but strong clinical rotations and academic achievements.
 
+**[📥 Download This Resume (.docx)](/downloads/resume-examples/new-grad-rn-resume.docx)**  
+*30KB • Microsoft Word Format • Ready to Customize*
+
 ### Resume Sample
 
 > **EMILY RODRIGUEZ, RN, BSN**  
@@ -107,6 +110,9 @@ These resume examples are meant to **inspire and guide** your own resume creatio
 
 **Profile**: Staff nurse with 4 years of medical-surgical experience, showing clear career progression and quantified accomplishments.
 
+**[📥 Download This Resume (.docx)](/downloads/resume-examples/experienced-medsurg-rn-resume.docx)**  
+*35KB • Microsoft Word Format • Ready to Customize*
+
 ### Resume Sample
 
 > **MICHAEL CHEN, RN, BSN, MEDSURG-BC**  
@@ -187,6 +193,9 @@ These resume examples are meant to **inspire and guide** your own resume creatio
 ## Example 3: ICU/Critical Care Specialist Resume
 
 **Profile**: Experienced critical care nurse with 8 years in ICU, seeking leadership position with advanced certifications and specialized skills.
+
+**[📥 Download This Resume (.docx)](/downloads/resume-examples/icu-critical-care-rn-resume.docx)**  
+*40KB • Microsoft Word Format • Ready to Customize*
 
 ### Resume Sample
 
@@ -296,6 +305,9 @@ These resume examples are meant to **inspire and guide** your own resume creatio
 ## Example 4: Charge Nurse / Leadership Track Resume
 
 **Profile**: Senior nurse with 12 years experience, transitioning from bedside to formal nursing leadership role.
+
+**[📥 Download This Resume (.docx)](/downloads/resume-examples/charge-nurse-leadership-resume.docx)**  
+*38KB • Microsoft Word Format • Ready to Customize*
 
 ### Resume Sample
 
@@ -408,6 +420,9 @@ These resume examples are meant to **inspire and guide** your own resume creatio
 ## Example 5: Career Changer / Specialty Transition Resume
 
 **Profile**: Experienced nurse transitioning from long-term care to acute hospital setting, highlighting transferable skills.
+
+**[📥 Download This Resume (.docx)](/downloads/resume-examples/career-changer-transition-resume.docx)**  
+*32KB • Microsoft Word Format • Ready to Customize*
 
 ### Resume Sample
 
