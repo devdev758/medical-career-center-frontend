@@ -22,6 +22,7 @@ import remarkGfm from 'remark-gfm';
 import { CRNA_HUB_CONTENT } from '@/lib/crna/hub-content';
 import { CRNA_HOWTOBECOME_CONTENT } from '@/lib/crna/how-to-become-content';
 import { CRNA_SCHOOLS_CONTENT } from '@/lib/crna/schools-content';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const { profession, path } = await params;
     const subPage = path?.[0];
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
 
     if (subPage === 'salary') {
         return {

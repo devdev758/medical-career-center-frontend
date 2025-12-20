@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ClipboardCheck, BookOpen, Clock, Target, ArrowRight, CheckCircle } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const testType = type?.[0];
     const testMeta = testType && TEST_TYPES[testType as keyof typeof TEST_TYPES];
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (testMeta) {
@@ -131,8 +132,8 @@ export default async function PracticeTestPage({ params }: PageProps) {
                                 key={slug}
                                 href={`/${profession}/practice-test/${slug}`}
                                 className={`p-4 rounded-lg border transition-colors ${testType === slug
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'hover:bg-muted'
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'hover:bg-muted'
                                     }`}
                             >
                                 <h3 className="font-semibold mb-1">{meta.title}</h3>

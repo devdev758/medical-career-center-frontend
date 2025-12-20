@@ -9,6 +9,8 @@ import { MapPin, Briefcase, Home, GraduationCap, Plane, Clock } from 'lucide-rea
 import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
+import { cache } from 'react';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -197,7 +199,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         where: { careerKeyword: dbSlug }
     });
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (isCity && isState) {

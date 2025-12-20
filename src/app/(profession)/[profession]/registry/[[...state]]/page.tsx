@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Search, ExternalLink, ArrowRight, Shield } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const stateSlug = state?.[0];
     const stateInfo = stateSlug ? US_STATES[stateSlug] : null;
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (stateInfo) {

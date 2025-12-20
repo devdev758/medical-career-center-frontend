@@ -25,6 +25,7 @@ import { RN_RESUME_TEMPLATES_CONTENT } from '@/lib/resume-templates-content';
 import { RN_RESUME_NEWGRAD_CONTENT } from '@/lib/resume-newgrad-content';
 import { RN_RESUME_ICU_CONTENT } from '@/lib/resume-icu-content';
 import { RN_RESUME_COVERLETTER_CONTENT } from '@/lib/resume-coverletter-content';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const isResumeType = firstParam && RESUME_TYPE_SLUGS.includes(firstParam);
     const resumeTypeMeta = isResumeType ? RESUME_TYPE_META[firstParam] : null;
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (resumeTypeMeta) {

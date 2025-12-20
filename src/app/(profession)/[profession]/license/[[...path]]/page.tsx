@@ -20,6 +20,7 @@ import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/l
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RN_LICENSE_CONTENT } from '@/lib/rn-license-content';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,7 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
     const licenseTypeMeta = isLicenseType ? LICENSE_TYPE_META[firstParam] : null;
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (licenseTypeMeta) {

@@ -21,6 +21,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RN_SCHOOLS_CONTENT } from '@/lib/rn-schools-content';
 import { PROGRAM_TYPE_CONTENT_MAP } from '@/lib/schools';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,7 +99,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const isState = firstParam && US_STATE_CODES.includes(firstParam);
     const programTypeMeta = isProgramType ? PROGRAM_TYPE_META[firstParam] : null;
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (isState) {
@@ -398,8 +399,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </CardContent>
             </Card>
 
-            {/* Comprehensive Schools Guide for RN */}
-            {isRegisteredNurse && (
+            {/* Comprehensive Schools Guide for RN - ONLY on main hub page */}
+            {!isProgramType && isRegisteredNurse && (
                 <article className="prose prose-slate dark:prose-invert max-w-none mb-12
                     prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
                     prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0

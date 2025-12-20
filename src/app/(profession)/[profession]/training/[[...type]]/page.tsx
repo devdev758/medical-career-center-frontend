@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { BookOpen, DollarSign, Clock, MapPin, ArrowRight, GraduationCap, Gift, Briefcase } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { getContentYear } from '@/lib/date-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const trainingType = type?.[0];
     const trainingMeta = trainingType && TRAINING_TYPES[trainingType as keyof typeof TRAINING_TYPES];
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (trainingMeta) {
@@ -150,8 +151,8 @@ export default async function TrainingPage({ params }: PageProps) {
                                     key={slug}
                                     href={`/${profession}/training/${slug}`}
                                     className={`p-4 rounded-lg border transition-colors ${isActive
-                                            ? 'bg-primary text-primary-foreground border-primary'
-                                            : 'hover:bg-muted'
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'hover:bg-muted'
                                         }`}
                                 >
                                     <Icon className={`w-6 h-6 mb-2 ${isActive ? '' : 'text-primary'}`} />
