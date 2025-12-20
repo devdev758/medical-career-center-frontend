@@ -81,8 +81,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     // ... existing metadata logic uses careerGuide ...
     return {
-        title: careerGuide.metaTitle || `${formalName} Career Guide & Salary (2026)`,
-        description: careerGuide.metaDescription || `Everything you need to know about becoming a ${formalName}. Salary, requirements, and job outlook updated for 2026.`,
+        title: careerGuide.metaTitle || `${formalName} Career Guide, Salary & Jobs (2026)`,
+        description: careerGuide.metaDescription || `Complete ${formalName} career resource. Explore education pathways, schools, NCLEX licensing, salary data by state, job opportunities, specializations, and career advancement. Find programs, browse jobs, and plan your nursing career.`,
         alternates: {
             canonical: `/${profession}`
         }

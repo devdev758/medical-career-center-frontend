@@ -7,12 +7,25 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getProfessionUrls, urlSlugToDbSlug } from '@/lib/url-utils';
 import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: {
         profession: string;
+    };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { profession } = await params;
+
+    return {
+        title: 'How to Become a Registered Nurse in 2026: Complete Career Guide',
+        description: 'Comprehensive guide to becoming an RN in 2026. Learn about nursing education (ADN vs BSN), NCLEX-RN requirements, current salary data, 6% job growth projections, and career advancement paths. Explore accredited programs and licensing requirements.',
+        alternates: {
+            canonical: `/${profession}/how-to-become`
+        }
     };
 }
 
