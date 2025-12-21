@@ -22,6 +22,7 @@ import { getStateName } from '@/lib/geographic-data';
 import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
 import { calculatePercentChange } from '@/lib/salary-utils';
 import { Search, GraduationCap, BookOpen, FileText } from 'lucide-react';
+import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 
 // New enhanced components
 import { SalaryHeroStats } from '@/components/salary/SalaryHeroStats';
@@ -124,6 +125,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SalaryPage({ params }: PageProps) {
     const { profession, location } = await params;
+
+    // Validate profession exists
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        notFound();
+    }
+
+    const blsKeywords = await getBLSKeywords(profession);
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
     const careerTitle = formatTitleForDisplay(profession);
@@ -144,8 +153,9 @@ export default async function SalaryPage({ params }: PageProps) {
         });
         if (cityLocation) {
             salaryData = await prisma.salaryData.findFirst({
-                where: { careerKeyword: dbSlug, locationId: cityLocation.id, year: 2024 },
-                include: { location: true }
+                where: { careerKeyword: { in: blsKeywords }, locationId: cityLocation.id, year: 2024 },
+                include: { location: true },
+                orderBy: { employmentCount: 'desc' }
             });
             locationData = { city: cityLocation.city, state: cityLocation.state, stateName: cityLocation.stateName };
 
@@ -166,15 +176,17 @@ export default async function SalaryPage({ params }: PageProps) {
     } else if (state) {
         const stateAbbr = state.toUpperCase();
         salaryData = await prisma.salaryData.findFirst({
-            where: { careerKeyword: dbSlug, location: { state: stateAbbr, city: "" }, year: 2024 },
-            include: { location: true }
+            where: { careerKeyword: { in: blsKeywords }, location: { state: stateAbbr, city: "" }, year: 2024 },
+            include: { location: true },
+            orderBy: { employmentCount: 'desc' }
         });
         if (salaryData?.location) {
             locationData = { state: salaryData.location.state, stateName: salaryData.location.stateName };
         }
     } else {
         salaryData = await prisma.salaryData.findFirst({
-            where: { careerKeyword: dbSlug, locationId: null, year: 2024 }
+            where: { careerKeyword: { in: blsKeywords }, locationId: null, year: 2024 },
+            orderBy: { employmentCount: 'desc' }
         });
     }
 
@@ -182,7 +194,8 @@ export default async function SalaryPage({ params }: PageProps) {
 
     // Fetch national data for comparison
     const nationalData = await prisma.salaryData.findFirst({
-        where: { careerKeyword: dbSlug, locationId: null, year: 2024 }
+        where: { careerKeyword: { in: blsKeywords }, locationId: null, year: 2024 },
+        orderBy: { employmentCount: 'desc' }
     });
 
     // Calculate vs national comparison
@@ -194,7 +207,8 @@ export default async function SalaryPage({ params }: PageProps) {
     let stateData;
     if (city && state) {
         stateData = await prisma.salaryData.findFirst({
-            where: { careerKeyword: dbSlug, location: { state: state.toUpperCase(), city: "" }, year: 2024 }
+            where: { careerKeyword: { in: blsKeywords }, location: { state: state.toUpperCase(), city: "" }, year: 2024 },
+            orderBy: { employmentCount: 'desc' }
         });
     }
 

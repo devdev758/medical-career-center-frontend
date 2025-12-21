@@ -28,6 +28,7 @@ import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/
 import { getProfessionFormalName } from '@/lib/content-generator';
 import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
 import { RN_SPOKE_HIGHLIGHTS, getAllHighlightsPriority } from '@/lib/rn-landing-highlights';
+import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,23 +67,26 @@ async function getOrSeedCareerGuide(slug: string) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession } = await params;
+
+    // Validate profession exists in our approved 55
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        return {
+            title: 'Profession Not Found',
+            description: 'The requested profession could not be found.'
+        };
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
     const dbSlug = urlSlugToDbSlug(profession);
-    const formalName = getProfessionFormalName(profession);
 
     // Try to get guide (with self-healing fallback)
     const careerGuide = await getOrSeedCareerGuide(dbSlug);
 
-    if (!careerGuide) {
-        return {
-            title: 'Profession Not Found',
-            description: 'The requested profession guide could not be found.'
-        };
-    }
-
-    // ... existing metadata logic uses careerGuide ...
+    // Use careerGuide if available, otherwise use profession displayName
     return {
-        title: careerGuide.metaTitle || `${formalName} Career Guide, Salary & Jobs (2026)`,
-        description: careerGuide.metaDescription || `Complete ${formalName} career resource. Explore education pathways, schools, NCLEX licensing, salary data by state, job opportunities, specializations, and career advancement. Find programs, browse jobs, and plan your nursing career.`,
+        title: careerGuide?.metaTitle || `${displayName} Career Guide, Salary & Jobs (2026)`,
+        description: careerGuide?.metaDescription || `Complete ${displayName} career resource. Explore education pathways, schools, licensing, salary data by state, job opportunities, specializations, and career advancement.`,
         alternates: {
             canonical: `/${profession}`
         }
@@ -122,25 +126,33 @@ const cnaSpokeNavItems = [
 
 export default async function ProfessionHubPage({ params }: PageProps) {
     const { profession } = await params;
+
+    // CRITICAL: Validate profession exists in our approved 55
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        notFound();
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
+    const blsKeywords = await getBLSKeywords(profession);
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
 
-    // Fetch career guide using database slug
+    // Fetch career guide using database slug (optional - for RN and others with guides)
     const careerGuide = await prisma.careerGuide.findUnique({
         where: { professionSlug: dbSlug },
     });
 
-    if (!careerGuide) {
-        notFound();
-    }
-
-    // Fetch salary data (national average)
+    // Fetch salary data using BLS keywords (supports consolidated professions)
     const salaryData = await prisma.salaryData.findFirst({
         where: {
-            careerKeyword: dbSlug,
+            careerKeyword: { in: blsKeywords }, // Query using ALL BLS keywords
             locationId: null, // National data
         },
-        orderBy: { year: 'desc' },
+        orderBy: [
+            { year: 'desc' },
+            { employmentCount: 'desc' } // Prefer keyword with more data
+        ],
     });
 
     // Fetch job count
@@ -155,10 +167,10 @@ export default async function ProfessionHubPage({ params }: PageProps) {
         take: 3,
     });
 
-    const keyStats = careerGuide.keyStats as any;
+    const keyStats = (careerGuide?.keyStats || {}) as any;
     const medianSalary = salaryData?.annualMedian
         ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
-        : keyStats.medianSalary;
+        : keyStats?.medianSalary || 'N/A';
 
     // Check if this is RN (has CRNA specialty)
     const isRegisteredNurse = profession === 'registered-nurse';
@@ -175,7 +187,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
             <Breadcrumb
                 items={[
                     { label: 'Home', href: '/' },
-                    { label: careerGuide.professionName }
+                    { label: careerGuide?.professionName || displayName }
                 ]}
                 className="mb-4"
             />
@@ -183,10 +195,10 @@ export default async function ProfessionHubPage({ params }: PageProps) {
             {/* Hero Section */}
             <div className="mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                    {careerGuide.professionName}
+                    {careerGuide?.professionName || displayName}
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-3xl">
-                    {careerGuide.overview.substring(0, 200)}...
+                    {careerGuide?.overview ? careerGuide.overview.substring(0, 200) + '...' : `Explore ${displayName} career information, salary data, and job opportunities.`}
                 </p>
             </div>
 
@@ -514,7 +526,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground mb-4">
-                                    Complete guide to becoming a {careerGuide.professionName.toLowerCase()}, including education, certification, and career paths.
+                                    Complete guide to becoming a {(careerGuide?.professionName || displayName).toLowerCase()}, including education, certification, and career paths.
                                 </p>
                                 <ul className="space-y-2 mb-6 text-sm">
                                     <li className="flex items-center gap-2">
@@ -523,7 +535,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Badge variant="outline" className="text-xs">
-                                            {careerGuide.timeline || '1-4 years'}
+                                            {careerGuide?.timeline || '1-4 years'}
                                         </Badge>
                                         <span>Timeline to Career</span>
                                     </li>
@@ -551,11 +563,11 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                                 <div className="space-y-3 mb-6">
                                     <div>
                                         <p className="text-sm text-muted-foreground">Entry Level</p>
-                                        <p className="text-lg font-semibold">{careerGuide.entryLevelRange}</p>
+                                        <p className="text-lg font-semibold">{careerGuide?.entryLevelRange || 'See salary data'}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Experienced</p>
-                                        <p className="text-lg font-semibold">{careerGuide.experiencedRange}</p>
+                                        <p className="text-lg font-semibold">{careerGuide?.experiencedRange || 'See salary data'}</p>
                                     </div>
                                 </div>
                                 <Button asChild variant="outline" className="w-full">
@@ -576,7 +588,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground mb-4">
-                                    Browse {jobCount.toLocaleString()} current job openings for {careerGuide.professionName.toLowerCase()}s across the country.
+                                    Browse {jobCount.toLocaleString()} current job openings for {(careerGuide?.professionName || displayName).toLowerCase()}s across the country.
                                 </p>
                                 <div className="space-y-2 mb-6">
                                     {recentJobs.map((job) => (
@@ -601,13 +613,13 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                     {/* Career Overview Section */}
                     <div className="grid md:grid-cols-2 gap-8 mb-12">
                         <div>
-                            <h2 className="text-2xl font-bold mb-4">What Does a {careerGuide.professionName} Do?</h2>
+                            <h2 className="text-2xl font-bold mb-4">What Does a {careerGuide?.professionName || displayName} Do?</h2>
                             <p className="text-muted-foreground mb-6">
-                                {careerGuide.rolesDescription}
+                                {careerGuide?.rolesDescription || `${displayName}s work in healthcare providing essential services to patients.`}
                             </p>
                             <h3 className="font-semibold mb-3">Daily Responsibilities:</h3>
                             <ul className="space-y-2">
-                                {(careerGuide.dailyTasks as string[]).slice(0, 5).map((task, idx) => (
+                                {((careerGuide?.dailyTasks as string[]) || []).slice(0, 5).map((task, idx) => (
                                     <li key={idx} className="flex items-start gap-2">
                                         <span className="text-primary mt-1">•</span>
                                         <span className="text-muted-foreground">{task}</span>
@@ -621,7 +633,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             <div className="mb-6">
                                 <h3 className="font-semibold mb-3">Technical Skills:</h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {(careerGuide.technicalSkills as string[]).slice(0, 6).map((skill, idx) => (
+                                    {((careerGuide?.technicalSkills as string[]) || []).slice(0, 6).map((skill, idx) => (
                                         <Badge key={idx} variant="secondary">{skill}</Badge>
                                     ))}
                                 </div>
@@ -629,7 +641,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                             <div>
                                 <h3 className="font-semibold mb-3">Soft Skills:</h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {(careerGuide.softSkills as string[]).slice(0, 6).map((skill, idx) => (
+                                    {((careerGuide?.softSkills as string[]) || []).slice(0, 6).map((skill, idx) => (
                                         <Badge key={idx} variant="outline">{skill}</Badge>
                                     ))}
                                 </div>
@@ -643,7 +655,7 @@ export default async function ProfessionHubPage({ params }: PageProps) {
             <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
                 <CardContent className="p-8 text-center">
                     <h2 className="text-2xl font-bold mb-4">
-                        Ready to Start Your Career as a {careerGuide.professionName}?
+                        Ready to Start Your Career as a {careerGuide?.professionName || displayName}?
                     </h2>
                     <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                         Explore accredited programs, discover job opportunities, and get the complete career guide to launch your nursing career.

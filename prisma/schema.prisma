@@ -294,6 +294,24 @@ model Certification {
 
 // Programmatic SEO Models
 
+// Profession taxonomy - maps URL slugs to BLS data and defines tier/spoke allocation
+model Profession {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL slug: "registered-nurse", "lpn", "cna"
+  displayName String            // Display name: "Registered Nurse"
+  socCode     String            // BLS SOC code: "29-1141"
+  blsKeywords String[]          // BLS database keywords: ["registered-nurses", "registered-nurse"]
+  tier        Int               // Tier: 1 (11 spokes), 2 (7 spokes), 3 (4 spokes)
+  rank        Int               // Priority order (1-55)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([tier])
+  @@index([rank])
+}
+
 model Location {
   id        String  @id @default(cuid())
   city      String
