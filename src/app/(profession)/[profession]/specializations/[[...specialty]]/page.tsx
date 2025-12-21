@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Target, ArrowRight, Stethoscope } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -161,6 +162,8 @@ export default async function SpecializationsPage({ params }: PageProps) {
                                 {selectedSpecialty.description}
                             </p>
 
+                            <QuickNavigation profession={profession} currentPath="specializations" />
+
                             <Card className="mb-8 bg-green-50 dark:bg-green-950/20 border-green-200">
                                 <CardContent className="p-6">
                                     <h3 className="font-semibold mb-2">Salary Range</h3>
@@ -200,6 +203,8 @@ export default async function SpecializationsPage({ params }: PageProps) {
                     <p className="text-xl text-muted-foreground mb-6">
                         Explore nursing specialty areas and career paths
                     </p>
+
+                    <QuickNavigation profession={profession} currentPath="specializations" />
 
                     <div className="prose prose-slate dark:prose-invert max-w-none mb-8">
                         <p className="text-lg leading-relaxed">

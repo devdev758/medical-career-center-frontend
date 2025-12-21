@@ -16,6 +16,7 @@ import {
     Briefcase
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -148,6 +149,8 @@ export default async function CRNAPage({ params }: PageProps) {
                 <p className="text-xl text-muted-foreground mb-8">
                     CRNAs are among the highest-paid nursing professionals in healthcare
                 </p>
+
+                <QuickNavigation profession={profession} currentPath="crna" />
 
                 <div className="grid md:grid-cols-3 gap-6 mb-12">
                     <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">

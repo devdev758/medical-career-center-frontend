@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { Heart, Clock, Battery, AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -568,6 +569,8 @@ export default async function RegisteredNurseWorkLifeBalancePage({ params }: Pag
                     <p className="text-sm font-medium">Strategies</p>
                 </div>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="work-life-balance" />
 
             {/* Alert Card */}
             <Card className="mb-8 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10">

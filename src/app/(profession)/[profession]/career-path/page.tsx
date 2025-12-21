@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { TrendingUp, GraduationCap, Award, Users, ArrowRight, Info } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -540,6 +541,8 @@ export default async function RegisteredNurseCareerPathPage({ params }: PageProp
                     <p className="text-sm font-medium">Growth Paths</p>
                 </div>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="career-path" />
 
             {/* Info Card */}
             <Card className="mb-8 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10">
