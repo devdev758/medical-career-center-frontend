@@ -339,8 +339,8 @@ Nursing demand varies by region, with higher needs in rural and underserved area
         resumeContent: null,  // Brief tips with link to dedicated page
 
         // SEO & Meta
-        metaTitle: 'How to Become a Registered Nurse: Complete Career Guide 2026',
-        metaDescription: 'Comprehensive guide to becoming an RN. Learn about nursing education pathways, NCLEX-RN requirements, salary data ($81K median), job outlook (6% growth), and career advancement opportunities.',
+        metaTitle: 'Registered Nurse Career Guide, Salary & Jobs (2026)',
+        metaDescription: 'Complete Registered Nurse career resource. Explore education pathways, schools, NCLEX licensing, salary data by state, job opportunities, specializations, and career advancement. Find programs, browse jobs, and plan your nursing career.',
         slug: 'how-to-become',
         published: true
     };
