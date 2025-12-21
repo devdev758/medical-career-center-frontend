@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { DollarSign, GraduationCap, Briefcase, TrendingUp, ArrowRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -446,6 +447,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 ]}
                 className="mb-6"
             />
+            <QuickNavigation profession={profession} currentPath="how-to-become" />
 
             {/* Quick Stats - Visual Element */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

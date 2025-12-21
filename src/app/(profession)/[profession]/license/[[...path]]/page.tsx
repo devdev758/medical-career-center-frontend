@@ -16,6 +16,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -141,6 +142,7 @@ export default async function LicensePage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
+            <QuickNavigation profession={profession} currentPath="license" />
 
             {/* Header */}
             <div className="mb-8">

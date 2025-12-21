@@ -16,6 +16,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -188,6 +189,7 @@ export default async function SchoolsPage({ params }: PageProps) {
         return (
             <main className="container mx-auto py-10 px-4 max-w-5xl">
                 <Breadcrumb items={breadcrumbItems} className="mb-6" />
+                <QuickNavigation profession={profession} currentPath="schools" />
 
                 <div className="mb-8">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
@@ -293,6 +295,7 @@ export default async function SchoolsPage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
+            <QuickNavigation profession={profession} currentPath="schools" />
 
             {/* Header */}
             <div className="mb-8">
