@@ -5,7 +5,6 @@ import {
     Briefcase,
     GraduationCap,
     Award,
-    Stethoscope,
     Target,
     FileText,
     MessageSquare,
@@ -25,7 +24,6 @@ const spokeNavItems = [
     { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs' },
     { id: 'schools', label: 'Schools', icon: GraduationCap, path: '/schools' },
     { id: 'license', label: 'License', icon: Award, path: '/license' },
-    { id: 'crna', label: 'CRNA', icon: Stethoscope, path: '/crna' },
     { id: 'specializations', label: 'Specializations', icon: Target, path: '/specializations' },
     { id: 'resume', label: 'Resume', icon: FileText, path: '/resume' },
     { id: 'interview', label: 'Interview', icon: MessageSquare, path: '/interview' },
@@ -48,8 +46,8 @@ export function QuickNavigation({ profession, currentPath }: QuickNavigationProp
                             key={item.id}
                             href={`/${profession}${item.path}`}
                             className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-colors border ${isActive
-                                    ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-background hover:bg-primary/10'
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background hover:bg-primary/10'
                                 }`}
                         >
                             <Icon className={`w-4 h-4 ${isActive ? 'text-primary-foreground' : 'text-primary'}`} />
