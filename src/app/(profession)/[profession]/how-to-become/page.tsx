@@ -447,7 +447,6 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 ]}
                 className="mb-6"
             />
-            <QuickNavigation profession={profession} currentPath="how-to-become" />
 
             {/* Quick Stats - Visual Element */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -472,6 +471,8 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                     <p className="text-xl font-bold">{salaryData.employmentCount ? `${(salaryData.employmentCount / 1000000).toFixed(1)}M` : '3.2M'}</p>
                 </div>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="how-to-become" />
 
             {/* Main Article Content with Markdown Rendering */}
             <article className="prose prose-slate dark:prose-invert max-w-none 

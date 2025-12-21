@@ -142,7 +142,6 @@ export default async function LicensePage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
-            <QuickNavigation profession={profession} currentPath="license" />
 
             {/* Header */}
             <div className="mb-8">
@@ -157,6 +156,8 @@ export default async function LicensePage({ params }: PageProps) {
                         : 'Everything you need to know about licensing and certification'}
                 </p>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="license" />
 
             {/* License Type Navigation */}
             {showLicenseNav && (

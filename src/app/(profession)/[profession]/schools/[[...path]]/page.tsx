@@ -189,7 +189,6 @@ export default async function SchoolsPage({ params }: PageProps) {
         return (
             <main className="container mx-auto py-10 px-4 max-w-5xl">
                 <Breadcrumb items={breadcrumbItems} className="mb-6" />
-                <QuickNavigation profession={profession} currentPath="schools" />
 
                 <div className="mb-8">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
@@ -199,6 +198,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                         Find accredited nursing programs in {stateName}
                     </p>
                 </div>
+
+                <QuickNavigation profession={profession} currentPath="schools" />
 
                 {/* Coming Soon Notice */}
                 <Card className="mb-8 bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200">
@@ -295,7 +296,6 @@ export default async function SchoolsPage({ params }: PageProps) {
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
-            <QuickNavigation profession={profession} currentPath="schools" />
 
             {/* Header */}
             <div className="mb-8">
@@ -305,9 +305,11 @@ export default async function SchoolsPage({ params }: PageProps) {
                 <p className="text-xl text-muted-foreground">
                     {programTypeMeta
                         ? programTypeMeta.description
-                        : 'Find accredited nursing programs to start your healthcare career'}
+                        : `Find accredited nursing programs and schools for aspiring ${careerTitle}s`}
                 </p>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="schools" />
 
             {/* Program Type Navigation */}
             {isRegisteredNurse && (
