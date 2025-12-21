@@ -22,28 +22,28 @@ export function RelatedSalaries({ currentProfession, state, city, availableSlugs
     const careers: RelatedCareer[] = [
         {
             title: 'Registered Nurse',
-            slug: 'registered-nurses',
+            slug: 'registered-nurse',
             avgSalary: '$86,070',
             icon: Stethoscope,
             color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400'
         },
         {
             title: 'Nurse Practitioner',
-            slug: 'nurse-practitioners',
+            slug: 'nurse-practitioner',
             avgSalary: '$126,260',
             icon: UserRound,
             color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400'
         },
         {
             title: 'Medical Assistant',
-            slug: 'medical-assistants',
+            slug: 'medical-assistant',
             avgSalary: '$42,000',
             icon: Activity,
             color: 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400'
         },
         {
             title: 'Surgical Tech',
-            slug: 'surgical-technologists',
+            slug: 'surgical-technologist',
             avgSalary: '$60,610',
             icon: Syringe,
             color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400'

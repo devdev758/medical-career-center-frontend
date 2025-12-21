@@ -160,18 +160,30 @@ export default async function SalaryPage({ params }: PageProps) {
             locationData = { city: cityLocation.city, state: cityLocation.state, stateName: cityLocation.stateName };
 
             // Check availability of related professions for this city
-            const targetSlugs = ['registered-nurses', 'nurse-practitioners', 'medical-assistants', 'surgical-technologists']
-                .filter(s => s !== dbSlug);
+            // Map canonical profession slugs to their BLS keywords for database query
+            const relatedProfessions = [
+                { canonical: 'registered-nurse', bls: ['registered-nurses', 'registered-nurse'] },
+                { canonical: 'nurse-practitioner', bls: ['nurse-practitioners', 'nurse-practitioner'] },
+                { canonical: 'medical-assistant', bls: ['medical-assistants', 'medical-assistant'] },
+                { canonical: 'surgical-technologist', bls: ['surgical-technologists', 'surgical-technologist'] }
+            ].filter(p => p.canonical !== profession);
+
+            const allBlsKeywords = relatedProfessions.flatMap(p => p.bls);
 
             const relatedAvailability = await prisma.salaryData.findMany({
                 where: {
                     locationId: cityLocation.id,
-                    careerKeyword: { in: targetSlugs },
+                    careerKeyword: { in: allBlsKeywords },
                     year: 2024
                 },
                 select: { careerKeyword: true }
             });
-            availableRelatedSlugs = relatedAvailability.map(d => d.careerKeyword);
+
+            // Map BLS keywords back to canonical slugs for RelatedSalaries component
+            const foundBlsKeywords = relatedAvailability.map(d => d.careerKeyword);
+            availableRelatedSlugs = relatedProfessions
+                .filter(p => p.bls.some(bls => foundBlsKeywords.includes(bls)))
+                .map(p => p.canonical);
         }
     } else if (state) {
         const stateAbbr = state.toUpperCase();
