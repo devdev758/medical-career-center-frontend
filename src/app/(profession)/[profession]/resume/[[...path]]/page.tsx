@@ -16,6 +16,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -154,6 +155,8 @@ export default async function ResumePage({ params }: PageProps) {
                         : 'Expert tips to create a standout nursing resume that gets interviews'}
                 </p>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="resume" />
 
             <Card className="mb-8">
                 <CardHeader>

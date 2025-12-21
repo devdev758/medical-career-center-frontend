@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { MessageCircle, DollarSign, Briefcase, CheckCircle2, ArrowRight, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -569,6 +570,8 @@ export default async function RegisteredNurseInterviewPage({ params }: PageProps
                     <p className="text-sm font-medium">Red Flags</p>
                 </div>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="interview" />
 
             {/* Main Article Content */}
             <article className="prose prose-slate dark:prose-invert max-w-none 

@@ -40,8 +40,6 @@ function generateRNContent(salaryData: {
     employmentCount?: number;
 }) {
     return `
-# How to Become a Registered Nurse: Complete Career Guide 2026
-
 Registered nurses form the backbone of healthcare delivery in the United States, providing essential patient care across hospitals, clinics, long-term care facilities, and community health settings. With over ${salaryData.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + ' million' : '3.2 million'} practicing RNs nationwide, nursing represents one of the largest and most respected healthcare professions.
 
 The nursing profession offers a unique combination of clinical expertise, patient advocacy, and career flexibility that few other healthcare roles can match. Whether you're drawn to the fast-paced environment of emergency care, the specialized knowledge required in critical care units, or the patient education focus of community health nursing, the RN credential opens doors to diverse career opportunities.
@@ -447,6 +445,16 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 ]}
                 className="mb-6"
             />
+
+            {/* Page Header */}
+            <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                    How to Become a Registered Nurse: Complete Career Guide 2026
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                    Everything you need to know about becoming an RN, from education to career advancement
+                </p>
+            </div>
 
             {/* Quick Stats - Visual Element */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
