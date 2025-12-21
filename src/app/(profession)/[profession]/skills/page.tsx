@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { CheckCircle2, Brain, Heart, Users, Laptop, Award, TrendingUp, ArrowRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -441,6 +442,8 @@ export default async function RegisteredNurseSkillsPage({ params }: PageProps) {
                     <p className="text-sm font-medium">Professional Growth</p>
                 </div>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="skills" />
 
             {/* Main Article Content */}
             <article className="prose prose-slate dark:prose-invert max-w-none 

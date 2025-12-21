@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Briefcase, Home, GraduationCap, Plane, Clock } from 'lucide-react';
 import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 import { cache } from 'react';
 import { getContentYear } from '@/lib/date-utils';
@@ -356,6 +357,8 @@ export default async function JobsPage({ params }: PageProps) {
                     {(isState || isCity || isJobType) && ` (${totalJobCount} total ${careerTitle.toLowerCase()} jobs)`}
                 </p>
             </div>
+
+            <QuickNavigation profession={profession} currentPath="jobs" />
 
             {/* Job Type Quick Navigation */}
             {showJobTypeNav && !isState && !isCity && (

@@ -16,6 +16,7 @@ import {
 } from "@/lib/content-generator";
 import { InternalLinks } from "@/components/salary/InternalLinks";
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 import { getStateName } from '@/lib/geographic-data';
 import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
@@ -381,6 +382,8 @@ export default async function SalaryPage({ params }: PageProps) {
             <h1 className="text-3xl md:text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100 text-center md:text-left">
                 How much does a {formalName} make{locationData ? ` in ${locationName}` : ''}?
             </h1>
+
+            <QuickNavigation profession={profession} currentPath="salary" />
 
             {/* Hero Stats Section */}
             <SalaryHeroStats
