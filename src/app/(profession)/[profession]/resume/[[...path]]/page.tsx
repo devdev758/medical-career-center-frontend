@@ -128,9 +128,7 @@ export default async function ResumePage({ params }: PageProps) {
         }
     });
 
-    if (!careerGuide) {
-        notFound();
-    }
+    // Career guide is optional - pages work without it
 
     const resumeKeywords = (careerGuide.resumeKeywords as string[]) || [];
     const technicalSkills = (careerGuide.technicalSkills as string[]) || [];

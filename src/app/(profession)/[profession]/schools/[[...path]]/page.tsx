@@ -161,9 +161,7 @@ export default async function SchoolsPage({ params }: PageProps) {
         }
     });
 
-    if (!careerGuide) {
-        notFound();
-    }
+    // Career guide is optional - pages work without it
 
     // Get all states from Location table for navigation
     const allStates = await prisma.location.findMany({

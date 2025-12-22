@@ -83,7 +83,7 @@ export default async function SpecializationsPage({ params }: PageProps) {
         }
     });
 
-    if (!careerGuide) notFound();
+    // Career guide is optional - pages work without it
 
     const dbSpecializations = (careerGuide.specializations as any[]) || [];
     const isRegisteredNurse = profession === 'registered-nurse';

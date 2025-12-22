@@ -228,7 +228,7 @@ export default async function SalaryPage({ params }: PageProps) {
     let allStates: { state: string; stateName: string; median: number; employment: number; jobsPer1000: number | null; locationQuotient: number | null }[] = [];
     if (!state && !city) {
         const stateRecords = await prisma.salaryData.findMany({
-            where: { careerKeyword: dbSlug, location: { city: "" }, year: 2024 },
+            where: { careerKeyword: { in: blsKeywords }, location: { city: "" }, year: 2024 },
             include: { location: true },
             orderBy: { annualMedian: 'desc' }
         });
@@ -249,7 +249,7 @@ export default async function SalaryPage({ params }: PageProps) {
     if (state && !city) {
         const cityRecords = await prisma.salaryData.findMany({
             where: {
-                careerKeyword: dbSlug,
+                careerKeyword: { in: blsKeywords },
                 location: { state: state.toUpperCase(), city: { not: "" } },
                 year: 2024
             },
@@ -273,7 +273,7 @@ export default async function SalaryPage({ params }: PageProps) {
     if (!state && !city) {
         const cityRecords = await prisma.salaryData.findMany({
             where: {
-                careerKeyword: dbSlug,
+                careerKeyword: { in: blsKeywords },
                 location: { city: { not: "" } },
                 year: 2024,
                 annualMedian: { not: null }

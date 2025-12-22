@@ -125,9 +125,7 @@ export default async function LicensePage({ params }: PageProps) {
         }
     });
 
-    if (!careerGuide) {
-        notFound();
-    }
+    // Career guide is optional - pages work without it
 
     const stateReqs = (careerGuide.stateRequirements as Record<string, any>) || {};
     const examInfo = (careerGuide.examInfo as any[]) || [];
