@@ -232,16 +232,22 @@ export default async function SalaryPage({ params }: PageProps) {
             include: { location: true },
             orderBy: { annualMedian: 'desc' }
         });
-        allStates = stateRecords
-            .filter(s => s.location && s.annualMedian)
-            .map(s => ({
-                state: s.location!.state,
-                stateName: s.location!.stateName,
-                median: s.annualMedian!,
-                employment: s.employmentCount || 0,
-                jobsPer1000: s.jobsPer1000,
-                locationQuotient: s.locationQuotient,
-            }));
+
+        // Deduplicate by state (BLS keywords can cause duplicates)
+        const stateMap = new Map();
+        stateRecords.filter(s => s.location && s.annualMedian).forEach(s => {
+            if (!stateMap.has(s.location!.state) || s.annualMedian! > stateMap.get(s.location!.state).median) {
+                stateMap.set(s.location!.state, {
+                    state: s.location!.state,
+                    stateName: s.location!.stateName,
+                    median: s.annualMedian!,
+                    employment: s.employmentCount || 0,
+                    jobsPer1000: s.jobsPer1000,
+                    locationQuotient: s.locationQuotient,
+                });
+            }
+        });
+        allStates = Array.from(stateMap.values());
     }
 
     // Fetch cities for state page
@@ -256,16 +262,23 @@ export default async function SalaryPage({ params }: PageProps) {
             include: { location: true },
             orderBy: { annualMedian: 'desc' }
         });
-        stateCities = cityRecords
-            .filter(c => c.location && c.annualMedian)
-            .map(c => ({
-                city: c.location!.city,
-                state: c.location!.state,
-                median: c.annualMedian!,
-                employment: c.employmentCount || 0,
-                jobsPer1000: c.jobsPer1000,
-                locationQuotient: c.locationQuotient,
-            }));
+
+        // Deduplicate by city
+        const cityMap = new Map();
+        cityRecords.filter(c => c.location && c.annualMedian).forEach(c => {
+            const key = `${c.location!.city}-${c.location!.state}`;
+            if (!cityMap.has(key) || c.annualMedian! > cityMap.get(key).median) {
+                cityMap.set(key, {
+                    city: c.location!.city,
+                    state: c.location!.state,
+                    median: c.annualMedian!,
+                    employment: c.employmentCount || 0,
+                    jobsPer1000: c.jobsPer1000,
+                    locationQuotient: c.locationQuotient,
+                });
+            }
+        });
+        stateCities = Array.from(cityMap.values());
     }
 
     // Fetch top cities nationally for national page
@@ -282,16 +295,23 @@ export default async function SalaryPage({ params }: PageProps) {
             orderBy: { annualMedian: 'desc' },
             take: 20
         });
-        topCitiesNational = cityRecords
-            .filter(c => c.location && c.annualMedian)
-            .map(c => ({
-                city: c.location!.city,
-                state: c.location!.state,
-                median: c.annualMedian!,
-                employment: c.employmentCount || 0,
-                jobsPer1000: c.jobsPer1000,
-                locationQuotient: c.locationQuotient,
-            }));
+
+        // Deduplicate by city
+        const cityMap = new Map();
+        cityRecords.filter(c => c.location && c.annualMedian).forEach(c => {
+            const key = `${c.location!.city}-${c.location!.state}`;
+            if (!cityMap.has(key) || c.annualMedian! > cityMap.get(key).median) {
+                cityMap.set(key, {
+                    city: c.location!.city,
+                    state: c.location!.state,
+                    median: c.annualMedian!,
+                    employment: c.employmentCount || 0,
+                    jobsPer1000: c.jobsPer1000,
+                    locationQuotient: c.locationQuotient,
+                });
+            }
+        });
+        topCitiesNational = Array.from(cityMap.values()).slice(0, 20);
     }
 
     // Fetch industry data with filtering
