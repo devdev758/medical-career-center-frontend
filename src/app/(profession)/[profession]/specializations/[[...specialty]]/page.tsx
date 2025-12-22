@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Target, ArrowRight, Stethoscope } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { QuickNavigation } from '@/components/ui/quick-navigation';
-import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { urlSlugToDbSlug, formatSlugForBreadcrumb, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { SPECIALTY_CONTENT_MAP } from '@/lib/specializations';
@@ -60,6 +61,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SpecializationsPage({ params }: PageProps) {
     const { profession, specialty } = await params;
+
+    // Validate profession
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        notFound();
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
     const careerTitle = formatSlugForDisplay(profession);

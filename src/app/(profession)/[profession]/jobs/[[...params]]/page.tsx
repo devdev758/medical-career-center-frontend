@@ -10,6 +10,7 @@ import { JobListingsWithFilters } from '@/components/jobs/JobListingsWithFilters
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
+import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 import { cache } from 'react';
 import { getContentYear } from '@/lib/date-utils';
 
@@ -184,6 +185,15 @@ function formatCityName(slug: string): string {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, params: routeParams } = await params;
+
+    // Validate profession
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        return { title: 'Profession Not Found' };
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
+    const blsKeywords = await getBLSKeywords(profession);
     const dbSlug = urlSlugToDbSlug(profession);
     const careerTitle = formatSlugForBreadcrumb(profession);
 
@@ -197,7 +207,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const jobTypeMeta = isJobType ? JOB_TYPE_META[firstParam] : null;
 
     const jobCount = await prisma.job.count({
-        where: { careerKeyword: dbSlug }
+        where: { careerKeyword: { in: blsKeywords } }
     });
 
     const currentYear = getContentYear();
@@ -235,8 +245,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function JobsPage({ params }: PageProps) {
     const { profession, params: routeParams } = await params;
-    const dbSlug = urlSlugToDbSlug(profession);
+
+    // Validate profession
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        notFound();
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
+    const blsKeywords = await getBLSKeywords(profession);
     const urls = getProfessionUrls(profession);
+    const dbSlug = urlSlugToDbSlug(profession);
     const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = routeParams?.[0]?.toLowerCase();
@@ -248,9 +267,9 @@ export default async function JobsPage({ params }: PageProps) {
 
     const jobTypeMeta = isJobType ? JOB_TYPE_META[firstParam] : null;
 
-    // Build query
+    // Build query using BLS keywords
     const whereClause: any = {
-        careerKeyword: dbSlug
+        careerKeyword: { in: blsKeywords }
     };
 
     // Apply filters based on route type

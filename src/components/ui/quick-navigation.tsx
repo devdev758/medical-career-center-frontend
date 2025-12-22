@@ -33,11 +33,16 @@ const spokeNavItems = [
 ];
 
 export function QuickNavigation({ profession, currentPath }: QuickNavigationProps) {
+    // Filter CRNA for non-RN professions  
+    const displayNavItems = spokeNavItems.filter(item =>
+        item.id !== 'crna' || profession === 'registered-nurse'
+    );
+
     return (
         <div className="bg-muted/50 rounded-lg p-6 mb-8">
             <h2 className="font-semibold mb-4 text-lg">Quick Navigation</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {spokeNavItems.map((item) => {
+                {displayNavItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = currentPath === item.id;
 

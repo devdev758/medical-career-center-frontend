@@ -8,6 +8,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getProfessionUrls, urlSlugToDbSlug } from '@/lib/url-utils';
 import { prisma } from '@/lib/prisma';
+import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -21,9 +23,16 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession } = await params;
 
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        return { title: 'Profession Not Found' };
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
+
     return {
-        title: 'How to Become a Registered Nurse in 2026: Complete Career Guide',
-        description: 'Comprehensive guide to becoming an RN in 2026. Learn about nursing education (ADN vs BSN), NCLEX-RN requirements, current salary data, 6% job growth projections, and career advancement paths. Explore accredited programs and licensing requirements.',
+        title: `How to Become a ${displayName} in 2026: Complete Career Guide`,
+        description: `Comprehensive guide to becoming a ${displayName}. Learn about education requirements, certification, salary data, job growth, and career paths.`,
         alternates: {
             canonical: `/${profession}/how-to-become`
         }
@@ -375,22 +384,32 @@ Whether you're a recent high school graduate, a career changer, or someone retur
 
 export default async function RegisteredNurseCareerGuide({ params }: PageProps) {
     const { profession } = await params;
+
+    // Validate profession
+    const isValid = await validateProfession(profession);
+    if (!isValid) {
+        notFound();
+    }
+
+    const displayName = await getProfessionDisplayName(profession);
+    const blsKeywords = await getBLSKeywords(profession);
     const dbSlug = urlSlugToDbSlug(profession);
     const urls = getProfessionUrls(profession);
 
-    // Fetch live BLS salary data for registered nurses
+    // Fetch live BLS salary data using BLS keywords
     const nationalData = await prisma.salaryData.findFirst({
         where: {
-            careerKeyword: dbSlug,
+            careerKeyword: { in: blsKeywords },
             locationId: null,
             year: 2024
-        }
+        },
+        orderBy: { employmentCount: 'desc' }
     });
 
     // Fetch top paying states
     const topStatesData = await prisma.salaryData.findMany({
         where: {
-            careerKeyword: dbSlug,
+            careerKeyword: { in: blsKeywords },
             location: { city: '' },
             year: 2024
         },
@@ -402,7 +421,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
     // Fetch top paying cities
     const topCitiesData = await prisma.salaryData.findMany({
         where: {
-            careerKeyword: dbSlug,
+            careerKeyword: { in: blsKeywords },
             location: { city: { not: '' } },
             year: 2024
         },
@@ -440,7 +459,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
             <Breadcrumb
                 items={[
                     { label: 'Home', href: '/' },
-                    { label: 'Registered Nurse', href: '/registered-nurse' },
+                    { label: displayName, href: `/${profession}` },
                     { label: 'Career Guide' }
                 ]}
                 className="mb-6"
@@ -449,10 +468,10 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
             {/* Page Header */}
             <div className="mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    How to Become a Registered Nurse: Complete Career Guide 2026
+                    How to Become a {displayName}: Complete Career Guide 2026
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    Everything you need to know about becoming an RN, from education to career advancement
+                    Everything you need to know about becoming {profession === 'registered-nurse' ? 'an RN' : `a ${displayName}`}, from education to career advancement
                 </p>
             </div>
 
@@ -482,34 +501,71 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
 
             <QuickNavigation profession={profession} currentPath="how-to-become" />
 
-            {/* Main Article Content with Markdown Rendering */}
-            <article className="prose prose-slate dark:prose-invert max-w-none 
-                prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
-                prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
-                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
-                prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
-                prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic">
-                <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                        a: ({ node, ...props }) => {
-                            const href = props.href || '';
-                            // External links
-                            if (href.startsWith('http')) {
-                                return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</a>;
+            {/* Main Content - Conditional based on profession */}
+            {profession === 'registered-nurse' ? (
+                /* RN gets full detailed career guide */
+                <article className="prose prose-slate dark:prose-invert max-w-none 
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                    prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            a: ({ node, ...props }) => {
+                                const href = props.href || '';
+                                // External links
+                                if (href.startsWith('http')) {
+                                    return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</a>;
+                                }
+                                // Internal links
+                                return <Link href={href} className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</Link>;
                             }
-                            // Internal links
-                            return <Link href={href} className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</Link>;
-                        }
-                    }}
-                >
-                    {content}
-                </ReactMarkdown>
-            </article>
+                        }}
+                    >
+                        {content}
+                    </ReactMarkdown>
+                </article>
+            ) : (
+                /* Other professions get "Coming Soon" placeholder */
+                <Card className="mb-16 border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900">
+                    <CardContent className="p-8 text-center">
+                        <h2 className="text-2xl font-bold mb-4">
+                            Comprehensive {displayName} Career Guide Coming Soon
+                        </h2>
+                        <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                            We're currently developing a detailed career guide for {displayName}s, covering education requirements,
+                            certification paths, career advancement, and more. In the meantime, explore our salary data and job listings.
+                        </p>
+                        <div className="flex gap-4 justify-center flex-wrap">
+                            <Button asChild>
+                                <Link href={urls.salary}>
+                                    <DollarSign className="w-4 h-4 mr-2" />
+                                    View Salary Data
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href={urls.jobs}>
+                                    <Briefcase className="w-4 h-4 mr-2" />
+                                    Browse Jobs
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href={urls.schools}>
+                                    <GraduationCap className="w-4 h-4 mr-2" />
+                                    Find Programs
+                                </Link>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )
+            }
 
             {/* CTA Section - Visual Element */}
             <div className="mt-12 grid md:grid-cols-3 gap-6">
@@ -558,6 +614,6 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                     </CardContent>
                 </Card>
             </div>
-        </main>
+        </main >
     );
 }
