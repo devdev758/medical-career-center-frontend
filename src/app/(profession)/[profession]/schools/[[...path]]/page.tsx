@@ -170,14 +170,14 @@ export default async function SchoolsPage({ params }: PageProps) {
         orderBy: { stateName: 'asc' }
     });
 
-    const topSchools = (careerGuide.topSchools as any[]) || [];
-    const programTypes = (careerGuide.programTypes as any[]) || [];
+    const topSchools = (careerGuide?.topSchools as any[]) || [];
+    const programTypes = (careerGuide?.programTypes as any[]) || [];
     const isRegisteredNurse = profession === 'registered-nurse';
 
     // Build breadcrumb items
     const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
-        { label: careerGuide.professionName, href: `/${profession}` },
+        { label: careerGuide?.professionName || displayName, href: `/${profession}` },
     ];
 
     if (isState) {
@@ -450,7 +450,7 @@ export default async function SchoolsPage({ params }: PageProps) {
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Education Overview</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide.schoolsOverview || careerGuide.educationPath}
+                        {careerGuide?.schoolsOverview || careerGuide?.educationPath}
                     </p>
                 </section>
             )}
@@ -496,7 +496,7 @@ export default async function SchoolsPage({ params }: PageProps) {
             )}
 
             {/* Financial Aid */}
-            {careerGuide.financialAid && (
+            {careerGuide?.financialAid && (
                 <section className="mb-12">
                     <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">
                         <CardContent className="p-6">
@@ -504,7 +504,7 @@ export default async function SchoolsPage({ params }: PageProps) {
                                 <DollarSign className="w-5 h-5 text-green-600" />
                                 Financial Aid & Scholarships
                             </h3>
-                            <p className="text-muted-foreground">{careerGuide.financialAid}</p>
+                            <p className="text-muted-foreground">{careerGuide?.financialAid}</p>
                         </CardContent>
                     </Card>
                 </section>

@@ -127,16 +127,16 @@ export default async function LicensePage({ params }: PageProps) {
 
     // Career guide is optional - pages work without it
 
-    const stateReqs = (careerGuide.stateRequirements as Record<string, any>) || {};
-    const examInfo = (careerGuide.examInfo as any[]) || [];
-    const certifications = (careerGuide.certifications as any[]) || [];
+    const stateReqs = (careerGuide?.stateRequirements as Record<string, any>) || {};
+    const examInfo = (careerGuide?.examInfo as any[]) || [];
+    const certifications = (careerGuide?.certifications as any[]) || [];
     // Show license navigation for main professions
     const showLicenseNav = ['registered-nurse', 'cna', 'licensed-practical-nurse'].includes(profession);
 
     // Build breadcrumb items
     const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
-        { label: careerGuide.professionName, href: `/${profession}` },
+        { label: careerGuide?.professionName || displayName, href: `/${profession}` },
     ];
 
     if (isLicenseType && licenseTypeMeta) {
@@ -241,7 +241,7 @@ export default async function LicensePage({ params }: PageProps) {
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Licensing Overview</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide.licensingOverview}
+                        {careerGuide?.licensingOverview}
                     </p>
                 </section>
             )}
@@ -285,7 +285,7 @@ export default async function LicensePage({ params }: PageProps) {
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">License Renewal Process</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide.renewalProcess || 'Most states require nursing license renewal every 1-2 years. Requirements typically include completing continuing education hours and paying a renewal fee.'}
+                        {careerGuide?.renewalProcess || 'Most states require nursing license renewal every 1-2 years. Requirements typically include completing continuing education hours and paying a renewal fee.'}
                     </p>
                 </section>
             )}

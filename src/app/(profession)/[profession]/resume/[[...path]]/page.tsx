@@ -130,13 +130,13 @@ export default async function ResumePage({ params }: PageProps) {
 
     // Career guide is optional - pages work without it
 
-    const resumeKeywords = (careerGuide.resumeKeywords as string[]) || [];
-    const technicalSkills = (careerGuide.technicalSkills as string[]) || [];
-    const softSkills = (careerGuide.softSkills as string[]) || [];
+    const resumeKeywords = (careerGuide?.resumeKeywords as string[]) || [];
+    const technicalSkills = (careerGuide?.technicalSkills as string[]) || [];
+    const softSkills = (careerGuide?.softSkills as string[]) || [];
 
     const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
-        { label: careerGuide.professionName, href: `/${profession}` },
+        { label: careerGuide?.professionName || displayName, href: `/${profession}` },
     ];
 
     if (isResumeType && resumeTypeMeta) {

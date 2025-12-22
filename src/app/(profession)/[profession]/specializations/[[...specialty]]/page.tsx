@@ -85,7 +85,7 @@ export default async function SpecializationsPage({ params }: PageProps) {
 
     // Career guide is optional - pages work without it
 
-    const dbSpecializations = (careerGuide.specializations as any[]) || [];
+    const dbSpecializations = (careerGuide?.specializations as any[]) || [];
     const isRegisteredNurse = profession === 'registered-nurse';
 
     // Use RN specialties for RN, otherwise use DB data
@@ -102,7 +102,7 @@ export default async function SpecializationsPage({ params }: PageProps) {
     // Build breadcrumb - last item should not have href
     const breadcrumbItems: { label: string; href?: string }[] = [
         { label: 'Home', href: '/' },
-        { label: careerGuide.professionName, href: `/${profession}` },
+        { label: careerGuide?.professionName || displayName, href: `/${profession}` },
     ];
 
     if (selectedSpecialty) {
