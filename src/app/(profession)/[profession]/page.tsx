@@ -179,7 +179,10 @@ export default async function ProfessionHubPage({ params }: PageProps) {
     const isCNA = profession === 'cna';
 
     // Use appropriate navigation items
-    const navItems = isCNA ? cnaSpokeNavItems : spokeNavItems;
+    // Filter CRNA for non-RN professions
+    const navItems = isCNA ? cnaSpokeNavItems : spokeNavItems.filter(item =>
+        item.id !== 'crna' || profession === 'registered-nurse'
+    );
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-7xl">
