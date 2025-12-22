@@ -1,12 +1,21 @@
 import Link from 'next/link';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Button } from '@/components/ui/button';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { QuickNavigation } from '@/components/ui/quick-navigation';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Heart, Clock, Battery, AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import ReactMarkdown from 'react-markdown';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import remarkGfm from 'remark-gfm';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { getProfessionUrls } from '@/lib/url-utils';
+import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 
 export const dynamic = 'force-dynamic';
 
