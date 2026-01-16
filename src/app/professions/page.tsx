@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     }
 };
 
+export const dynamic = 'force-dynamic';
+
 // Icon mapping by tier for visual distinction
 const getTierIcon = (tier: number) => {
     switch (tier) {
