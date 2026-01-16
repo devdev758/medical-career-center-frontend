@@ -1,23 +1,15 @@
 import Link from 'next/link';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
+import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { QuickNavigation } from '@/components/ui/quick-navigation';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { TrendingUp, GraduationCap, Award, Users, ArrowRight, Info } from 'lucide-react';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import ReactMarkdown from 'react-markdown';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import remarkGfm from 'remark-gfm';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import { getProfessionUrls, urlSlugToDbSlug } from '@/lib/url-utils';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
+import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 import { prisma } from '@/lib/prisma';
-import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -494,13 +486,70 @@ Your career path is uniquely yours. Use this guide as a roadmap, but remain open
 
 export default async function RegisteredNurseCareerPathPage({ params }: PageProps) {
     const { profession } = await params;
-    const dbSlug = urlSlugToDbSlug(profession);
+    const isValid = await validateProfession(profession);
+    if (!isValid) notFound();
+
+    const displayName = await getProfessionDisplayName(profession);
     const urls = getProfessionUrls(profession);
+    const blsKeywords = await getBLSKeywords(profession);
+
+    // Placeholder for non-RN professions
+    if (profession !== 'registered-nurse') {
+        return (
+            <main className="container mx-auto py-10 px-4 max-w-5xl">
+                <Breadcrumb items={[
+                    { label: 'Home', href: '/' },
+                    { label: displayName, href: `/${profession}` },
+                    { label: 'Career Path' }
+                ]} className="mb-6" />
+
+                <div className="mb-8">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{displayName} Career Path</h1>
+                    <p className="text-xl text-muted-foreground">Career progression resources coming soon</p>
+                </div>
+
+                <QuickNavigation profession={profession} />
+
+                <Card className="mt-8">
+                    <CardContent className="pt-8">
+                        <div className="text-center space-y-6">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                                <TrendingUp className="w-8 h-8 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold mb-2">{displayName} Career Path Resources</h2>
+                                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                                    Career progression guides for {displayName} professionals are coming soon.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-4 justify-center">
+                                <Button asChild>
+                                    <Link href={urls.salary}>
+                                        View Salary Data
+                                        <ArrowRight className="ml-2 w-4 h-4" />
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="outline">
+                                    <Link href={urls.jobs}>
+                                        Browse Jobs
+                                        <ArrowRight className="ml-2 w-4 h-4" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </main>
+        );
+    }
+
+    // RN content below
+    const dbSlug = urlSlugToDbSlug(profession);
 
     // Fetch RN and NP salary data for comparison
     const rnSalary = await prisma.salaryData.findFirst({
         where: {
-            careerKeyword: dbSlug,
+            careerKeyword: { in: blsKeywords },
             locationId: null,
             year: 2024
         }
