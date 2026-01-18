@@ -74,10 +74,15 @@ const PROFESSIONS = [
     { rank: 53, soc: '29-9092', blsKeywords: ['genetic-counselors'], slug: 'genetic-counselor', name: 'Genetic Counselor', tier: 3 },
     { rank: 54, soc: '29-2091', blsKeywords: ['orthotists-and-prosthetists'], slug: 'orthotist-prosthetist', name: 'Orthotist & Prosthetist', tier: 3 },
     { rank: 55, soc: '29-2092', blsKeywords: ['hearing-aid-specialists'], slug: 'hearing-aid-specialist', name: 'Hearing Aid Specialist', tier: 3 },
+
+    // Additional professions (from main site migration)
+    { rank: 56, soc: '29-2072', blsKeywords: ['medical-records-specialists'], slug: 'medical-coder', name: 'Medical Coder', tier: 3 },
+    { rank: 57, soc: '17-2031', blsKeywords: ['biomedical-engineers'], slug: 'biomedical-engineer', name: 'Biomedical Engineer', tier: 3 },
+    { rank: 58, soc: '49-9062', blsKeywords: ['medical-equipment-repairers'], slug: 'biomedical-equipment-technician', name: 'Biomedical Equipment Technician', tier: 3 },
 ];
 
 async function main() {
-    console.log('🌱 Seeding 55 Professions...\n');
+    console.log('🌱 Seeding 58 Professions...\n');
 
     let created = 0;
     let updated = 0;
