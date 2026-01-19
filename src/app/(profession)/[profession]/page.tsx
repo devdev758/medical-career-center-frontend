@@ -214,6 +214,27 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                     </div>
                 </div>
 
+                <div className="my-12 p-6 md:p-8 rounded-3xl bg-white border border-border shadow-sm">
+                    <h3 className="text-2xl font-bold font-heading mb-4 text-foreground">How to Become a {displayName}</h3>
+                    <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                        {careerGuide?.educationPath || `Becoming a ${displayName} requires a specific educational path and licensing. Our comprehensive guide covers every step from choosing a school to passing your exams.`}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button variant="default" size="lg" className="h-12 px-6 font-semibold" asChild>
+                            <Link href={urls.howToBecome}>
+                                <BookOpen className="w-4 h-4 mr-2" />
+                                Read Full Career Guide
+                            </Link>
+                        </Button>
+                        <Button variant="outline" size="lg" className="h-12 px-6 font-semibold" asChild>
+                            <Link href={urls.schools}>
+                                <GraduationCap className="w-4 h-4 mr-2" />
+                                Find Schools
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+
                 <h3 className="text-2xl font-bold text-foreground mt-12 mb-4">Career Path & Advancement</h3>
                 <p className="text-muted-foreground">
                     The career trajectory for a {displayName} offers multiple avenues for growth. Starting as an entry-level professional, you can advance through specialized certifications, higher education, or management roles.

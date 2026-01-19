@@ -7,60 +7,54 @@
 
     /* "Neutral Earth" - Luxury, Editorial, Grounded */
 
-    /* Soft Linen - Creamy neutral background */
-    --background: 30 20% 90%;
-    /* #eae0d5 formatted to HSL approx */
-    /* Using HSL prevents opacity issues. #eae0d5 = hsl(32, 29%, 88%) */
-    --background: 32 29% 88%;
+    /* Soft Linen - Creamy neutral background - Adjusted to be slightly lighter for better text contrast */
+    --background: 32 30% 92%;
 
     /* Black - Authority & Depth (#0a0908) */
     --foreground: 220 12% 4%;
-    /* #0a0908 */
 
-    /* Bone White / Lighter Linen for Cards (#f8f5f2 approx) */
-    --card: 33 25% 96%;
+    /* White / Bone - Card Backgrounds to pop against Linen */
+    --card: 0 0% 100%;
     --card-foreground: 220 12% 4%;
 
-    --popover: 33 25% 96%;
+    --popover: 0 0% 100%;
     --popover-foreground: 220 12% 4%;
 
     /* Jet Black - Primary Action / Buttons (#22333b) */
     --primary: 200 27% 18%;
-    --primary-foreground: 32 29% 88%;
-    /* Soft Linen text */
+    --primary-foreground: 32 30% 92%;
 
-    /* Tan - Soft Sunlit / Secondary (#c6ac8f) */
+    /* Tan - Soft Sunlit / Secondary (#c6ac8f) - More saturation */
     --secondary: 32 28% 67%;
     --secondary-foreground: 220 12% 4%;
 
-    /* Stone Brown - Accents (#5e503f) */
+    /* Stone Brown - Accents (#5e503f) - Darker for outlines */
     --accent: 33 20% 31%;
-    --accent-foreground: 32 29% 88%;
+    --accent-foreground: 32 30% 92%;
 
-    /* Soft Linen Darker for Muted elements */
-    --muted: 32 20% 80%;
-    --muted-foreground: 220 12% 40%;
+    /* Muted - Distinct from background */
+    --muted: 32 20% 85%;
+    --muted-foreground: 33 10% 45%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Border - Stone Brown/Tan mix */
-    --border: 32 28% 67%;
-    /* Using Tan for borders */
-    --input: 32 28% 67%;
+    /* Border - Darker for visibility */
+    --border: 33 15% 82%;
+    --input: 33 15% 82%;
     --ring: 200 27% 18%;
-    /* Jet Black Ring */
 
     --radius: 0.5rem;
 
-    /* Chart Colors - Earthy */
+    /* Chart Colors - High Contrast Earthy */
     --chart-1: 200 27% 18%;
     /* Jet Black */
-    --chart-2: 33 20% 31%;
-    /* Stone Brown */
-    --chart-3: 32 28% 67%;
-    /* Tan */
-    --chart-4: 32 29% 88%;
-    /* Soft Linen */
+    --chart-2: 33 40% 45%;
+    /* Deep Bronze */
+    --chart-3: 160 30% 40%;
+    /* Forest Green */
+    --chart-4: 32 60% 70%;
+    /* Warm Gold */
     --chart-5: 220 12% 4%;
     /* Black */
   }

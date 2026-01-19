@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ProfessionSidebar } from '@/components/profession/ProfessionSidebar';
+import { ProfessionSubNav } from '@/components/profession/ProfessionSubNav';
 import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 import { urlSlugToDbSlug, getProfessionUrls } from '@/lib/url-utils';
 import {
@@ -65,8 +65,8 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
 
     return (
         <div className="min-h-screen bg-background pb-32">
-            {/* PERSISTENT HERO SECTION */}
-            <div className="relative pt-32 pb-20 px-4 overflow-hidden border-b border-border/40 bg-background">
+            {/* PERSISTENT HERO SECTION - Compact Version */}
+            <div className="relative pt-32 pb-12 px-4 overflow-hidden border-b border-border/40 bg-card">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
 
                 <div className="container mx-auto max-w-7xl">
@@ -79,90 +79,42 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
                         className="mb-8"
                     />
 
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/20 text-secondary-foreground text-sm font-medium mb-4 border border-secondary/20">
                                 <Sparkles className="w-4 h-4" />
                                 <span>Complete Career Hub</span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-heading font-extrabold tracking-tight mb-6 leading-[0.9] text-foreground">
+                            <h1 className="text-4xl md:text-6xl font-heading font-extrabold tracking-tight mb-4 text-foreground">
                                 {careerGuide?.professionName || displayName}
                             </h1>
-                            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-                                {careerGuide?.overview ? careerGuide.overview.substring(0, 200) + '...' : `The definitive guide to becoming a ${displayName}. Explore salary data, find accredited schools, and land your dream job.`}
+                            <p className="text-lg text-muted-foreground max-w-2xl">
+                                {careerGuide?.overview ? careerGuide.overview.substring(0, 160) + '...' : `The definitive guide to becoming a ${displayName}. Explore salary data, accredited schools, and job opportunities.`}
                             </p>
+                        </div>
 
-                            <div className="flex flex-wrap gap-4 mt-8">
-                                <Button size="lg" className="rounded-full shadow-lg shadow-primary/20" asChild>
-                                    <Link href={urls.jobs}>Find Jobs</Link>
-                                </Button>
-                                <Button variant="outline" size="lg" className="rounded-full" asChild>
-                                    <Link href={urls.salary}>See Salary Data</Link>
-                                </Button>
+                        {/* Quick Stats - Condensed */}
+                        <div className="flex gap-4">
+                            <div className="bg-background/80 backdrop-blur-sm border border-border rounded-xl p-4 min-w-[140px]">
+                                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Avg Salary</p>
+                                <p className="text-xl font-bold text-foreground">{medianSalary}</p>
+                            </div>
+                            <div className="bg-background/80 backdrop-blur-sm border border-border rounded-xl p-4 min-w-[140px]">
+                                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Open Jobs</p>
+                                <p className="text-xl font-bold text-foreground">{jobCount.toLocaleString()}</p>
                             </div>
                         </div>
-
-                        {/* Hero Stats */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                                <CardContent className="p-6">
-                                    <p className="text-sm text-muted-foreground mb-1">Median Salary</p>
-                                    <p className="text-3xl font-bold text-foreground">{medianSalary}</p>
-                                    <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs mt-2">
-                                        <TrendingUp className="w-3 h-3" />
-                                        <span>National Avg</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                                <CardContent className="p-6">
-                                    <p className="text-sm text-muted-foreground mb-1">Open Jobs</p>
-                                    <p className="text-3xl font-bold text-foreground">{jobCount.toLocaleString()}</p>
-                                    <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs mt-2">
-                                        <Briefcase className="w-3 h-3" />
-                                        <span>Active Listings</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                                <CardContent className="p-6">
-                                    <p className="text-sm text-muted-foreground mb-1">Job Growth</p>
-                                    <p className="text-3xl font-bold text-foreground">{keyStats.jobGrowth || '+5%'}</p>
-                                    <div className="flex items-center gap-1 text-primary/80 text-xs mt-2">
-                                        <TrendingUp className="w-3 h-3" />
-                                        <span>10-Year Outlook</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                                <CardContent className="p-6">
-                                    <p className="text-sm text-muted-foreground mb-1">Employability</p>
-                                    <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">High</p>
-                                    <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400 text-xs mt-2">
-                                        <CheckCircle2 className="w-3 h-3" />
-                                        <span>Demand Score</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* SHARED LAYOUT GRID */}
-            <div className="container mx-auto px-4 max-w-7xl pt-12">
-                <div className="grid lg:grid-cols-12 gap-12">
-                    {/* LEFT SIDEBAR (Shared) */}
-                    <div className="lg:col-span-4">
-                        <ProfessionSidebar profession={profession} />
-                    </div>
+            {/* STICKY SUB-NAVIGATION */}
+            <ProfessionSubNav profession={profession} />
 
-                    {/* RIGHT CONTENT (Dynamic) */}
-                    <div className="lg:col-span-8">
-                        {children}
-                    </div>
-                </div>
-            </div>
+            {/* MAIN CONTENT - Centered Single Column */}
+            <main className="container mx-auto px-4 max-w-5xl py-12">
+                {children}
+            </main>
         </div>
     );
 }
