@@ -364,34 +364,36 @@ export default async function SalaryPage({ params }: PageProps) {
         if (topCitiesNational.length > 0) topCityName = topCitiesNational[0].city;
     }
 
-    // Generate Content Narratives
-    const narrative = generateWageNarrative(
-        salaryData,
-        careerTitle,
-        locationName,
-        topStateName,
-        topCityName
-    );
-
-    const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
-
-    // New Content Generators
-    const factorsContent = generateFactorsAffectingSalary(careerTitle);
-
+    // Prepare top stats for narrative generation
     const topStateForNarrative = allStates.length > 0 ? { name: allStates[0].stateName, salary: allStates[0].median } : undefined;
-    const stateNarrative = generateStateSalaryNarrative(careerTitle, topStateForNarrative);
-
-    // Fix: Use state top city for narrative if on state page
     const topCitySource = (state && stateCities.length > 0) ? stateCities[0] : (topCitiesNational.length > 0 ? topCitiesNational[0] : undefined);
     const topCityForNarrative = topCitySource ? { name: topCitySource.city, salary: topCitySource.median } : undefined;
 
-    const cityNarrative = generateCitySalaryNarrative(careerTitle, topCityForNarrative);
+    let narrative;
 
-    const topIndustry = industries.length > 0
-        ? { name: industries[0].naicsTitle, salary: industries[0].meanAnnual || 0, employment: industries[0].employment }
-        : undefined;
-    const industryNarrative = generateIndustrySalaryNarrative(careerTitle, topIndustry);
+    if (city && state) {
+        // City Page
+        const cityRes = generateCitySalaryNarrative(careerTitle, topCityForNarrative);
+        narrative = { intro: cityRes.content };
+    } else if (state) {
+        // State Page
+        const stateRes = generateStateSalaryNarrative(careerTitle, topStateForNarrative);
+        narrative = { intro: stateRes.content };
+    } else {
+        // National Page
+        // generateWageNarrative(salary, careerTitle, locationName, topStateName, topCityName)
+        narrative = generateWageNarrative(
+            salaryData,
+            careerTitle,
+            locationName,
+            topStateName,
+            topCityName
+        );
+    }
 
+    const faqSchema = generateFAQSchema(careerTitle, locationName, salaryData);
+    const factorsContent = generateFactorsAffectingSalary(careerTitle);
+    const salaryByState = allStates; // Ensure salaryByState is defined, assuming it refers to allStates for the table
 
     // Breadcrumbs
     const breadcrumbItems: { label: string; href?: string }[] = [
@@ -421,43 +423,55 @@ export default async function SalaryPage({ params }: PageProps) {
     }
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500">
+        <div className="space-y-12 animate-in fade-in duration-500 w-full max-w-none">
             {/* Page Header (Sub-Hero) */}
             <div className="border-b border-border/50 pb-8">
-                <h1 className="text-3xl font-heading font-bold mb-4 text-foreground">
+                <h1 className="text-4xl font-heading font-bold mb-4 text-foreground">
                     {careerTitle} Salary Analysis
                 </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-xl text-muted-foreground leading-relaxed max-w-4xl">
                     Comprehensive salary data for {careerTitle}s in {locationName}. Analyze earnings by percentile, compare with national averages, and identify top-paying locations.
                 </p>
             </div>
 
-            {/* Main Interactive Chart */}
-            <div className="h-[400px] w-full p-4 bg-card rounded-2xl border border-border/50 shadow-sm">
+            {/* Main Interactive Chart - WIDER */}
+            <div className="h-[500px] w-full p-6 md:p-8 bg-white rounded-3xl border border-border shadow-sm">
                 <SalaryChart data={salaryData} professionName={careerTitle} />
             </div>
 
             {/* Key Insights Grid */}
             <div className="grid md:grid-cols-2 gap-8">
-                {/* Narrative Card */}
-                <article className="prose prose-slate dark:prose-invert max-w-none bg-muted/30 p-8 rounded-2xl border border-border/50">
+                {/* Narrative Card - High Contrast */}
+                <article className="prose prose-lg max-w-none bg-white p-8 rounded-3xl border border-border shadow-sm">
                     <div dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                 </article>
 
-                {/* State vs National Card */}
+                {/* State vs National Card - High Contrast */}
                 {state && vsNational !== undefined && !city && (
-                    <div className={`p-8 rounded-2xl border ${vsNational.isPositive ? 'bg-green-50/50 border-green-200 dark:bg-green-900/10 dark:border-green-900' : 'bg-orange-50/50 border-orange-200 dark:bg-orange-900/10 dark:border-orange-900'}`}>
-                        <h3 className="text-xl font-bold mb-4 font-heading">Performance vs National</h3>
-                        <p className="text-lg leading-relaxed">
+                    <div className={`p-8 rounded-3xl border shadow-sm ${vsNational.isPositive ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
+                        <h3 className="text-2xl font-bold mb-4 font-heading text-black">Performance vs National</h3>
+                        <p className="text-lg leading-relaxed text-black/80">
                             The average salary in <strong>{locationData?.stateName}</strong> is
-                            <strong className="mx-1"> {formatCurrency(salaryData.annualMedian || 0)}</strong>.
-                            It is <strong className={`${vsNational.isPositive ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                                {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'}
-                            </strong> than the national average.
+                            <strong className={vsNational.isPositive ? 'text-green-700' : 'text-orange-700'}> {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'} </strong>
+                            than the national average.
                         </p>
                     </div>
                 )}
             </div>
+
+            {/* National Map / Table Section */}
+            {!city && !state && (
+                <div className="space-y-8">
+                    <h2 className="text-3xl font-bold font-heading text-foreground">State-by-State Breakdown</h2>
+                    <div className="bg-white rounded-3xl border border-border overflow-hidden shadow-sm">
+                        <StateComparisonTable
+                            states={salaryByState}
+                            nationalMedian={nationalData?.annualMedian || 0}
+                            profession={profession}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Comparison / Leaderboard */}
             <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">

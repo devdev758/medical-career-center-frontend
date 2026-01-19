@@ -499,21 +499,20 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 </div>
             </div>
 
-            <QuickNavigation profession={profession} currentPath="how-to-become" />
 
-            {/* Main Content - Conditional based on profession */}
+
             {profession === 'registered-nurse' ? (
                 /* RN gets full detailed career guide */
-                <article className="prose prose-slate dark:prose-invert max-w-none 
-                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                <article className="prose prose-slate max-w-none 
+                    prose-headings:font-bold prose-headings:text-black 
                     prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-black/10 prose-h2:pb-2
                     prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
-                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
-                    prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic">
+                    prose-p:text-black/80 prose-p:leading-relaxed prose-p:mb-4 prose-p:font-medium
+                    prose-li:text-black/80 prose-li:font-medium
+                    prose-strong:text-black prose-strong:font-bold
+                    prose-a:text-blue-700 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
+                    bg-white p-8 md:p-12 rounded-3xl border border-black/5 shadow-sm">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -521,10 +520,10 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                                 const href = props.href || '';
                                 // External links
                                 if (href.startsWith('http')) {
-                                    return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</a>;
+                                    return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</a>;
                                 }
                                 // Internal links
-                                return <Link href={href} className="text-blue-600 dark:text-blue-400 hover:underline">{props.children}</Link>;
+                                return <Link href={href} className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</Link>;
                             }
                         }}
                     >
