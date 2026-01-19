@@ -274,14 +274,14 @@ export default async function JobsPage({ params }: PageProps) {
 
     // Apply filters based on route type
     if (isCity && isState) {
-        // City filter: match "City, ST" pattern
+        // City filter: match "City, State" pattern (e.g., "Richmond, Virginia")
         const cityName = formatCityName(secondParam);
-        const stateCode = firstParam.toUpperCase();
-        whereClause.location = { contains: `${cityName}, ${stateCode}`, mode: 'insensitive' };
+        const stateName = getStateName(firstParam);
+        whereClause.location = { contains: `${cityName}, ${stateName}`, mode: 'insensitive' };
     } else if (isState) {
-        // State filter: match ", ST" pattern
-        const stateCode = firstParam.toUpperCase();
-        whereClause.location = { contains: `, ${stateCode}`, mode: 'insensitive' };
+        // State filter: match full state name (e.g., "Virginia") since Adzuna uses full names
+        const stateName = getStateName(firstParam);
+        whereClause.location = { contains: stateName, mode: 'insensitive' };
     } else if (jobTypeMeta?.filter) {
         Object.assign(whereClause, jobTypeMeta.filter);
     }
@@ -296,16 +296,52 @@ export default async function JobsPage({ params }: PageProps) {
         take: 200
     });
 
-    // Get total job count for the profession
+    // Get total job count for the profession using BLS keywords
     const totalJobCount = await prisma.job.count({
-        where: { careerKeyword: dbSlug }
+        where: { careerKeyword: { in: blsKeywords } }
     });
 
-    // Get top states with job counts for navigation
-    const topStates = await prisma.location.findMany({
-        where: { city: '' },
-        select: { state: true, stateName: true }
-    });
+    // Get states with actual job counts for navigation (from Job table, not Location)
+    const jobsByState = await prisma.$queryRaw<{ location: string, count: bigint }[]>`
+        SELECT location, COUNT(*) as count 
+        FROM "Job" 
+        WHERE "careerKeyword" = ANY(${blsKeywords})
+        GROUP BY location
+    `;
+
+    // Extract unique states from job locations and count them
+    const stateJobCounts = new Map<string, number>();
+    const stateCodeMap: Record<string, string> = {
+        'alabama': 'al', 'alaska': 'ak', 'arizona': 'az', 'arkansas': 'ar', 'california': 'ca',
+        'colorado': 'co', 'connecticut': 'ct', 'delaware': 'de', 'florida': 'fl', 'georgia': 'ga',
+        'hawaii': 'hi', 'idaho': 'id', 'illinois': 'il', 'indiana': 'in', 'iowa': 'ia',
+        'kansas': 'ks', 'kentucky': 'ky', 'louisiana': 'la', 'maine': 'me', 'maryland': 'md',
+        'massachusetts': 'ma', 'michigan': 'mi', 'minnesota': 'mn', 'mississippi': 'ms', 'missouri': 'mo',
+        'montana': 'mt', 'nebraska': 'ne', 'nevada': 'nv', 'new hampshire': 'nh', 'new jersey': 'nj',
+        'new mexico': 'nm', 'new york': 'ny', 'north carolina': 'nc', 'north dakota': 'nd', 'ohio': 'oh',
+        'oklahoma': 'ok', 'oregon': 'or', 'pennsylvania': 'pa', 'rhode island': 'ri', 'south carolina': 'sc',
+        'south dakota': 'sd', 'tennessee': 'tn', 'texas': 'tx', 'utah': 'ut', 'vermont': 'vt',
+        'virginia': 'va', 'washington': 'wa', 'west virginia': 'wv', 'wisconsin': 'wi', 'wyoming': 'wy',
+        'district of columbia': 'dc', 'puerto rico': 'pr'
+    };
+
+    for (const row of jobsByState) {
+        // Extract state from location like "City, State"
+        const parts = row.location?.split(', ');
+        if (parts && parts.length >= 2) {
+            const statePart = parts[parts.length - 1]?.toLowerCase();
+            const stateCode = stateCodeMap[statePart];
+            if (stateCode) {
+                stateJobCounts.set(stateCode, (stateJobCounts.get(stateCode) || 0) + Number(row.count));
+            }
+        }
+    }
+
+    // Convert to sorted array
+    const topStates = Array.from(stateJobCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 25)
+        .map(([code, count]) => ({ state: code.toUpperCase(), stateName: getStateName(code), count }));
 
     // Get cities for current state if viewing a state
     let stateCities: { city: string; state: string }[] = [];
@@ -438,21 +474,24 @@ export default async function JobsPage({ params }: PageProps) {
                                     </Link>
                                 ))}
                             </div>
-                        ) : (
+                        ) : topStates.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
-                                {topStates.slice(0, 20).map((loc) => (
+                                {topStates.map((loc) => (
                                     <Link
                                         key={loc.state}
                                         href={`/${profession}/jobs/${loc.state.toLowerCase()}`}
-                                        className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${firstParam === loc.state.toLowerCase()
+                                        className={`px-3 py-1.5 rounded-full border text-sm transition-colors flex items-center gap-1.5 ${firstParam === loc.state.toLowerCase()
                                             ? 'bg-primary text-primary-foreground border-primary'
                                             : 'hover:bg-muted'
                                             }`}
                                     >
-                                        {loc.stateName || loc.state}
+                                        {loc.stateName}
+                                        <Badge variant="secondary" className="text-xs px-1.5">{loc.count}</Badge>
                                     </Link>
                                 ))}
                             </div>
+                        ) : (
+                            <p className="text-muted-foreground text-sm">No jobs available by state at this time.</p>
                         )}
                         {(isState || isCity) && (
                             <div className="mt-4 pt-4 border-t">
