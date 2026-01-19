@@ -43,11 +43,8 @@ export default async function Home() {
               <span>The Future of Medical Careers</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-heading font-extrabold tracking-tight leading-[0.9] text-foreground">
-              LAUNCH YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-glow">
-                CAREER
-              </span>
+            <h1 className="text-5xl md:text-7xl font-heading font-extrabold tracking-tight mb-6 text-foreground text-balance">
+              LAUNCH YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-glow">CAREER</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-xl leading-relaxed">
@@ -56,7 +53,7 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button size="lg" className="rounded-full text-lg h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25" asChild>
+              <Button size="lg" className="rounded-full text-lg h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 text-white" asChild>
                 <Link href="/professions">
                   Explore Professions <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
@@ -94,9 +91,12 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="absolute top-40 right-60 w-80 h-96 bg-card/50 backdrop-blur-md border border-white/5 rounded-3xl shadow-xl z-10 p-6 -rotate-6 grayscale opacity-80">
+            <div className="absolute top-40 right-60 w-80 h-96 bg-card/50 backdrop-blur-md border border-white/5 rounded-3xl shadow-xl z-10 p-6 -rotate-6 grayscale hover:grayscale-0 transition-all duration-300">
               <div className="w-full h-32 bg-muted/20 rounded-2xl mb-4" />
-              <h3 className="text-2xl font-bold font-heading text-muted-foreground">Nurse Practitioner</h3>
+              <div>
+                <h3 className="text-2xl font-bold font-heading text-muted-foreground hover:text-foreground transition-colors">Nurse Practitioner</h3>
+                <span className="text-secondary font-mono text-lg">$121,610/yr</span>
+              </div>
             </div>
           </div>
         </div>

@@ -236,11 +236,11 @@ export default async function ProfessionHubPage({ params }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-background/50 backdrop-blur-sm border-purple-500/20">
+                            <Card className="bg-background/50 backdrop-blur-sm border-primary/20">
                                 <CardContent className="p-6">
                                     <p className="text-sm text-muted-foreground mb-1">Job Growth</p>
-                                    <p className="text-3xl font-bold text-purple-400">{keyStats.jobGrowth || '+5%'}</p>
-                                    <div className="flex items-center gap-1 text-purple-400 text-xs mt-2">
+                                    <p className="text-3xl font-bold text-primary">{keyStats.jobGrowth || '+5%'}</p>
+                                    <div className="flex items-center gap-1 text-primary/80 text-xs mt-2">
                                         <TrendingUp className="w-3 h-3" />
                                         <span>10-Year Outlook</span>
                                     </div>

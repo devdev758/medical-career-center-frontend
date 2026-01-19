@@ -60,42 +60,48 @@
     /* "Future Clinical" Dark Mode - Deep Space, Glowing */
     --background: 222 47% 11%;
     /* Deep Space */
-    --foreground: 210 40% 98%;
-    /* Ice White */
+    --foreground: 0 0% 100%;
+    /* Pure White for maximum contrast */
 
     --card: 217 33% 17%;
     /* Module */
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 98%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Electric Violet remains vibrant */
-    --primary: 265 89% 66%;
-    --primary-foreground: 222 47% 11%;
+    /* Bright Blue - Professional, trustworthy, readable */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Neon Teal pops against dark */
+    /* Neon Teal - Secondary accents */
     --secondary: 170 100% 45%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 217 33% 25%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 20% 75%;
+    /* Lighter gray for better readability */
 
     --accent: 217 33% 25%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 350 89% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 25%;
+    --border: 217 33% 30%;
+    /* Slightly lighter border */
     --input: 217 33% 25%;
-    --ring: 265 89% 66%;
+    --ring: 217 91% 60%;
 
-    /* Chart Colors adjusted for Dark Mode visibility */
-    --chart-1: 265 89% 66%;
+    /* Chart Colors */
+    --chart-1: 217 91% 60%;
+    /* Blue */
     --chart-2: 170 100% 45%;
-    --chart-3: 54 100% 50%;
+    /* Teal */
+    --chart-3: 265 89% 66%;
+    /* Violet (Downgraded to accent) */
     --chart-4: 350 89% 60%;
+    /* Coral */
     --chart-5: 215 20% 65%;
   }
 }
