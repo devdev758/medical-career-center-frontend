@@ -421,174 +421,96 @@ export default async function SalaryPage({ params }: PageProps) {
     }
 
     return (
-        <main className="container mx-auto py-8 px-4 max-w-7xl animate-in fade-in duration-500">
-            <Breadcrumb items={breadcrumbItems} className="mb-8" />
+        <div className="space-y-12 animate-in fade-in duration-500">
+            {/* Page Header (Sub-Hero) */}
+            <div className="border-b border-border/50 pb-8">
+                <h1 className="text-3xl font-heading font-bold mb-4 text-foreground">
+                    {careerTitle} Salary Analysis
+                </h1>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                    Comprehensive salary data for {careerTitle}s in {locationName}. Analyze earnings by percentile, compare with national averages, and identify top-paying locations.
+                </p>
+            </div>
 
-            {/* NEW: Fintech Dashboard Layout */}
+            {/* Main Interactive Chart */}
+            <div className="h-[400px] w-full p-4 bg-card rounded-2xl border border-border/50 shadow-sm">
+                <SalaryChart data={salaryData} professionName={careerTitle} />
+            </div>
 
-            {/* 1. Hero Section - Full Width */}
-            <SalaryHero
-                professionName={careerTitle}
-                medianSalary={salaryData.annualMedian || 0}
-                employment={salaryData.employmentCount || 0}
-                locationName={locationName}
-                hourlyRate={salaryData.hourlyMedian || undefined}
-                jobsPer1000={salaryData.jobsPer1000}
-            />
+            {/* Key Insights Grid */}
+            <div className="grid md:grid-cols-2 gap-8">
+                {/* Narrative Card */}
+                <article className="prose prose-slate dark:prose-invert max-w-none bg-muted/30 p-8 rounded-2xl border border-border/50">
+                    <div dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                </article>
 
-            <div className="grid lg:grid-cols-12 gap-8">
-                {/* 2. Main Content Stack (Left 8 cols) */}
-                <div className="lg:col-span-8 flex flex-col gap-8">
-                    {/* Chart Card */}
-                    <div className="h-[400px]">
-                        <SalaryChart data={salaryData} professionName={careerTitle} />
+                {/* State vs National Card */}
+                {state && vsNational !== undefined && !city && (
+                    <div className={`p-8 rounded-2xl border ${vsNational.isPositive ? 'bg-green-50/50 border-green-200 dark:bg-green-900/10 dark:border-green-900' : 'bg-orange-50/50 border-orange-200 dark:bg-orange-900/10 dark:border-orange-900'}`}>
+                        <h3 className="text-xl font-bold mb-4 font-heading">Performance vs National</h3>
+                        <p className="text-lg leading-relaxed">
+                            The average salary in <strong>{locationData?.stateName}</strong> is
+                            <strong className="mx-1"> {formatCurrency(salaryData.annualMedian || 0)}</strong>.
+                            It is <strong className={`${vsNational.isPositive ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                                {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'}
+                            </strong> than the national average.
+                        </p>
                     </div>
+                )}
+            </div>
 
-                    {/* SEO Narrative - Intro */}
-                    <article className="prose prose-slate dark:prose-invert max-w-none bg-card p-8 rounded-2xl border border-border/50 shadow-sm">
-                        <div dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                    </article>
+            {/* Comparison / Leaderboard */}
+            <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+                {state ? (
+                    <CityComparisonTable
+                        cities={stateCities}
+                        baselineMedian={salaryData.annualMedian || 0}
+                        profession={profession}
+                        stateCode={state}
+                        limit={10}
+                        title={`Top Paying Cities in ${locationData?.stateName}`}
+                    />
+                ) : (
+                    <StateComparisonTable
+                        states={allStates}
+                        nationalMedian={nationalData?.annualMedian || 0}
+                        profession={profession}
+                        limit={10}
+                    />
+                )}
+            </div>
 
-                    {/* State/National Comparison (Conditional) */}
-                    {state && vsNational !== undefined && !city && (
-                        <div className={`p-8 rounded-2xl border ${vsNational.isPositive ? 'bg-green-50/50 border-green-200 dark:bg-green-900/10 dark:border-green-900' : 'bg-orange-50/50 border-orange-200 dark:bg-orange-900/10 dark:border-orange-900'}`}>
-                            <h2 className="text-2xl font-bold mb-4 font-heading">State vs National</h2>
-                            <p className="text-lg leading-relaxed">
-                                The average salary in <strong>{locationData?.stateName}</strong> is
-                                <strong className="mx-1"> {formatCurrency(salaryData.annualMedian || 0)}</strong>.
-                                This is <strong className={`${vsNational.isPositive ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                                    {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'}
-                                </strong> than the national average.
-                            </p>
+            {/* Factors Grid */}
+            <div className="bg-muted/30 rounded-2xl border border-border/50 p-8">
+                <h2 className="text-2xl font-bold mb-6 font-heading text-foreground">{factorsContent.title}</h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                    {factorsContent.factors.map((factor: string, i: number) => (
+                        <div key={i} className="p-4 bg-background rounded-xl border border-border/50 text-sm">
+                            <div dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                         </div>
-                    )}
-
-                    {/* Factors Grid */}
-                    <div className="bg-card rounded-2xl border border-border/50 p-8">
-                        <h2 className="text-2xl font-bold mb-6 font-heading">{factorsContent.title}</h2>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {factorsContent.factors.map((factor: string, i: number) => (
-                                <div key={i} className="p-4 bg-muted/30 rounded-xl border border-border/50 text-sm">
-                                    <div dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* 3. Sidebar Stack (Right 4 cols) */}
-                <div className="lg:col-span-4 flex flex-col gap-6">
-                    {/* Quick Nav (Sticky candidate?) */}
-                    <div className="bg-card rounded-2xl border border-border/50 p-1 shadow-sm">
-                        <QuickNavigation profession={profession} currentPath="salary" />
-                    </div>
-
-                    {/* Leaderboard Table */}
-                    <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm h-fit">
-                        {state ? (
-                            <CityComparisonTable
-                                cities={stateCities}
-                                baselineMedian={salaryData.annualMedian || 0}
-                                profession={profession}
-                                stateCode={state}
-                                limit={10}
-                                title={`Top Cities in ${locationData?.stateName}`}
-                            />
-                        ) : (
-                            <StateComparisonTable
-                                states={allStates}
-                                nationalMedian={nationalData?.annualMedian || 0}
-                                profession={profession}
-                                limit={10}
-                            />
-                        )}
-                    </div>
-
-                    {/* Insights Card */}
-                    {(state || city) && (salaryData.locationQuotient || salaryData.jobsPer1000) && (
-                        <div className="bg-gradient-to-br from-blue-600/5 to-indigo-600/5 rounded-2xl border border-blue-100 dark:border-blue-900/30 p-6">
-                            <LocationInsightCard
-                                locationQuotient={salaryData.locationQuotient}
-                                jobsPer1000={salaryData.jobsPer1000}
-                                stateName={locationData?.stateName}
-                                professionName={careerTitle}
-                            />
-                        </div>
-                    )}
-
-                    {/* Industry Breakdown */}
-                    {!state && !city && industries.length > 0 && (
-                        <div className="bg-card rounded-2xl border border-border/50 p-6">
-                            <h4 className="font-bold mb-4">Top Industries</h4>
-                            <IndustryBreakdown
-                                industries={industries}
-                                professionName={careerTitle}
-                                totalEmployment={salaryData.employmentCount || undefined}
-                            />
-                        </div>
-                    )}
+                    ))}
                 </div>
             </div>
 
-            {/* 4. Footer & SEO Sections */}
-            <div className="mt-16 space-y-12">
-                {/* Internal Links SEO Grid */}
-                <div className="bg-muted/10 rounded-3xl p-8 border border-border/50">
-                    <InternalLinks
-                        profession={dbSlug}
-                        state={state}
-                        city={city}
-                    />
-                </div>
-
-                {/* Related Salaries */}
+            {/* Related/Footer Sections */}
+            <div className="space-y-12 pt-8 border-t border-border/50">
+                <InternalLinks
+                    profession={dbSlug}
+                    state={state}
+                    city={city}
+                />
                 <RelatedSalaries
                     currentProfession={dbSlug}
                     state={state}
                     city={city}
                     availableSlugs={availableRelatedSlugs}
                 />
-
-                {/* Resource CTA Cards */}
-                <div>
-                    <h3 className="text-2xl font-bold mb-8 text-center font-heading">
-                        Next Steps for your Career
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Link href={`${urls.jobs}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-card border border-border hover:border-blue-500/50 rounded-2xl p-8 transition-all hover:shadow-lg hover:shadow-blue-500/10 active-card">
-                            <div className="mb-4 bg-blue-500/10 w-fit p-3 rounded-xl text-blue-500">
-                                <Search className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-xl font-bold mb-2">Browse Jobs</h4>
-                            <p className="text-muted-foreground mb-4 text-sm">Find {careerTitle} positions near you with competitive salaries.</p>
-                            <span className="text-blue-500 font-medium text-sm group-hover:underline">Search Now &rarr;</span>
-                        </Link>
-
-                        <Link href={`${urls.schools}${state ? '/' + state.toLowerCase() : ''}`} className="group relative overflow-hidden bg-card border border-border hover:border-indigo-500/50 rounded-2xl p-8 transition-all hover:shadow-lg hover:shadow-indigo-500/10 active-card">
-                            <div className="mb-4 bg-indigo-500/10 w-fit p-3 rounded-xl text-indigo-500">
-                                <GraduationCap className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-xl font-bold mb-2">Find Schools</h4>
-                            <p className="text-muted-foreground mb-4 text-sm">Discover top-rated programs to launch your career.</p>
-                            <span className="text-indigo-500 font-medium text-sm group-hover:underline">Find Programs &rarr;</span>
-                        </Link>
-
-                        <Link href={urls.howToBecome} className="group relative overflow-hidden bg-card border border-border hover:border-purple-500/50 rounded-2xl p-8 transition-all hover:shadow-lg hover:shadow-purple-500/10 active-card">
-                            <div className="mb-4 bg-purple-500/10 w-fit p-3 rounded-xl text-purple-500">
-                                <BookOpen className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-xl font-bold mb-2">Career Guide</h4>
-                            <p className="text-muted-foreground mb-4 text-sm">Step-by-step guide to becoming a {careerTitle}.</p>
-                            <span className="text-purple-500 font-medium text-sm group-hover:underline">Read Guide &rarr;</span>
-                        </Link>
-                    </div>
-                </div>
             </div>
 
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-        </main>
+        </div>
     );
 }

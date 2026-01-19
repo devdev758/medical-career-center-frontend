@@ -195,25 +195,21 @@ export default async function SchoolsPage({ params }: PageProps) {
     if (isState) {
         const stateName = getStateName(firstParam);
         return (
-            <main className="container mx-auto py-10 px-4 max-w-5xl">
-                <Breadcrumb items={breadcrumbItems} className="mb-6" />
-
-                <div className="mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            <div className="space-y-12 animate-in fade-in duration-500">
+                <div className="border-b border-border/50 pb-8">
+                    <h1 className="text-3xl font-heading font-bold mb-4 text-foreground">
                         {careerTitle} Schools in {stateName}
                     </h1>
-                    <p className="text-xl text-muted-foreground">
-                        Find accredited nursing programs in {stateName}
+                    <p className="text-xl text-muted-foreground leading-relaxed">
+                        Find accredited nursing programs in {stateName}. Compare tuition, duration, and outcomes.
                     </p>
                 </div>
-
-                <QuickNavigation profession={profession} currentPath="schools" />
 
                 {/* Coming Soon Notice */}
                 <Card className="mb-8 bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200">
                     <CardContent className="p-6">
-                        <h3 className="font-semibold mb-2 flex items-center gap-2">
-                            <GraduationCap className="w-5 h-5 text-yellow-600" />
+                        <h3 className="font-semibold mb-2 flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                            <GraduationCap className="w-5 h-5" />
                             School Directory Coming Soon
                         </h3>
                         <p className="text-muted-foreground">
@@ -224,9 +220,9 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </Card>
 
                 {/* State Overview */}
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4">Nursing Education in {stateName}</h2>
-                    <p className="text-muted-foreground leading-relaxed">
+                <section>
+                    <h2 className="text-2xl font-bold mb-4 text-foreground">Nursing Education in {stateName}</h2>
+                    <p className="text-muted-foreground leading-relaxed text-lg">
                         {stateName} offers a variety of nursing education pathways for aspiring {careerTitle.toLowerCase()}s.
                         From associate degree programs to bachelor's and master's degrees, you can find programs that fit your
                         schedule and career goals. Many schools also offer online and hybrid options for working professionals.
@@ -234,16 +230,16 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </section>
 
                 {/* Program Types Available */}
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">Program Types in {stateName}</h2>
+                <section>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">Program Types in {stateName}</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         {Object.entries(PROGRAM_TYPE_META).map(([slug, meta]) => {
                             const Icon = meta.icon;
                             return (
-                                <Card key={slug} className="hover:shadow-md transition-shadow">
+                                <Card key={slug} className="hover:shadow-md transition-shadow cursor-pointer bg-card border-border/50">
                                     <CardContent className="p-6">
                                         <Icon className="w-6 h-6 mb-3 text-primary" />
-                                        <h3 className="font-semibold mb-2">{meta.title}</h3>
+                                        <h3 className="font-semibold mb-2 text-foreground">{meta.title}</h3>
                                         <p className="text-sm text-muted-foreground">{meta.description}</p>
                                     </CardContent>
                                 </Card>
@@ -253,10 +249,10 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </section>
 
                 {/* Browse Other States */}
-                <Card className="mb-8">
+                <Card className="border-border/50">
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <MapPin className="w-5 h-5" />
+                            <MapPin className="w-5 h-5 text-secondary" />
                             Browse Schools by State
                         </CardTitle>
                     </CardHeader>
@@ -268,7 +264,7 @@ export default async function SchoolsPage({ params }: PageProps) {
                                     href={`/${profession}/schools/${loc.state.toLowerCase()}`}
                                     className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${firstParam === loc.state.toLowerCase()
                                         ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'hover:bg-muted'
+                                        : 'bg-background hover:bg-muted text-muted-foreground border-border'
                                         }`}
                                 >
                                     {loc.stateName || loc.state}
@@ -277,51 +273,28 @@ export default async function SchoolsPage({ params }: PageProps) {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Quick Navigation */}
-                <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-                    <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <Link href={`${urls.salary}/${firstParam}`} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                            <p className="font-medium text-sm">{stateName} Salary</p>
-                        </Link>
-                        <Link href={`${urls.jobs}/${firstParam}`} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                            <p className="font-medium text-sm">{stateName} Jobs</p>
-                        </Link>
-                        <Link href={urls.license} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                            <p className="font-medium text-sm">License Info</p>
-                        </Link>
-                        <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                            <p className="font-medium text-sm">Career Guide</p>
-                        </Link>
-                    </div>
-                </div>
-            </main>
+            </div>
         );
     }
 
     // Default schools page (program types or main)
     return (
-        <main className="container mx-auto py-10 px-4 max-w-5xl">
-            <Breadcrumb items={breadcrumbItems} className="mb-6" />
-
+        <div className="space-y-12 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            <div className="border-b border-border/50 pb-8">
+                <h1 className="text-3xl md:text-4xl font-heading font-bold mb-4 text-foreground">
                     {programTypeMeta ? `${programTypeMeta.title} ` : ''}{careerTitle} Schools & Programs
                 </h1>
-                <p className="text-xl text-muted-foreground">
+                <p className="text-xl text-muted-foreground leading-relaxed">
                     {programTypeMeta
                         ? programTypeMeta.description
-                        : `Find accredited nursing programs and schools for aspiring ${careerTitle}s`}
+                        : `Find accredited nursing programs and schools for aspiring ${careerTitle}s.`}
                 </p>
             </div>
 
-            <QuickNavigation profession={profession} currentPath="schools" />
-
             {/* Program Type Navigation */}
             {isRegisteredNurse && (
-                <Card className="mb-8">
+                <Card className="border-border/50">
                     <CardHeader>
                         <CardTitle className="text-lg">Browse by Program Type</CardTitle>
                     </CardHeader>
@@ -336,7 +309,7 @@ export default async function SchoolsPage({ params }: PageProps) {
                                         href={`/${profession}/schools/${slug}`}
                                         className={`p-4 rounded-lg border transition-colors text-center ${isActive
                                             ? 'bg-primary text-primary-foreground border-primary'
-                                            : 'hover:bg-muted'
+                                            : 'bg-card hover:bg-muted border-border/50'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
@@ -346,8 +319,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                             })}
                         </div>
                         {isProgramType && (
-                            <div className="mt-4 pt-4 border-t">
-                                <Link href={`/${profession}/schools`} className="text-sm text-primary hover:underline">
+                            <div className="mt-4 pt-4 border-t border-border/50">
+                                <Link href={`/${profession}/schools`} className="text-sm text-primary hover:underline font-medium">
                                     ← View all {careerTitle.toLowerCase()} schools
                                 </Link>
                             </div>
@@ -358,20 +331,7 @@ export default async function SchoolsPage({ params }: PageProps) {
 
             {/* Program-Type Specific Content for RN */}
             {isProgramType && isRegisteredNurse && firstParam && PROGRAM_TYPE_CONTENT_MAP[firstParam] && (
-                <article className="prose prose-slate dark:prose-invert max-w-none mb-12
-                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
-                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
-                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
-                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
-                    prose-table:my-6 prose-table:border-collapse
-                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
-                    prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
-                    prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
+                <article className="prose prose-slate dark:prose-invert max-w-none mb-12 bg-card p-8 rounded-2xl border border-border/50">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -390,10 +350,10 @@ export default async function SchoolsPage({ params }: PageProps) {
             )}
 
             {/* State Navigation */}
-            <Card className="mb-8">
+            <Card className="border-border/50">
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <MapPin className="w-5 h-5" />
+                        <MapPin className="w-5 h-5 text-secondary" />
                         Browse Schools by State
                     </CardTitle>
                 </CardHeader>
@@ -403,7 +363,7 @@ export default async function SchoolsPage({ params }: PageProps) {
                             <Link
                                 key={loc.state}
                                 href={`/${profession}/schools/${loc.state.toLowerCase()}`}
-                                className="px-3 py-1.5 rounded-full border text-sm hover:bg-muted transition-colors"
+                                className="px-3 py-1.5 rounded-full border border-border text-sm hover:bg-muted text-muted-foreground transition-colors"
                             >
                                 {loc.stateName || loc.state}
                             </Link>
@@ -412,81 +372,21 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </CardContent>
             </Card>
 
-            {/* Comprehensive Schools Guide for RN - ONLY on main hub page */}
-            {!isProgramType && isRegisteredNurse && (
-                <article className="prose prose-slate dark:prose-invert max-w-none mb-12
-                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
-                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
-                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
-                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
-                    prose-table:my-6 prose-table:border-collapse
-                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
-                    prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
-                    prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            a: ({ node, ...props }) => {
-                                const href = props.href || '';
-                                if (href.startsWith('http')) {
-                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
-                                }
-                                return <Link href={href}>{props.children}</Link>;
-                            }
-                        }}
-                    >
-                        {RN_SCHOOLS_CONTENT}
-                    </ReactMarkdown>
-                </article>
-            )}
-
-            {/* Overview - fallback for non-RN professions */}
-            {!isRegisteredNurse && (
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4">Education Overview</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide?.schoolsOverview || careerGuide?.educationPath}
-                    </p>
-                </section>
-            )}
-
-            {/* Program Types */}
-            {programTypes.length > 0 && (
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">Program Types</h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {programTypes.map((type: any, idx: number) => (
-                            <Card key={idx}>
-                                <CardContent className="p-6">
-                                    <h3 className="font-semibold mb-2">{type.type}</h3>
-                                    <p className="text-sm text-muted-foreground">{type.description}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Top Schools */}
+            {/* Top Schools (Featured) */}
             {topSchools.length > 0 && (
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">Featured Programs</h2>
+                <section>
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">Featured Programs</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         {topSchools.map((school: any, idx: number) => (
-                            <Card key={idx}>
+                            <Card key={idx} className="border-border/50 hover:border-primary/50 transition-colors">
                                 <CardContent className="p-6">
-                                    <h3 className="font-semibold mb-2">{school.name}</h3>
+                                    <h3 className="font-semibold mb-2 text-foreground">{school.name}</h3>
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <MapPin className="w-3 h-3" />
                                             {school.location}
                                         </span>
-                                        <Badge variant="outline" className="text-xs">{school.programType}</Badge>
+                                        <Badge variant="outline" className="text-xs border-border">{school.programType}</Badge>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -497,11 +397,11 @@ export default async function SchoolsPage({ params }: PageProps) {
 
             {/* Financial Aid */}
             {careerGuide?.financialAid && (
-                <section className="mb-12">
-                    <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">
+                <section>
+                    <Card className="bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
                         <CardContent className="p-6">
-                            <h3 className="font-semibold mb-2 flex items-center gap-2">
-                                <DollarSign className="w-5 h-5 text-green-600" />
+                            <h3 className="font-semibold mb-2 flex items-center gap-2 text-green-700 dark:text-green-300">
+                                <DollarSign className="w-5 h-5" />
                                 Financial Aid & Scholarships
                             </h3>
                             <p className="text-muted-foreground">{careerGuide?.financialAid}</p>
@@ -510,41 +410,22 @@ export default async function SchoolsPage({ params }: PageProps) {
                 </section>
             )}
 
-            {/* Quick Navigation */}
-            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Career Guide</p>
-                    </Link>
-                    <Link href={urls.license} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">License Info</p>
-                    </Link>
-                    <Link href={urls.salary} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Salary Data</p>
-                    </Link>
-                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Browse Jobs</p>
-                    </Link>
-                </div>
-            </div>
-
             {/* CTA */}
-            <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200">
-                <CardContent className="p-6 text-center">
-                    <h3 className="text-lg font-semibold mb-2">
+            <Card className="mt-8 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground border-primary">
+                <CardContent className="p-8 text-center">
+                    <h3 className="text-2xl font-bold mb-2 text-white">
                         Ready to Start Your {careerTitle} Career?
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-white/80 mb-6 text-lg">
                         Learn about requirements, timeline, and steps to become a {careerTitle.toLowerCase()}.
                     </p>
-                    <Button asChild>
+                    <Button size="lg" variant="secondary" asChild className="font-bold">
                         <Link href={urls.howToBecome}>
                             Read the Full Career Guide <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                     </Button>
                 </CardContent>
             </Card>
-        </main>
+        </div>
     );
 }

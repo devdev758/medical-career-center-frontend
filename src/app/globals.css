@@ -4,105 +4,89 @@
 
 @layer base {
   :root {
-    /* "Future Clinical" Light Mode - Stark, Clinical, Electric */
-    --background: 210 40% 98%;
-    /* Ice White */
-    --foreground: 222 47% 11%;
-    /* Deep Space */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* "Neutral Earth" - Luxury, Editorial, Grounded */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    /* Soft Linen - Creamy neutral background */
+    --background: 30 20% 90%;
+    /* #eae0d5 formatted to HSL approx */
+    /* Using HSL prevents opacity issues. #eae0d5 = hsl(32, 29%, 88%) */
+    --background: 32 29% 88%;
 
-    /* Electric Violet - The "Pulse" */
-    --primary: 265 89% 66%;
-    --primary-foreground: 222 47% 11%;
+    /* Black - Authority & Depth (#0a0908) */
+    --foreground: 220 12% 4%;
+    /* #0a0908 */
 
-    /* Neon Teal - The "Bio-Tech" */
-    --secondary: 170 100% 45%;
-    --secondary-foreground: 222 47% 11%;
+    /* Bone White / Lighter Linen for Cards (#f8f5f2 approx) */
+    --card: 33 25% 96%;
+    --card-foreground: 220 12% 4%;
 
-    --muted: 215 25% 90%;
-    --muted-foreground: 215 16% 47%;
+    --popover: 33 25% 96%;
+    --popover-foreground: 220 12% 4%;
 
-    --accent: 265 89% 66%;
-    /* Using Primary as default accent in light mode */
-    --accent-foreground: 222 47% 11%;
+    /* Jet Black - Primary Action / Buttons (#22333b) */
+    --primary: 200 27% 18%;
+    --primary-foreground: 32 29% 88%;
+    /* Soft Linen text */
 
-    --destructive: 350 89% 60%;
-    /* Hyper Coral */
-    --destructive-foreground: 210 40% 98%;
+    /* Tan - Soft Sunlit / Secondary (#c6ac8f) */
+    --secondary: 32 28% 67%;
+    --secondary-foreground: 220 12% 4%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 265 89% 66%;
-    /* Electric Ring */
+    /* Stone Brown - Accents (#5e503f) */
+    --accent: 33 20% 31%;
+    --accent-foreground: 32 29% 88%;
 
-    --radius: 0.75rem;
-    /* Larger, modern radius */
+    /* Soft Linen Darker for Muted elements */
+    --muted: 32 20% 80%;
+    --muted-foreground: 220 12% 40%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
 
-    /* Chart Colors */
-    --chart-1: 265 89% 66%;
-    /* Electric Violet */
-    --chart-2: 170 100% 45%;
-    /* Neon Teal */
-    --chart-3: 54 100% 50%;
-    /* Cyber Yellow */
-    --chart-4: 350 89% 60%;
-    /* Hyper Coral */
-    --chart-5: 222 47% 11%;
-    /* Deep Space */
+    /* Border - Stone Brown/Tan mix */
+    --border: 32 28% 67%;
+    /* Using Tan for borders */
+    --input: 32 28% 67%;
+    --ring: 200 27% 18%;
+    /* Jet Black Ring */
+
+    --radius: 0.5rem;
+
+    /* Chart Colors - Earthy */
+    --chart-1: 200 27% 18%;
+    /* Jet Black */
+    --chart-2: 33 20% 31%;
+    /* Stone Brown */
+    --chart-3: 32 28% 67%;
+    /* Tan */
+    --chart-4: 32 29% 88%;
+    /* Soft Linen */
+    --chart-5: 220 12% 4%;
+    /* Black */
   }
 
   .dark {
-    /* "Future Clinical" Dark Mode - Deep Space, Glowing */
-    --background: 222 47% 11%;
-    /* Deep Space */
-    --foreground: 0 0% 100%;
-    /* Pure White for maximum contrast */
-
-    --card: 217 33% 17%;
-    /* Module */
-    --card-foreground: 0 0% 100%;
-
-    --popover: 217 33% 17%;
-    --popover-foreground: 0 0% 100%;
-
-    /* Bright Blue - Professional, trustworthy, readable */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    /* Neon Teal - Secondary accents */
-    --secondary: 170 100% 45%;
-    --secondary-foreground: 222 47% 11%;
-
-    --muted: 217 33% 25%;
-    --muted-foreground: 215 20% 75%;
-    /* Lighter gray for better readability */
-
-    --accent: 217 33% 25%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 350 89% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 217 33% 30%;
-    /* Slightly lighter border */
-    --input: 217 33% 25%;
-    --ring: 217 91% 60%;
-
-    /* Chart Colors */
-    --chart-1: 217 91% 60%;
-    /* Blue */
-    --chart-2: 170 100% 45%;
-    /* Teal */
-    --chart-3: 265 89% 66%;
-    /* Violet (Downgraded to accent) */
-    --chart-4: 350 89% 60%;
-    /* Coral */
-    --chart-5: 215 20% 65%;
+    /* Dark Mode Disabled by User Request ("No dark background color") */
+    /* Inheriting standard Earth tones */
+    --background: 32 29% 88%;
+    --foreground: 220 12% 4%;
+    --card: 33 25% 96%;
+    --card-foreground: 220 12% 4%;
+    --popover: 33 25% 96%;
+    --popover-foreground: 220 12% 4%;
+    --primary: 200 27% 18%;
+    --primary-foreground: 32 29% 88%;
+    --secondary: 32 28% 67%;
+    --secondary-foreground: 220 12% 4%;
+    --muted: 32 20% 80%;
+    --muted-foreground: 220 12% 40%;
+    --accent: 33 20% 31%;
+    --accent-foreground: 32 29% 88%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 32 28% 67%;
+    --input: 32 28% 67%;
+    --ring: 200 27% 18%;
   }
 }
 
