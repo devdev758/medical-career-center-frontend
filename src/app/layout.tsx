@@ -6,6 +6,9 @@ import { Footer } from "@/components/footer";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering since we check auth in the layout
+export const dynamic = "force-dynamic";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
