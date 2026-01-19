@@ -343,15 +343,42 @@ export default async function JobsPage({ params }: PageProps) {
         .slice(0, 25)
         .map(([code, count]) => ({ state: code.toUpperCase(), stateName: getStateName(code), count }));
 
-    // Get cities for current state if viewing a state
-    let stateCities: { city: string; state: string }[] = [];
+    // Get cities for current state if viewing a state - from actual Job data
+    let stateCities: { city: string; state: string; count: number }[] = [];
     if (isState && !isCity) {
-        const stateCode = firstParam.toUpperCase();
-        stateCities = await prisma.location.findMany({
-            where: { state: stateCode, city: { not: '' } },
-            select: { city: true, state: true },
-            take: 20
+        const stateName = getStateName(firstParam);
+
+        // Get jobs for this state and extract unique cities with counts
+        const stateJobs = await prisma.job.findMany({
+            where: {
+                careerKeyword: { in: blsKeywords },
+                location: { contains: stateName, mode: 'insensitive' }
+            },
+            select: { location: true }
         });
+
+        // Extract cities from job locations and count them
+        const cityJobCounts = new Map<string, number>();
+        for (const job of stateJobs) {
+            // Extract city from location like "City, State"
+            const parts = job.location?.split(', ');
+            if (parts && parts.length >= 2) {
+                const cityPart = parts[0];
+                if (cityPart && cityPart.toLowerCase() !== stateName.toLowerCase()) {
+                    cityJobCounts.set(cityPart, (cityJobCounts.get(cityPart) || 0) + 1);
+                }
+            }
+        }
+
+        // Convert to sorted array
+        stateCities = Array.from(cityJobCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 25)
+            .map(([city, count]) => ({
+                city,
+                state: firstParam.toUpperCase(),
+                count
+            }));
     }
 
     // Build breadcrumb items
@@ -468,12 +495,15 @@ export default async function JobsPage({ params }: PageProps) {
                                     <Link
                                         key={loc.city}
                                         href={`/${profession}/jobs/${loc.state.toLowerCase()}/${loc.city.toLowerCase().replace(/\s+/g, '-')}`}
-                                        className="px-3 py-1.5 rounded-full border text-sm hover:bg-muted transition-colors"
+                                        className="px-3 py-1.5 rounded-full border text-sm hover:bg-muted transition-colors flex items-center gap-1.5"
                                     >
                                         {loc.city}
+                                        <Badge variant="secondary" className="text-xs px-1.5">{loc.count}</Badge>
                                     </Link>
                                 ))}
                             </div>
+                        ) : isState ? (
+                            <p className="text-muted-foreground text-sm">No city-level jobs available for {getStateName(firstParam)} at this time.</p>
                         ) : topStates.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
                                 {topStates.map((loc) => (
