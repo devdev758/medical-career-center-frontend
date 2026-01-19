@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -20,14 +20,13 @@ import {
     Target,
     Zap,
     Heart,
-    Building2,
-    Stethoscope
+    Stethoscope,
+    Sparkles,
+    CheckCircle2
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { urlSlugToDbSlug, formatSlugForDisplay, getProfessionUrls } from '@/lib/url-utils';
-import { getProfessionFormalName } from '@/lib/content-generator';
+import { urlSlugToDbSlug, getProfessionUrls } from '@/lib/url-utils';
 import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
-import { RN_SPOKE_HIGHLIGHTS, getAllHighlightsPriority } from '@/lib/rn-landing-highlights';
 import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 
 export const dynamic = 'force-dynamic';
@@ -95,32 +94,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // Spoke navigation items - ALL spokes in priority order
 const spokeNavItems = [
-    { id: 'how-to-become', label: 'How to Become', icon: BookOpen, path: '/how-to-become' },
-    { id: 'salary', label: 'Salary', icon: DollarSign, path: '/salary' },
-    { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs' },
-    { id: 'schools', label: 'Schools', icon: GraduationCap, path: '/schools' },
-    { id: 'license', label: 'License', icon: Award, path: '/license' },
-    { id: 'crna', label: 'CRNA', icon: Stethoscope, path: '/crna' },
-    { id: 'specializations', label: 'Specializations', icon: Target, path: '/specializations' },
-    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume' },
-    { id: 'interview', label: 'Interview', icon: MessageSquare, path: '/interview' },
-    { id: 'skills', label: 'Skills', icon: Zap, path: '/skills' },
-    { id: 'career-path', label: 'Career Path', icon: TrendingUp, path: '/career-path' },
-    { id: 'work-life-balance', label: 'Work-Life', icon: Heart, path: '/work-life-balance' },
+    { id: 'how-to-become', label: 'Career Guide', icon: BookOpen, path: '/how-to-become', desc: 'Step-by-step roadmap' },
+    { id: 'salary', label: 'Salary Data', icon: DollarSign, path: '/salary', desc: 'Earnings by state' },
+    { id: 'jobs', label: 'Job Board', icon: Briefcase, path: '/jobs', desc: 'Open positions' },
+    { id: 'schools', label: 'Schools', icon: GraduationCap, path: '/schools', desc: 'Find programs' },
+    { id: 'license', label: 'Licensing', icon: Award, path: '/license', desc: 'State requirements' },
+    { id: 'crna', label: 'CRNA Path', icon: Stethoscope, path: '/crna', desc: 'Advanced practice' },
+    { id: 'specializations', label: 'Specialties', icon: Target, path: '/specializations', desc: 'Career niches' },
+    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume', desc: 'Templates & tips' },
+    { id: 'interview', label: 'Interview', icon: MessageSquare, path: '/interview', desc: 'Prep questions' },
 ];
 
 // CNA-specific navigation items
 const cnaSpokeNavItems = [
-    { id: 'how-to-become', label: 'Career Guide', icon: BookOpen, path: '/how-to-become' },
-    { id: 'schools', label: 'Schools & Training', icon: GraduationCap, path: '/schools' },
-    { id: 'training', label: 'Training Programs', icon: BookOpen, path: '/training' },
-    { id: 'license', label: 'Certification', icon: Award, path: '/license' },
-    { id: 'registry', label: 'CNA Registry', icon: Users, path: '/registry' },
-    { id: 'practice-test', label: 'Practice Test', icon: Target, path: '/practice-test' },
-    { id: 'interview', label: 'Interview Prep', icon: MessageSquare, path: '/interview' },
-    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume' },
-    { id: 'skills', label: 'Skills', icon: Zap, path: '/skills' },
-    { id: 'career-path', label: 'Career Path', icon: TrendingUp, path: '/career-path' },
+    { id: 'how-to-become', label: 'Career Guide', icon: BookOpen, path: '/how-to-become', desc: 'Step-by-step roadmap' },
+    { id: 'schools', label: 'Classes', icon: GraduationCap, path: '/schools', desc: 'Training programs' },
+    { id: 'training', label: 'Training', icon: BookOpen, path: '/training', desc: 'Skills training' },
+    { id: 'license', label: 'Certification', icon: Award, path: '/license', desc: 'Exam & Registry' },
+    { id: 'registry', label: 'Registry', icon: Users, path: '/registry', desc: 'State lookups' },
+    { id: 'practice-test', label: 'Practice Test', icon: Target, path: '/practice-test', desc: 'Exam prep' },
+    { id: 'interview', label: 'Interview', icon: MessageSquare, path: '/interview', desc: 'Prep questions' },
+    { id: 'resume', label: 'Resume', icon: FileText, path: '/resume', desc: 'Templates' },
 ];
 
 
@@ -172,9 +166,6 @@ export default async function ProfessionHubPage({ params }: PageProps) {
         ? `$${Math.round(salaryData.annualMedian).toLocaleString()}`
         : keyStats?.medianSalary || 'N/A';
 
-    // Check if this is RN (has CRNA specialty)
-    const isRegisteredNurse = profession === 'registered-nurse';
-
     // Check if this is CNA (has special navigation)
     const isCNA = profession === 'cna';
 
@@ -185,503 +176,211 @@ export default async function ProfessionHubPage({ params }: PageProps) {
     );
 
     return (
-        <main className="container mx-auto py-10 px-4 max-w-7xl">
-            {/* Breadcrumb */}
-            <Breadcrumb
-                items={[
-                    { label: 'Home', href: '/' },
-                    { label: careerGuide?.professionName || displayName }
-                ]}
-                className="mb-4"
-            />
+        <main className="min-h-screen bg-background pb-32">
+            {/* Immersive Hero Section */}
+            <div className="relative pt-32 pb-20 px-4 overflow-hidden border-b border-border/40">
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
 
-            {/* Hero Section */}
-            <div className="mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                    {careerGuide?.professionName || displayName}
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-3xl">
-                    {careerGuide?.overview ? careerGuide.overview.substring(0, 200) + '...' : `Explore ${displayName} career information, salary data, and job opportunities.`}
-                </p>
-            </div>
+                <div className="container mx-auto max-w-7xl">
+                    <Breadcrumb
+                        items={[
+                            { label: 'Home', href: '/' },
+                            { label: 'Directory', href: '/professions' },
+                            { label: careerGuide?.professionName || displayName }
+                        ]}
+                        className="mb-8"
+                    />
 
-            {/* Key Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                                <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-6">
+                                <Sparkles className="w-4 h-4" />
+                                <span>Complete Career Hub</span>
                             </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Median Salary</p>
-                                <p className="text-2xl font-bold">{medianSalary}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            <h1 className="text-5xl md:text-7xl font-heading font-extrabold tracking-tight mb-6 leading-[0.9]">
+                                {careerGuide?.professionName || displayName}
+                            </h1>
+                            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+                                {careerGuide?.overview ? careerGuide.overview.substring(0, 200) + '...' : `The definitive guide to becoming a ${displayName}. Explore salary data, find accredited schools, and land your dream job.`}
+                            </p>
 
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Job Growth</p>
-                                <p className="text-2xl font-bold">{keyStats.jobGrowth}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                                <Briefcase className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Open Jobs</p>
-                                <p className="text-2xl font-bold">{jobCount.toLocaleString()}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
-                                <Users className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Employed</p>
-                                <p className="text-2xl font-bold">{keyStats.totalEmployed}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Quick Navigation */}
-            <div className="bg-muted/50 rounded-lg p-6 mb-12">
-                <h2 className="font-semibold mb-4 text-lg">Quick Navigation</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {navItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.id}
-                                href={`/${profession}${item.path}`}
-                                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-background hover:bg-primary/10 transition-colors border"
-                            >
-                                <Icon className="w-4 h-4 text-primary" />
-                                <span className="text-sm font-medium">{item.label}</span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* CRNA Hero Card - For RN Only */}
-            {isRegisteredNurse && (
-                <Card className="mb-12 overflow-hidden border-0">
-                    <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 p-8 text-white">
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                                <Badge className="bg-white/20 text-white border-white/30 mb-3">
-                                    Highest-Paid RN Specialty
-                                </Badge>
-                                <h2 className="text-3xl font-bold mb-3">CRNA - Nurse Anesthetist</h2>
-                                <p className="text-white/90 mb-6 text-lg max-w-2xl">
-                                    Become a Certified Registered Nurse Anesthetist and earn $180K-$250K annually.
-                                    Administer anesthesia independently in all 50 states after completing a 3-year doctoral program.
-                                </p>
-                                <div className="flex flex-wrap gap-6 mb-6">
-                                    <div>
-                                        <p className="text-white/80 text-sm">Average Salary</p>
-                                        <p className="text-2xl font-bold">$200K+</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-white/80 text-sm">Program Length</p>
-                                        <p className="text-2xl font-bold">3 Years</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-white/80 text-sm">Prerequisites</p>
-                                        <p className="text-2xl font-bold">BSN + ICU</p>
-                                    </div>
-                                </div>
-                                <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-white/90">
-                                    <Link href={`/${profession}/crna`}>
-                                        Explore CRNA Career <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Link>
+                            <div className="flex flex-wrap gap-4 mt-8">
+                                <Button size="lg" className="rounded-full shadow-lg shadow-primary/20" asChild>
+                                    <Link href={urls.jobs}>Find Jobs</Link>
+                                </Button>
+                                <Button variant="outline" size="lg" className="rounded-full" asChild>
+                                    <Link href={urls.salary}>See Salary Data</Link>
                                 </Button>
                             </div>
-                            <Stethoscope className="w-24 h-24 text-white/20 hidden lg:block" />
-                        </div>
-                    </div>
-                </Card>
-            )}
-
-            {/* Spoke Content - RN Only - Article Format */}
-            {isRegisteredNurse && (
-                <div className="mb-12">
-                    {/* Section Header */}
-                    <div className="mb-8">
-                        <h2 className="text-3xl font-bold mb-3">Your Complete Guide to RN Success</h2>
-                        <p className="text-muted-foreground text-lg max-w-3xl">
-                            From education to career advancement, here's everything you need to know about becoming and thriving as a Registered Nurse.
-                        </p>
-                    </div>
-
-                    {/* Article-Style Content */}
-                    <div className="prose prose-slate dark:prose-invert max-w-none">
-                        {/* Education & Getting Started */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                                    <GraduationCap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                Education Pathways & Schools
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Your nursing journey begins with choosing the right educational path. <strong>Associate Degree in Nursing (ADN)</strong> programs offer the fastest route—just 2 years and $6,000-$20,000 in costs. While ADN grads earn RN licenses and can start working immediately, many hospitals increasingly prefer <strong>Bachelor of Science in Nursing (BSN)</strong> degrees for new hires, especially in competitive markets.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                BSN programs typically take 4 years and cost $40,000-$80,000, but they open doors to specialized roles and higher salaries ($90K-$200K+ in premium specialties). For career changers with existing bachelor's degrees, <strong>Accelerated BSN programs</strong> compress the curriculum into 11-18 months of intensive study. Already working as an RN? <strong>Online RN-to-BSN</strong> programs let you upgrade your credentials while maintaining your job, typically costing $15,000-$40,000. When evaluating schools, prioritize NCLEX pass rates above 90% and CCNE or ACEN accreditation.
-                            </p>
-                            <Link href="/registered-nurse/schools" className="inline-flex items-center gap-2 text-primary hover:underline font-medium mt-2">
-                                Compare nursing programs and find accredited schools <ArrowRight className="w-4 h-4" />
-                            </Link>
                         </div>
 
-                        {/* Licensing */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                                    <Award className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                Licensing & NCLEX Exam
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                After graduating, you must pass the <strong>NCLEX-RN</strong> (National Council Licensure Examination for Registered Nurses) to practice. The computerized adaptive test contains 75-145 questions and has an 87% first-time pass rate nationally. The exam costs $200, and most states require additional fees for initial licensure ($100-$400).
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                Good news for travel nurses and those planning to relocate: <strong>43 states participate in the Nurse Licensure Compact (NLC)</strong>, allowing you to practice across state lines with a single multistate license. For non-compact states, you'll need to apply for licensure by endorsement, which typically takes 4-8 weeks. RN licenses require renewal every 2-3 years (varies by state) with continuing education requirements ranging from 15-30 hours.
-                            </p>
-                            <Link href="/registered-nurse/license" className="inline-flex items-center gap-2 text-primary hover:underline font-medium mt-2">
-                                View complete licensing guide and state requirements <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Salary & Compensation */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                                    <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
-                                </div>
-                                Salary & Earning Potential
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Registered Nurses earn a national median salary of around <strong>$81,000 annually</strong>, but compensation varies dramatically by location and specialty. <strong>California leads the nation at $124,000 median</strong>, while states like South Dakota and Mississippi average $60,000-$65,000. Geographic arbitrage is real—California RNs can earn double their Southern counterparts for the same work.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                New graduates typically start at $60,000-$75,000, while experienced RNs in specialized units (ICU, ER, OR) earn 15-20% above base rates. <strong>Travel nurses command premium pay:</strong> $2,000-$3,000 per week plus housing stipends and bonuses. Remote case management and telehealth positions have surged 40% since 2024, offering work-life balance with competitive $70,000-$90,000 salaries. Per diem and PRN shifts pay hourly rates 20-30% higher than staff positions, ideal for flexible schedules.
-                            </p>
-                            <Link href="/registered-nurse/salary" className="inline-flex items-center gap-2 text-primary hover:underline font-medium mt-2">
-                                Explore detailed salary data by state and specialty <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Specializations */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
-                                    <Target className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                                </div>
-                                Specializations & Career Paths
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                While general medical-surgical nursing offers a solid foundation, specialization significantly boosts both earning potential and job satisfaction. <strong>ICU (Intensive Care Unit) nurses</strong> manage critically ill patients with complex conditions, earning $85,000-$110,000 with CCRN certification. <strong>Emergency Room nurses</strong> thrive in fast-paced environments, making quick decisions under pressure for similar compensation.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                <strong>Operating Room (OR) nurses</strong> assist in surgical procedures and can earn $80,000-$105,000 with CNOR credentials. For those drawn to specific populations, <strong>Pediatric</strong>, <strong>Neonatal ICU (NICU)</strong>, and <strong>Labor & Delivery</strong> nursing offer rewarding paths working with children and families. Emerging specialties like <strong>Psychiatric nursing</strong> and <strong>Aesthetic/Cosmetic nursing</strong> provide alternatives to traditional hospital settings. Most specializations require 1-2 years of general nursing experience before specializing, plus specialty certification exams.
-                            </p>
-                            <Link href="/registered-nurse/specializations" className="inline-flex items-center gap-2 text-primary hover:underline font-medium mt-2">
-                                Explore all 10 nursing specialties in detail <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Job Search & Career Launch */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg">
-                                    <Briefcase className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                                </div>
-                                Landing Your First Job & Interview Success
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                The nursing job market remains strong with hundreds of thousands of openings nationwide. New graduates should target <strong>new grad residency programs</strong> at major health systems—these structured 6-12 month programs provide mentorship and gradual responsibility increases, dramatically improving first-year retention and confidence.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                Your <strong>ATS-optimized resume</strong> needs to highlight clinical rotations, relevant skills (IV insertion, wound care, EHR systems), and any healthcare experience. Approach interviews prepared for <strong>behavioral questions using the STAR method</strong> and clinical scenarios testing critical thinking. Common questions include handling difficult patients, medication errors, and end-of-life situations. Salary negotiation is appropriate—research local market rates and emphasize unique certifications or bilingual abilities. Most hospitals offer sign-on bonuses ($5,000-$15,000) for hard-to-fill specialties or locations.
-                            </p>
-                            <div className="flex flex-wrap gap-3 mt-4">
-                                <Link href="/registered-nurse/jobs" className="inline-flex items-center gap-2 text-primary hover:underline font-medium">
-                                    Browse current job openings <ArrowRight className="w-4 h-4" />
-                                </Link>
-                                <span className="text-muted-foreground">|</span>
-                                <Link href="/registered-nurse/resume" className="inline-flex items-center gap-2 text-primary hover:underline font-medium">
-                                    View resume templates & examples <ArrowRight className="w-4 h-4" />
-                                </Link>
-                                <span className="text-muted-foreground">|</span>
-                                <Link href="/registered-nurse/interview" className="inline-flex items-center gap-2 text-primary hover:underline font-medium">
-                                    Prepare for interviews <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Career Advancement */}
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-pink-100 dark:bg-pink-900/20 rounded-lg">
-                                    <TrendingUp className="w-6 h-6 text-pink-600 dark:text-pink-400" />
-                                </div>
-                                Career Advancement & Long-Term Growth
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Nursing offers clear career ladders beyond bedside care. <strong>Clinical advancement:</strong> Staff RN ($75K) → Charge Nurse ($85K) → Clinical Nurse Specialist ($105K). <strong>Management track:</strong> Nurse Manager ($95K) → Director of Nursing ($110K) → Chief Nursing Officer ($150K+).
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                <strong>Advanced practice roles</strong> require a Master's (MSN) or Doctorate (DNP): Nurse Practitioners earn $115,000 median, Nurse Anesthetists (CRNAs) command $200,000+, and Clinical Nurse Specialists make $105,000. Other paths include nursing education ($75,000-$95,000), informatics ($90,000-$115,000), and quality/safety roles ($85,000-$110,000). Most advancement requires a BSN minimum, with MSN/DNP preferred for leadership positions.
-                            </p>
-                            <Link href="/registered-nurse/career-path" className="inline-flex items-center gap-2 text-primary hover:underline font-medium mt-2">
-                                Explore career advancement paths in detail <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Work-Life Balance Note */}
-                        <div className="bg-muted/50 rounded-lg p-6">
-                            <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                <Heart className="w-5 h-5 text-primary" />
-                                Work-Life Balance Reality
-                            </h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Most hospital RNs work 12-hour shifts, typically three days per week (36 hours = full-time). While 75% report career satisfaction, burnout affects 60% of nurses—particularly in high-intensity units. Flexible schedules, self-care strategies, and choosing the right specialty significantly impact quality of life. Remote opportunities (telehealth, case management), part-time options, and PRN positions offer alternatives to traditional hospital shifts.
-                            </p>
-                            <Link href="/registered-nurse/work-life-balance" className="text-sm inline-flex items-center gap-1 text-primary hover:underline font-medium mt-2">
-                                Learn about nursing work-life balance <ArrowRight className="w-3 h-3" />
-                            </Link>
+                        {/* Hero Stats */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <Card className="bg-background/50 backdrop-blur-sm border-primary/20">
+                                <CardContent className="p-6">
+                                    <p className="text-sm text-muted-foreground mb-1">Median Salary</p>
+                                    <p className="text-3xl font-bold text-primary">{medianSalary}</p>
+                                    <div className="flex items-center gap-1 text-green-400 text-xs mt-2">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>National Avg</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card className="bg-background/50 backdrop-blur-sm border-secondary/20">
+                                <CardContent className="p-6">
+                                    <p className="text-sm text-muted-foreground mb-1">Open Jobs</p>
+                                    <p className="text-3xl font-bold text-secondary">{jobCount.toLocaleString()}</p>
+                                    <div className="flex items-center gap-1 text-blue-400 text-xs mt-2">
+                                        <Briefcase className="w-3 h-3" />
+                                        <span>Active Listings</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card className="bg-background/50 backdrop-blur-sm border-purple-500/20">
+                                <CardContent className="p-6">
+                                    <p className="text-sm text-muted-foreground mb-1">Job Growth</p>
+                                    <p className="text-3xl font-bold text-purple-400">{keyStats.jobGrowth || '+5%'}</p>
+                                    <div className="flex items-center gap-1 text-purple-400 text-xs mt-2">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>10-Year Outlook</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card className="bg-background/50 backdrop-blur-sm border-orange-500/20">
+                                <CardContent className="p-6">
+                                    <p className="text-sm text-muted-foreground mb-1">Employability</p>
+                                    <p className="text-3xl font-bold text-orange-400">High</p>
+                                    <div className="flex items-center gap-1 text-orange-400 text-xs mt-2">
+                                        <CheckCircle2 className="w-3 h-3" />
+                                        <span>Demand Score</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
 
-            {/* Jobs Sub-Navigation (for RN with remote, new-grad, etc.) */}
-            {isRegisteredNurse && (
-                <Card className="mb-12">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Briefcase className="w-5 h-5" />
-                            Browse Jobs by Type
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                            <Link href={`/${profession}/jobs/remote`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
-                                <p className="font-medium">Remote Jobs</p>
-                                <p className="text-xs text-muted-foreground">Work from home</p>
-                            </Link>
-                            <Link href={`/${profession}/jobs/new-grad`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
-                                <p className="font-medium">New Grad Jobs</p>
-                                <p className="text-xs text-muted-foreground">Entry level</p>
-                            </Link>
-                            <Link href={`/${profession}/jobs/travel`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
-                                <p className="font-medium">Travel Jobs</p>
-                                <p className="text-xs text-muted-foreground">Travel nursing</p>
-                            </Link>
-                            <Link href={`/${profession}/jobs/part-time`} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center">
-                                <p className="font-medium">Part-Time Jobs</p>
-                                <p className="text-xs text-muted-foreground">Flexible hours</p>
-                            </Link>
-                            <Link href={urls.jobs} className="p-4 rounded-lg border hover:bg-muted transition-colors text-center bg-primary/5">
-                                <p className="font-medium">All Jobs</p>
-                                <p className="text-xs text-muted-foreground">{jobCount.toLocaleString()} openings</p>
-                            </Link>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+            {/* Split Layout: Stack Navigation + Main Content */}
+            <div className="container mx-auto px-4 max-w-7xl pt-12">
+                <div className="grid lg:grid-cols-12 gap-12">
 
-            {/* Fallback for non-RN professions - Keep original */}
-            {!isRegisteredNurse && (
-                <>
-                    {/* Main Navigation Cards */}
-                    <div className="grid md:grid-cols-3 gap-6 mb-12">
-                        {/* Career Guide */}
-                        <Card className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <BookOpen className="w-8 h-8 text-primary" />
-                                    <CardTitle>Career Guide</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground mb-4">
-                                    Complete guide to becoming a {(careerGuide?.professionName || displayName).toLowerCase()}, including education, certification, and career paths.
-                                </p>
-                                <ul className="space-y-2 mb-6 text-sm">
-                                    <li className="flex items-center gap-2">
-                                        <GraduationCap className="w-4 h-4 text-muted-foreground" />
-                                        <span>Education Requirements</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <Badge variant="outline" className="text-xs">
-                                            {careerGuide?.timeline || '1-4 years'}
-                                        </Badge>
-                                        <span>Timeline to Career</span>
-                                    </li>
-                                </ul>
-                                <Button asChild className="w-full">
-                                    <Link href={urls.howToBecome}>
-                                        Read Full Guide <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
+                    {/* LEFT: Command Stack Navigation */}
+                    <aside className="lg:col-span-4 space-y-4">
+                        <div className="sticky top-24 space-y-4">
+                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider px-2">Career Modules</h2>
+                            <div className="space-y-3">
+                                {navItems.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <Link key={item.id} href={`/${profession}${item.path}`} className="block group">
+                                            <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/50 hover:bg-muted/50 transition-all duration-200 active-card">
+                                                <div className={`p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors`}>
+                                                    <Icon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold font-heading text-foreground group-hover:text-primary transition-colors">{item.label}</h3>
+                                                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                                                </div>
+                                                <ArrowRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
+                            </div>
 
-                        {/* Salary Information */}
-                        <Card className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <DollarSign className="w-8 h-8 text-primary" />
-                                    <CardTitle>Salary Data</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground mb-4">
-                                    Explore detailed salary information by state and city, including percentiles and trends.
-                                </p>
-                                <div className="space-y-3 mb-6">
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">Entry Level</p>
-                                        <p className="text-lg font-semibold">{careerGuide?.entryLevelRange || 'See salary data'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">Experienced</p>
-                                        <p className="text-lg font-semibold">{careerGuide?.experiencedRange || 'See salary data'}</p>
-                                    </div>
-                                </div>
-                                <Button asChild variant="outline" className="w-full">
-                                    <Link href={urls.salary}>
-                                        View Salary Data <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Job Listings */}
-                        <Card className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <Briefcase className="w-8 h-8 text-primary" />
-                                    <CardTitle>Job Openings</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground mb-4">
-                                    Browse {jobCount.toLocaleString()} current job openings for {(careerGuide?.professionName || displayName).toLowerCase()}s across the country.
-                                </p>
-                                <div className="space-y-2 mb-6">
+                            {/* Mini Job Feed in Sidebar */}
+                            <div className="mt-8 pt-8 border-t border-border/50">
+                                <h3 className="font-bold mb-4 flex items-center gap-2">
+                                    <Briefcase className="w-4 h-4 text-primary" />
+                                    Latest Jobs
+                                </h3>
+                                <div className="space-y-3">
                                     {recentJobs.map((job) => (
-                                        <div key={job.id} className="text-sm">
-                                            <p className="font-medium truncate">{job.title}</p>
-                                            <p className="text-muted-foreground flex items-center gap-1">
-                                                <MapPin className="w-3 h-3" />
-                                                {job.location || 'Remote'}
-                                            </p>
-                                        </div>
+                                        <Link key={job.id} href={urls.jobs} className="block p-3 rounded-lg bg-muted/30 hover:bg-muted transition-colors border border-transparent hover:border-border">
+                                            <p className="font-medium text-sm line-clamp-1">{job.title}</p>
+                                            <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                                                <span>{job.location || 'Remote'}</span>
+                                                <span>New</span>
+                                            </div>
+                                        </Link>
                                     ))}
+                                    <Button variant="ghost" size="sm" className="w-full text-xs" asChild>
+                                        <Link href={urls.jobs}>View All {jobCount} Jobs</Link>
+                                    </Button>
                                 </div>
-                                <Button asChild variant="outline" className="w-full">
-                                    <Link href={urls.jobs}>
-                                        View All Jobs <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            </div>
+                        </div>
+                    </aside>
 
-                    {/* Career Overview Section */}
-                    <div className="grid md:grid-cols-2 gap-8 mb-12">
-                        <div>
-                            <h2 className="text-2xl font-bold mb-4">What Does a {careerGuide?.professionName || displayName} Do?</h2>
-                            <p className="text-muted-foreground mb-6">
-                                {careerGuide?.rolesDescription || `${displayName}s work in healthcare providing essential services to patients.`}
+                    {/* RIGHT: Main Content Feed */}
+                    <article className="lg:col-span-8 space-y-12">
+                        {/* Intro Section */}
+                        <div className="prose prose-lg dark:prose-invert max-w-none">
+                            <h2 className="text-3xl font-heading font-bold mb-6">About the Role</h2>
+                            <p className="leading-relaxed text-muted-foreground">
+                                {careerGuide?.rolesDescription || `${displayName}s play a crucial role in the healthcare system, providing essential care and support to patients. This comprehensive guide covers everything you need to start and advance your career.`}
                             </p>
-                            <h3 className="font-semibold mb-3">Daily Responsibilities:</h3>
-                            <ul className="space-y-2">
-                                {((careerGuide?.dailyTasks as string[]) || []).slice(0, 5).map((task, idx) => (
-                                    <li key={idx} className="flex items-start gap-2">
-                                        <span className="text-primary mt-1">•</span>
-                                        <span className="text-muted-foreground">{task}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
 
-                        <div>
-                            <h2 className="text-2xl font-bold mb-4">Skills & Qualifications</h2>
-                            <div className="mb-6">
-                                <h3 className="font-semibold mb-3">Technical Skills:</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {((careerGuide?.technicalSkills as string[]) || []).slice(0, 6).map((skill, idx) => (
-                                        <Badge key={idx} variant="secondary">{skill}</Badge>
-                                    ))}
+                            <div className="grid md:grid-cols-2 gap-8 my-8 not-prose">
+                                <div className="p-6 rounded-2xl bg-muted/30 border border-border/50">
+                                    <h3 className="font-bold mb-4 flex items-center gap-2">
+                                        <Target className="w-5 h-5 text-secondary" />
+                                        Key Responsibilities
+                                    </h3>
+                                    <ul className="space-y-2">
+                                        {((careerGuide?.dailyTasks as string[]) || []).slice(0, 5).map((task, idx) => (
+                                            <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                                <span className="text-secondary mt-1">•</span>
+                                                <span>{task}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="p-6 rounded-2xl bg-muted/30 border border-border/50">
+                                    <h3 className="font-bold mb-4 flex items-center gap-2">
+                                        <Zap className="w-5 h-5 text-yellow-500" />
+                                        Essential Skills
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {((careerGuide?.technicalSkills as string[]) || []).slice(0, 8).map((skill, idx) => (
+                                            <Badge key={idx} variant="secondary" className="bg-background border-border">{skill}</Badge>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="font-semibold mb-3">Soft Skills:</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {((careerGuide?.softSkills as string[]) || []).slice(0, 6).map((skill, idx) => (
-                                        <Badge key={idx} variant="outline">{skill}</Badge>
-                                    ))}
+
+                            <h3>Career Path & Advancement</h3>
+                            <p className="text-muted-foreground">
+                                The career trajectory for a {displayName} offers multiple avenues for growth. Starting as an entry-level professional, you can advance through specialized certifications, higher education, or management roles.
+                                {profession === 'registered-nurse' && " For example, RNs can become Nurse Practitioners or CRNAs with advanced degrees, significantly increasing autonomy and salary."}
+                            </p>
+                        </div>
+
+                        {/* Call to Action Banner */}
+                        <div className="rounded-3xl bg-gradient-to-br from-primary via-purple-600 to-secondary p-8 md:p-12 text-center text-white relative overflow-hidden">
+                            <div className="relative z-10">
+                                <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">Start Your Journey Today</h2>
+                                <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+                                    Whether you're looking for school programs or your next job, we have the tools to help you succeed.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <Button size="lg" variant="secondary" className="font-bold h-12 px-8" asChild>
+                                        <Link href={urls.schools}>Find Schools</Link>
+                                    </Button>
+                                    <Button size="lg" variant="outline" className="font-bold h-12 px-8 bg-transparent text-white border-white hover:bg-white hover:text-primary" asChild>
+                                        <Link href={urls.jobs}>Browse Jobs</Link>
+                                    </Button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </>
-            )}
 
-            {/* CTA Section */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
-                <CardContent className="p-8 text-center">
-                    <h2 className="text-2xl font-bold mb-4">
-                        Ready to Start Your Career as a {careerGuide?.professionName || displayName}?
-                    </h2>
-                    <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                        Explore accredited programs, discover job opportunities, and get the complete career guide to launch your nursing career.
-                    </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Button asChild size="lg">
-                            <Link href={urls.schools}>
-                                Find Schools & Programs
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" size="lg">
-                            <Link href={urls.jobs}>
-                                Browse Jobs
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" size="lg">
-                            <Link href={urls.howToBecome}>
-                                View Career Guide
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+                            {/* Abstract Shapes */}
+                            <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+                            <div className="absolute bottom-0 right-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+                        </div>
+                    </article>
+                </div>
+            </div>
         </main>
     );
 }
