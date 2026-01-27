@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ContentSection, ContentCard, FeatureCard } from '@/components/ui/prose-content';
 import {
     BookOpen,
     DollarSign,
@@ -177,70 +178,73 @@ export default async function ProfessionHubPage({ params }: PageProps) {
 
     return (
         <article className="space-y-12 animate-in fade-in duration-500">
-            {/* Intro Section */}
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-                <h2 className="text-3xl font-heading font-bold mb-6 text-foreground">About the Role</h2>
-                <div className="p-6 rounded-2xl bg-card border border-border/50 mb-8 not-prose">
-                    <p className="leading-relaxed text-muted-foreground text-lg">
+            {/* About the Role Section */}
+            <ContentSection title="About the Role">
+                <ContentCard className="mb-8">
+                    <p className="leading-relaxed text-[#4A5568] text-lg">
                         {careerGuide?.rolesDescription || `${displayName}s play a crucial role in the healthcare system, providing essential care and support to patients. This comprehensive guide covers everything you need to start and advance your career.`}
                     </p>
-                </div>
+                </ContentCard>
 
-                <div className="grid md:grid-cols-2 gap-8 my-8 not-prose">
-                    <div className="p-6 rounded-2xl bg-muted/30 border border-border/50">
-                        <h3 className="font-bold mb-4 flex items-center gap-2 text-foreground">
-                            <Target className="w-5 h-5 text-secondary" />
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FeatureCard variant="blue">
+                        <h3 className="font-bold mb-4 flex items-center gap-2 text-[#003554]">
+                            <Target className="w-5 h-5 text-[#0582CA]" />
                             Key Responsibilities
                         </h3>
                         <ul className="space-y-3">
                             {((careerGuide?.dailyTasks as string[]) || []).slice(0, 5).map((task, idx) => (
-                                <li key={idx} className="flex items-start gap-3 text-sm text-foreground/80">
-                                    <span className="text-secondary mt-1 shrink-0">•</span>
+                                <li key={idx} className="flex items-start gap-3 text-sm text-[#4A5568]">
+                                    <span className="text-[#0582CA] mt-1 shrink-0">•</span>
                                     <span>{task}</span>
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                    <div className="p-6 rounded-2xl bg-muted/30 border border-border/50">
-                        <h3 className="font-bold mb-4 flex items-center gap-2 text-foreground">
-                            <Zap className="w-5 h-5 text-yellow-500" />
+                    </FeatureCard>
+                    <FeatureCard variant="gold">
+                        <h3 className="font-bold mb-4 flex items-center gap-2 text-[#003554]">
+                            <Zap className="w-5 h-5 text-[#FFC300]" />
                             Essential Skills
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {((careerGuide?.technicalSkills as string[]) || []).slice(0, 8).map((skill, idx) => (
-                                <Badge key={idx} variant="secondary" className="bg-background border-border text-foreground hover:bg-white">{skill}</Badge>
+                                <Badge key={idx} className="bg-white border border-[#006494]/20 text-[#003554] hover:bg-[#F0F4F8]">{skill}</Badge>
                             ))}
                         </div>
-                    </div>
+                    </FeatureCard>
                 </div>
+            </ContentSection>
 
-                <div className="my-12 p-6 md:p-8 rounded-3xl bg-white border border-border shadow-sm">
-                    <h3 className="text-2xl font-bold font-heading mb-4 text-foreground">How to Become a {displayName}</h3>
-                    <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+            {/* How to Become Section */}
+            <ContentSection title={`How to Become a ${displayName}`}>
+                <ContentCard className="bg-gradient-to-br from-[#003554]/5 to-white">
+                    <p className="text-lg text-[#4A5568] mb-6 leading-relaxed">
                         {careerGuide?.educationPath || `Becoming a ${displayName} requires a specific educational path and licensing. Our comprehensive guide covers every step from choosing a school to passing your exams.`}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Button variant="default" size="lg" className="h-12 px-6 font-semibold" asChild>
+                        <Button variant="default" size="lg" className="h-12 px-6 font-semibold bg-[#003554] hover:bg-[#006494]" asChild>
                             <Link href={urls.howToBecome}>
                                 <BookOpen className="w-4 h-4 mr-2" />
                                 Read Full Career Guide
                             </Link>
                         </Button>
-                        <Button variant="outline" size="lg" className="h-12 px-6 font-semibold" asChild>
+                        <Button variant="outline" size="lg" className="h-12 px-6 font-semibold border-[#006494]/30 text-[#003554] hover:bg-[#F0F4F8]" asChild>
                             <Link href={urls.schools}>
                                 <GraduationCap className="w-4 h-4 mr-2" />
                                 Find Schools
                             </Link>
                         </Button>
                     </div>
-                </div>
+                </ContentCard>
+            </ContentSection>
 
-                <h3 className="text-2xl font-bold text-foreground mt-12 mb-4">Career Path & Advancement</h3>
-                <p className="text-muted-foreground">
+            {/* Career Path Section */}
+            <ContentSection title="Career Path & Advancement">
+                <p className="text-[#4A5568] leading-relaxed text-lg">
                     The career trajectory for a {displayName} offers multiple avenues for growth. Starting as an entry-level professional, you can advance through specialized certifications, higher education, or management roles.
                     {profession === 'registered-nurse' && " For example, RNs can become Nurse Practitioners or CRNAs with advanced degrees, significantly increasing autonomy and salary."}
                 </p>
-            </div>
+            </ContentSection>
 
             {/* Call to Action Banner */}
             <div className="rounded-3xl bg-primary p-8 md:p-12 text-center text-primary-foreground relative overflow-hidden shadow-xl">
