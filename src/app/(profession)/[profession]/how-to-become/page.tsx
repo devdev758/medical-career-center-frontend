@@ -455,15 +455,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
 
     return (
         <main className="container mx-auto py-10 px-4 max-w-4xl">
-            {/* Breadcrumbs */}
-            <Breadcrumb
-                items={[
-                    { label: 'Home', href: '/' },
-                    { label: displayName, href: `/${profession}` },
-                    { label: 'Career Guide' }
-                ]}
-                className="mb-6"
-            />
+            {/* Breadcrumbs REMOVED - Managed by Layout Hero */}
 
             {/* Page Header - Minimized since we have Hero */}
             <div className="mb-8 border-b border-border/40 pb-6">

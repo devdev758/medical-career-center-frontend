@@ -8,7 +8,8 @@
     /* "Electric Ocean" - Fresh, Clinical, Punchy */
 
     /* Pure White / Ice - Crisp and Clean */
-    --background: 210 30% 99%;
+    --background: 210 40% 98%;
+    /* Slightly cooler/darker off-white (Slate 50) for contrast */
 
     /* Deep Slate Black - High Contrast Text */
     --foreground: 222 47% 11%;
