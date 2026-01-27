@@ -178,6 +178,9 @@ export default async function ProfessionHubPage({ params }: PageProps) {
 
     return (
         <article className="animate-in fade-in duration-500">
+            {/* Main Page Title (Hidden visually since Hero acts as visual title, but required for SEO/A11y) */}
+            <h1 className="sr-only">{displayName} Career Overview</h1>
+
             {/* About the Role Section */}
             <section className="mb-12">
                 <h2 className="text-2xl font-bold text-[#003554] mb-4 pb-2 border-b border-[#006494]/10">

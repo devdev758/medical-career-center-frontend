@@ -74,9 +74,9 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
                 <div className="container mx-auto max-w-7xl">
                     <div className="grid lg:grid-cols-2 gap-8 items-center">
                         <div className="space-y-4">
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-[#051923] leading-tight">
+                            <div className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-[#051923] leading-tight">
                                 {careerGuide?.professionName || displayName}
-                            </h1>
+                            </div>
                             <p className="text-base md:text-lg text-[#003554] max-w-xl font-normal leading-relaxed line-clamp-2" title={careerGuide?.overview || `The definitive guide to becoming a ${displayName}.`}>
                                 {careerGuide?.overview || `The definitive guide to becoming a ${displayName}. Explore salary data, accredited schools, and job opportunities.`}
                             </p>
