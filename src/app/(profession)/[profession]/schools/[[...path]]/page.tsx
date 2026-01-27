@@ -196,11 +196,11 @@ export default async function SchoolsPage({ params }: PageProps) {
         const stateName = getStateName(firstParam);
         return (
             <div className="space-y-12 animate-in fade-in duration-500">
-                <div className="border-b border-border/50 pb-8">
-                    <h1 className="text-3xl font-heading font-bold mb-4 text-foreground">
+                <div className="border-b border-[#006494]/10 pb-8">
+                    <h1 className="text-3xl font-bold mb-4 text-[#003554]">
                         {careerTitle} Schools in {stateName}
                     </h1>
-                    <p className="text-xl text-muted-foreground leading-relaxed">
+                    <p className="text-xl text-[#4A5568] leading-relaxed">
                         Find accredited nursing programs in {stateName}. Compare tuition, duration, and outcomes.
                     </p>
                 </div>
@@ -221,8 +221,8 @@ export default async function SchoolsPage({ params }: PageProps) {
 
                 {/* State Overview */}
                 <section>
-                    <h2 className="text-2xl font-bold mb-4 text-foreground">Nursing Education in {stateName}</h2>
-                    <p className="text-muted-foreground leading-relaxed text-lg">
+                    <h2 className="text-2xl font-bold mb-4 text-[#003554]">Nursing Education in {stateName}</h2>
+                    <p className="text-[#4A5568] leading-relaxed text-lg">
                         {stateName} offers a variety of nursing education pathways for aspiring {careerTitle.toLowerCase()}s.
                         From associate degree programs to bachelor's and master's degrees, you can find programs that fit your
                         schedule and career goals. Many schools also offer online and hybrid options for working professionals.
@@ -231,16 +231,16 @@ export default async function SchoolsPage({ params }: PageProps) {
 
                 {/* Program Types Available */}
                 <section>
-                    <h2 className="text-2xl font-bold mb-6 text-foreground">Program Types in {stateName}</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-[#003554]">Program Types in {stateName}</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         {Object.entries(PROGRAM_TYPE_META).map(([slug, meta]) => {
                             const Icon = meta.icon;
                             return (
-                                <Card key={slug} className="hover:shadow-md transition-shadow cursor-pointer bg-card border-border/50">
+                                <Card key={slug} className="hover:shadow-md transition-shadow cursor-pointer bg-white border-[#006494]/10">
                                     <CardContent className="p-6">
-                                        <Icon className="w-6 h-6 mb-3 text-primary" />
-                                        <h3 className="font-semibold mb-2 text-foreground">{meta.title}</h3>
-                                        <p className="text-sm text-muted-foreground">{meta.description}</p>
+                                        <Icon className="w-6 h-6 mb-3 text-[#0582CA]" />
+                                        <h3 className="font-semibold mb-2 text-[#003554]">{meta.title}</h3>
+                                        <p className="text-sm text-[#6B7280]">{meta.description}</p>
                                     </CardContent>
                                 </Card>
                             );
@@ -281,11 +281,11 @@ export default async function SchoolsPage({ params }: PageProps) {
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="border-b border-border/50 pb-8">
-                <h1 className="text-3xl md:text-4xl font-heading font-bold mb-4 text-foreground">
+            <div className="border-b border-[#006494]/10 pb-8">
+                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#003554]">
                     {programTypeMeta ? `${programTypeMeta.title} ` : ''}{careerTitle} Schools & Programs
                 </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-xl text-[#4A5568] leading-relaxed">
                     {programTypeMeta
                         ? programTypeMeta.description
                         : `Find accredited nursing programs and schools for aspiring ${careerTitle}s.`}
@@ -294,9 +294,9 @@ export default async function SchoolsPage({ params }: PageProps) {
 
             {/* Program Type Navigation */}
             {isRegisteredNurse && (
-                <Card className="border-border/50">
+                <Card className="border-[#006494]/10">
                     <CardHeader>
-                        <CardTitle className="text-lg">Browse by Program Type</CardTitle>
+                        <CardTitle className="text-lg text-[#003554]">Browse by Program Type</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -308,8 +308,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                                         key={slug}
                                         href={`/${profession}/schools/${slug}`}
                                         className={`p-4 rounded-lg border transition-colors text-center ${isActive
-                                            ? 'bg-primary text-primary-foreground border-primary'
-                                            : 'bg-card hover:bg-muted border-border/50'
+                                            ? 'bg-[#003554] text-white border-[#003554]'
+                                            : 'bg-white hover:bg-[#F0F4F8] border-[#006494]/10 text-[#003554]'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
@@ -319,8 +319,8 @@ export default async function SchoolsPage({ params }: PageProps) {
                             })}
                         </div>
                         {isProgramType && (
-                            <div className="mt-4 pt-4 border-t border-border/50">
-                                <Link href={`/${profession}/schools`} className="text-sm text-primary hover:underline font-medium">
+                            <div className="mt-4 pt-4 border-t border-[#006494]/10">
+                                <Link href={`/${profession}/schools`} className="text-sm text-[#0582CA] hover:underline font-medium">
                                     ← View all {careerTitle.toLowerCase()} schools
                                 </Link>
                             </div>
