@@ -63,8 +63,6 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
 
     // Richer, thicker narrative with proper HTML paragraphs
     const intro = `
-        <h2>${formalName} Salary Guide ${year}</h2>
-        
         <p>The healthcare industry continues to face high demand for skilled professionals, and ${formalName}s are no exception. As we look towards ${year}, understanding the salary landscape is crucial for both new entrants and seasoned professionals. If you are considering a career path as a <strong>${profession}</strong>, you're likely asking: "How much does a ${profession} actually make in ${locationName}?"</p>
         
         <p>According to the latest available data, the <strong>average annual salary for a ${profession} in ${locationName} is ${annualMedian}</strong>, which breaks down to approximately <strong>${hourlyMedian} per hour</strong>. However, this single figure doesn't tell the whole story. Your actual take-home pay can vary dramatically based on your experience level, the specific facility you work in, and even the city you call home.</p>
