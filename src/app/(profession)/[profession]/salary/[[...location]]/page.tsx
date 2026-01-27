@@ -23,6 +23,7 @@ import { professionGuides, getCareerGuideDefaults } from '@/lib/career-data';
 import { calculatePercentChange } from '@/lib/salary-utils';
 import { Search, GraduationCap, BookOpen, FileText } from 'lucide-react';
 import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
+import { getContentYear } from '@/lib/date-utils';
 
 // New enhanced components
 import { SalaryHero } from '@/components/salary/SalaryHero';
@@ -422,92 +423,112 @@ export default async function SalaryPage({ params }: PageProps) {
         topCityObj = { name: stateCities[0].city, salary: stateCities[0].median };
     }
 
+    const contentYear = getContentYear();
+
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 w-full max-w-none">
-            {/* Page Header (Sub-Hero) */}
-            <div className="border-b border-border/50 pb-8">
-                <h1 className="text-4xl font-heading font-bold mb-4 text-foreground">
-                    {careerTitle} Salary Analysis
+        <div className="animate-in fade-in duration-500">
+            {/* Page Header */}
+            <section className="mb-10">
+                <h1 className="text-3xl font-bold mb-4 text-[#003554]">
+                    How Much Does a {careerTitle} Make in {locationName} in {contentYear}
                 </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-4xl">
+                <p className="text-lg text-[#4A5568] leading-relaxed">
                     Comprehensive salary data for {careerTitle}s in {locationName}. Analyze earnings by percentile, compare with national averages, and identify top-paying locations.
                 </p>
-            </div>
+            </section>
 
-            {/* Main Interactive Chart - WIDER */}
-            <div className="h-[500px] w-full p-6 md:p-8 bg-white rounded-3xl border border-border shadow-sm">
-                <SalaryChart data={salaryData} professionName={careerTitle} />
-            </div>
+            {/* Main Interactive Chart */}
+            <section className="mb-12">
+                <div className="h-[450px]">
+                    <SalaryChart data={salaryData} professionName={careerTitle} />
+                </div>
+            </section>
 
-            {/* Key Insights Grid */}
-            <div className="grid md:grid-cols-2 gap-8">
-                {/* Narrative Card - High Contrast */}
-                <article className="prose prose-lg max-w-none bg-white p-8 rounded-3xl border border-border shadow-sm">
+            {/* Salary Narrative */}
+            <section className="mb-12">
+                <article className="prose prose-lg max-w-none prose-headings:text-[#003554] prose-p:text-[#4A5568] prose-strong:text-[#003554]">
                     <div dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                 </article>
+            </section>
 
-                {/* State vs National Card - High Contrast */}
-                {state && vsNational !== undefined && !city && (
-                    <div className={`p-8 rounded-3xl border shadow-sm ${vsNational.isPositive ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
-                        <h3 className="text-2xl font-bold mb-4 font-heading text-black">Performance vs National</h3>
-                        <p className="text-lg leading-relaxed text-black/80">
+            {/* State vs National Comparison (for state pages only) */}
+            {state && vsNational !== undefined && !city && (
+                <section className="mb-12">
+                    <div className={`p-6 rounded-xl ${vsNational.isPositive ? 'bg-green-50 border border-green-200' : 'bg-orange-50 border border-orange-200'}`}>
+                        <h2 className="text-xl font-bold mb-3 text-[#003554]">Performance vs National Average</h2>
+                        <p className="text-[#4A5568] leading-relaxed">
                             The average salary in <strong>{locationData?.stateName}</strong> is
-                            <strong className={vsNational.isPositive ? 'text-green-700' : 'text-orange-700'}> {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'} </strong>
+                            <strong className={vsNational.isPositive ? ' text-green-700' : ' text-orange-700'}> {Math.abs(vsNational.percent).toFixed(1)}% {vsNational.isPositive ? 'higher' : 'lower'} </strong>
                             than the national average.
                         </p>
                     </div>
-                )}
-            </div>
-
-            {/* National Map / Table Section */}
-            {!city && !state && (
-                <div className="space-y-8">
-                    <h2 className="text-3xl font-bold font-heading text-foreground">State-by-State Breakdown</h2>
-                    <div className="bg-white rounded-3xl border border-border overflow-hidden shadow-sm">
-                        <StateComparisonTable
-                            states={salaryByState}
-                            nationalMedian={nationalData?.annualMedian || 0}
-                            profession={profession}
-                        />
-                    </div>
-                </div>
+                </section>
             )}
 
-            {/* Comparison / Leaderboard */}
-            <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
-                {state ? (
-                    <CityComparisonTable
-                        cities={stateCities}
-                        baselineMedian={salaryData.annualMedian || 0}
-                        profession={profession}
-                        stateCode={state}
-                        limit={10}
-                        title={`Top Paying Cities in ${locationData?.stateName}`}
-                    />
-                ) : (
+            {/* State-by-State Breakdown (National page only) */}
+            {!city && !state && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6 text-[#003554] pb-2 border-b border-[#006494]/10">
+                        Salary by State
+                    </h2>
                     <StateComparisonTable
                         states={allStates}
                         nationalMedian={nationalData?.annualMedian || 0}
                         profession={profession}
                         limit={10}
                     />
-                )}
-            </div>
+                </section>
+            )}
 
-            {/* Factors Grid */}
-            <div className="bg-muted/30 rounded-2xl border border-border/50 p-8">
-                <h2 className="text-2xl font-bold mb-6 font-heading text-foreground">{factorsContent.title}</h2>
-                <div className="grid md:grid-cols-2 gap-4">
+            {/* Top 10 Paying Cities (National page) */}
+            {!city && !state && topCitiesNational.length > 0 && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6 text-[#003554] pb-2 border-b border-[#006494]/10">
+                        Top 10 Paying Cities
+                    </h2>
+                    <CityComparisonTable
+                        cities={topCitiesNational}
+                        baselineMedian={nationalData?.annualMedian || 0}
+                        profession={profession}
+                        limit={10}
+                        title=""
+                    />
+                </section>
+            )}
+
+            {/* Cities in State (State page only) */}
+            {state && !city && stateCities.length > 0 && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6 text-[#003554] pb-2 border-b border-[#006494]/10">
+                        Top Paying Cities in {locationData?.stateName}
+                    </h2>
+                    <CityComparisonTable
+                        cities={stateCities}
+                        baselineMedian={salaryData.annualMedian || 0}
+                        profession={profession}
+                        stateCode={state}
+                        limit={10}
+                        title=""
+                    />
+                </section>
+            )}
+
+            {/* Factors Affecting Salary - Prose Style */}
+            <section className="mb-12">
+                <h2 className="text-2xl font-bold mb-4 text-[#003554] pb-2 border-b border-[#006494]/10">
+                    {factorsContent.title}
+                </h2>
+                <div className="space-y-4">
                     {factorsContent.factors.map((factor: string, i: number) => (
-                        <div key={i} className="p-4 bg-background rounded-xl border border-border/50 text-sm">
-                            <div dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                        </div>
+                        <p key={i} className="text-[#4A5568] leading-relaxed">
+                            <span dangerouslySetInnerHTML={{ __html: factor.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#003554]">$1</strong>') }} />
+                        </p>
                     ))}
                 </div>
-            </div>
+            </section>
 
-            {/* Related/Footer Sections */}
-            <div className="space-y-12 pt-8 border-t border-border/50">
+            {/* Related Links */}
+            <section className="pt-8 border-t border-[#006494]/10 space-y-8">
                 <InternalLinks
                     profession={dbSlug}
                     state={state}
@@ -519,7 +540,7 @@ export default async function SalaryPage({ params }: PageProps) {
                     city={city}
                     availableSlugs={availableRelatedSlugs}
                 />
-            </div>
+            </section>
 
             <script
                 type="application/ld+json"
