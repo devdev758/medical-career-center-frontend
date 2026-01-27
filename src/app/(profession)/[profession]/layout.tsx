@@ -116,7 +116,7 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
 
             {/* MAIN CONTENT - White Background Starting Right After SubNav */}
             <main className="w-full bg-white min-h-screen -mt-8 pt-16">
-                <div className="container mx-auto px-4 max-w-5xl py-12">
+                <div className="container mx-auto px-4 max-w-6xl py-12">
                     {children}
                 </div>
             </main>

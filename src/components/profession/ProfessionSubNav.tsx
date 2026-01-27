@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,18 @@ interface ProfessionSubNavProps {
 export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     const pathname = usePathname();
     const isCNA = profession === 'cna';
+    const [isSticky, setIsSticky] = useState(false);
+
+    // Scroll listener for sticky behavior
+    useEffect(() => {
+        const handleScroll = () => {
+            // Stick after scrolling past hero (approx 250px)
+            setIsSticky(window.scrollY > 250);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Standard Spoke Navigation
     const spokeNavItems = [
@@ -65,10 +78,22 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     const isOverview = pathname === `/${profession}` || pathname === `/${profession}/`;
 
     return (
-        <div className="relative z-40 -mt-8">
+        <div
+            className={cn(
+                "z-40 transition-all duration-300",
+                isSticky
+                    ? "fixed top-20 left-0 right-0 py-2"
+                    : "relative -mt-8"
+            )}
+        >
             {/* Full-Width Oval SubNav - All Items in Single Row */}
             <div className="mx-auto max-w-6xl px-4">
-                <div className="bg-[#14213D] rounded-full px-6 py-2 shadow-2xl border-2 border-[#FFC300]/30">
+                <div className={cn(
+                    "rounded-full px-6 py-2 shadow-2xl border-2 border-[#FFC300]/30 transition-all duration-300",
+                    isSticky
+                        ? "bg-[#14213D]/95 backdrop-blur-md"
+                        : "bg-[#14213D]"
+                )}>
                     <div className="flex items-center justify-center gap-1">
                         {/* Hub Link (Overview) */}
                         <Link
