@@ -454,16 +454,14 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
     const content = generateRNContent(salaryData);
 
     return (
-        <main className="container mx-auto py-10 px-4 max-w-4xl">
-            {/* Breadcrumbs REMOVED - Managed by Layout Hero */}
-
+        <main>
             {/* Page Header - Minimized since we have Hero */}
-            <div className="mb-8 border-b border-border/40 pb-6">
-                <span className="text-sm font-bold text-primary mb-2 block uppercase tracking-wide">Career Guide</span>
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-foreground">
+            <div className="mb-8 border-b border-[#006494]/10 pb-6">
+                <span className="text-sm font-bold text-[#0582CA] mb-2 block uppercase tracking-wide">Career Guide</span>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-[#003554]">
                     How to Become a {displayName}
                 </h1>
-                <p className="text-lg text-muted-foreground max-w-3xl">
+                <p className="text-lg text-[#4A5568] max-w-3xl">
                     Everything you need to know about becoming {profession === 'registered-nurse' ? 'an RN' : `a ${displayName}`}, from education to career advancement.
                 </p>
             </div>
@@ -473,15 +471,15 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
             {profession === 'registered-nurse' ? (
                 /* RN gets full detailed career guide */
                 <article className="prose prose-slate max-w-none 
-                    prose-headings:font-bold prose-headings:text-primary 
+                    prose-headings:font-bold prose-headings:text-[#003554] 
                     prose-h1:hidden
-                    prose-h2:text-3xl md:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-gray-100 prose-h2:pb-4 prose-h2:tracking-tight
-                    prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-foreground/90
-                    prose-p:text-foreground/80 prose-p:leading-8 prose-p:mb-6 prose-p:font-normal prose-p:text-lg md:prose-p:text-xl
-                    prose-li:text-foreground/80 prose-li:font-normal prose-li:text-lg prose-li:leading-relaxed
-                    prose-strong:text-foreground prose-strong:font-bold
-                    prose-a:text-blue-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-blue-800
-                    mt-8">
+                    prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-[#006494]/10 prose-h2:pb-3 prose-h2:tracking-tight
+                    prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[#003554]
+                    prose-p:text-[#4A5568] prose-p:leading-relaxed prose-p:mb-4 prose-p:font-normal prose-p:text-base md:prose-p:text-lg
+                    prose-li:text-[#4A5568] prose-li:font-normal prose-li:text-base prose-li:leading-relaxed
+                    prose-strong:text-[#003554] prose-strong:font-bold
+                    prose-a:text-[#0582CA] prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#003554]
+                    mt-6">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{

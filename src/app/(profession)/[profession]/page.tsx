@@ -177,74 +177,79 @@ export default async function ProfessionHubPage({ params }: PageProps) {
     );
 
     return (
-        <article className="space-y-12 animate-in fade-in duration-500">
+        <article className="animate-in fade-in duration-500">
             {/* About the Role Section */}
-            <ContentSection title="About the Role">
-                <ContentCard className="mb-8">
-                    <p className="leading-relaxed text-[#4A5568] text-lg">
-                        {careerGuide?.rolesDescription || `${displayName}s play a crucial role in the healthcare system, providing essential care and support to patients. This comprehensive guide covers everything you need to start and advance your career.`}
-                    </p>
-                </ContentCard>
+            <section className="mb-12">
+                <h2 className="text-2xl font-bold text-[#003554] mb-4 pb-2 border-b border-[#006494]/10">
+                    About the Role
+                </h2>
+                <p className="text-lg text-[#4A5568] leading-relaxed mb-6">
+                    {careerGuide?.rolesDescription || `${displayName}s play a crucial role in the healthcare system, providing essential care and support to patients. This comprehensive guide covers everything you need to start and advance your career.`}
+                </p>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                    <FeatureCard variant="blue">
-                        <h3 className="font-bold mb-4 flex items-center gap-2 text-[#003554]">
+                <div className="grid md:grid-cols-2 gap-8 mt-8">
+                    <div>
+                        <h3 className="text-xl font-semibold text-[#003554] mb-4 flex items-center gap-2">
                             <Target className="w-5 h-5 text-[#0582CA]" />
                             Key Responsibilities
                         </h3>
                         <ul className="space-y-3">
                             {((careerGuide?.dailyTasks as string[]) || []).slice(0, 5).map((task, idx) => (
-                                <li key={idx} className="flex items-start gap-3 text-sm text-[#4A5568]">
+                                <li key={idx} className="flex items-start gap-3 text-[#4A5568]">
                                     <span className="text-[#0582CA] mt-1 shrink-0">•</span>
                                     <span>{task}</span>
                                 </li>
                             ))}
                         </ul>
-                    </FeatureCard>
-                    <FeatureCard variant="gold">
-                        <h3 className="font-bold mb-4 flex items-center gap-2 text-[#003554]">
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold text-[#003554] mb-4 flex items-center gap-2">
                             <Zap className="w-5 h-5 text-[#FFC300]" />
                             Essential Skills
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {((careerGuide?.technicalSkills as string[]) || []).slice(0, 8).map((skill, idx) => (
-                                <Badge key={idx} className="bg-white border border-[#006494]/20 text-[#003554] hover:bg-[#F0F4F8]">{skill}</Badge>
+                                <Badge key={idx} className="bg-[#F0F4F8] border border-[#006494]/10 text-[#003554] hover:bg-white">{skill}</Badge>
                             ))}
                         </div>
-                    </FeatureCard>
+                    </div>
                 </div>
-            </ContentSection>
+            </section>
 
             {/* How to Become Section */}
-            <ContentSection title={`How to Become a ${displayName}`}>
-                <ContentCard className="bg-gradient-to-br from-[#003554]/5 to-white">
-                    <p className="text-lg text-[#4A5568] mb-6 leading-relaxed">
-                        {careerGuide?.educationPath || `Becoming a ${displayName} requires a specific educational path and licensing. Our comprehensive guide covers every step from choosing a school to passing your exams.`}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <Button variant="default" size="lg" className="h-12 px-6 font-semibold bg-[#003554] hover:bg-[#006494]" asChild>
-                            <Link href={urls.howToBecome}>
-                                <BookOpen className="w-4 h-4 mr-2" />
-                                Read Full Career Guide
-                            </Link>
-                        </Button>
-                        <Button variant="outline" size="lg" className="h-12 px-6 font-semibold border-[#006494]/30 text-[#003554] hover:bg-[#F0F4F8]" asChild>
-                            <Link href={urls.schools}>
-                                <GraduationCap className="w-4 h-4 mr-2" />
-                                Find Schools
-                            </Link>
-                        </Button>
-                    </div>
-                </ContentCard>
-            </ContentSection>
+            <section className="mb-12">
+                <h2 className="text-2xl font-bold text-[#003554] mb-4 pb-2 border-b border-[#006494]/10">
+                    How to Become a {displayName}
+                </h2>
+                <p className="text-lg text-[#4A5568] mb-6 leading-relaxed">
+                    {careerGuide?.educationPath || `Becoming a ${displayName} requires a specific educational path and licensing. Our comprehensive guide covers every step from choosing a school to passing your exams.`}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <Button variant="default" size="lg" className="h-12 px-6 font-semibold bg-[#003554] hover:bg-[#006494]" asChild>
+                        <Link href={urls.howToBecome}>
+                            <BookOpen className="w-4 h-4 mr-2" />
+                            Read Full Career Guide
+                        </Link>
+                    </Button>
+                    <Button variant="outline" size="lg" className="h-12 px-6 font-semibold border-[#006494]/30 text-[#003554] hover:bg-[#F0F4F8]" asChild>
+                        <Link href={urls.schools}>
+                            <GraduationCap className="w-4 h-4 mr-2" />
+                            Find Schools
+                        </Link>
+                    </Button>
+                </div>
+            </section>
 
             {/* Career Path Section */}
-            <ContentSection title="Career Path & Advancement">
-                <p className="text-[#4A5568] leading-relaxed text-lg">
+            <section className="mb-12">
+                <h2 className="text-2xl font-bold text-[#003554] mb-4 pb-2 border-b border-[#006494]/10">
+                    Career Path & Advancement
+                </h2>
+                <p className="text-lg text-[#4A5568] leading-relaxed">
                     The career trajectory for a {displayName} offers multiple avenues for growth. Starting as an entry-level professional, you can advance through specialized certifications, higher education, or management roles.
                     {profession === 'registered-nurse' && " For example, RNs can become Nurse Practitioners or CRNAs with advanced degrees, significantly increasing autonomy and salary."}
                 </p>
-            </ContentSection>
+            </section>
 
             {/* Call to Action Banner */}
             <div className="rounded-3xl bg-primary p-8 md:p-12 text-center text-primary-foreground relative overflow-hidden shadow-xl">
