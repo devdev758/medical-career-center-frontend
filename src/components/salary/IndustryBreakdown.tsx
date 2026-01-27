@@ -40,15 +40,15 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-gray-500" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <Building2 className="w-5 h-5 text-[#0582CA]" />
+                <h3 className="text-xl font-semibold text-[#003554]">
                     Where Do {professionName}s Work?
                 </h3>
             </div>
 
             {/* Visual Bar Breakdown */}
             <div className="space-y-4">
-                <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 dark:bg-gray-700">
+                <div className="h-4 rounded-full overflow-hidden flex bg-[#F0F4F8]">
                     {topIndustries.map((ind, i) => {
                         const percent = (ind.employment / effectiveTotal) * 100;
                         return (
@@ -73,10 +73,10 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
                             >
                                 <div className={`w-3 h-3 rounded-full ${colors[i]} mt-1 flex-shrink-0`} />
                                 <div className="min-w-0">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                    <div className="text-sm font-medium text-[#003554] truncate">
                                         {ind.naicsTitle.replace(/\(.*\)/g, '').trim()}
                                     </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                    <div className="text-xs text-[#6B7280]">
                                         {percent.toFixed(1)}% • {formatNumber(ind.employment)}
                                     </div>
                                 </div>
@@ -87,20 +87,20 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
             </div>
 
             {/* Table Detail */}
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+            <div className="overflow-x-auto rounded-lg border border-[#006494]/10">
+                <table className="min-w-full divide-y divide-[#E5E7EB]">
+                    <thead className="bg-[#003554]">
                         <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                                 Industry
                             </th>
-                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-right text-xs font-medium text-white uppercase">
                                 <div className="flex items-center justify-end gap-1">
                                     <Users className="w-3 h-3" />
                                     Employment
                                 </div>
                             </th>
-                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-right text-xs font-medium text-white uppercase">
                                 <div className="flex items-center justify-end gap-1">
                                     <DollarSign className="w-3 h-3" />
                                     Avg Salary
@@ -108,21 +108,21 @@ export function IndustryBreakdown({ industries, professionName, totalEmployment 
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white divide-y divide-[#E5E7EB]">
                         {topIndustries.map((ind, i) => (
-                            <tr key={ind.naicsCode} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <tr key={ind.naicsCode} className="hover:bg-[#F0F4F8]">
                                 <td className="px-4 py-3">
                                     <div className="flex items-center gap-2">
                                         <div className={`w-2 h-2 rounded-full ${colors[i]}`} />
-                                        <span className="text-sm text-gray-900 dark:text-gray-100">
+                                        <span className="text-sm text-[#003554]">
                                             {ind.naicsTitle.replace(/\(.*\)/g, '').trim()}
                                         </span>
                                     </div>
                                 </td>
-                                <td className="px-4 py-3 text-right text-sm text-gray-600 dark:text-gray-400">
+                                <td className="px-4 py-3 text-right text-sm text-[#4A5568]">
                                     {formatNumber(ind.employment)}
                                 </td>
-                                <td className="px-4 py-3 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
+                                <td className="px-4 py-3 text-right text-sm font-medium text-[#003554]">
                                     {ind.meanAnnual ? formatSalary(ind.meanAnnual) : 'N/A'}
                                 </td>
                             </tr>
