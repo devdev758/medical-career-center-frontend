@@ -48,8 +48,8 @@ export function Header({ user }: HeaderProps) {
                     className={`
                         relative flex items-center justify-between px-6 py-3 rounded-full border 
                         ${isScrolled
-                            ? "bg-background/80 border-border/50 backdrop-blur-md shadow-lg"
-                            : "bg-background/50 border-transparent backdrop-blur-sm"
+                            ? "bg-white/90 border-border/50 backdrop-blur-md shadow-lg"
+                            : "bg-white/80 border-transparent backdrop-blur-sm"
                         }
                     `}
                 >

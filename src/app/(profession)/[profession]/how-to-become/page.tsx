@@ -473,7 +473,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
             {profession === 'registered-nurse' ? (
                 /* RN gets full detailed career guide */
                 <article className="prose prose-slate max-w-none 
-                    prose-headings:font-bold prose-headings:text-foreground 
+                    prose-headings:font-bold prose-headings:text-primary 
                     prose-h1:hidden
                     prose-h2:text-3xl md:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-gray-100 prose-h2:pb-4 prose-h2:tracking-tight
                     prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-foreground/90
