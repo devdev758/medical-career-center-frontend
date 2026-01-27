@@ -446,8 +446,11 @@ export default async function SalaryPage({ params }: PageProps) {
 
             {/* Salary Narrative */}
             <section className="mb-12">
-                <article className="prose prose-lg max-w-none prose-headings:text-[#003554] prose-p:text-[#4A5568] prose-strong:text-[#003554]">
-                    <div dangerouslySetInnerHTML={{ __html: narrative.intro.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                <article className="prose prose-lg max-w-none 
+                    prose-h2:text-2xl prose-h2:font-bold prose-h2:text-[#003554] prose-h2:mb-6 prose-h2:pb-2 prose-h2:border-b prose-h2:border-[#006494]/10
+                    prose-p:text-[#4A5568] prose-p:leading-relaxed prose-p:mb-4
+                    prose-strong:text-[#003554] prose-strong:font-semibold">
+                    <div dangerouslySetInnerHTML={{ __html: narrative.intro }} />
                 </article>
             </section>
 

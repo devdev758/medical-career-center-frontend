@@ -61,21 +61,19 @@ export function generateWageNarrative(salary: any, careerTitle: string, location
     const formalName = getProfessionFormalName(careerTitle);
     const year = 2026; // Forward looking branding. User requested 2026.
 
-    // Richer, thicker narrative
+    // Richer, thicker narrative with proper HTML paragraphs
     const intro = `
-        **${formalName} Salary Guide ${year}**
-
-        The healthcare industry continues to face high demand for skilled professionals, and ${formalName}s are no exception. As we look towards ${year}, understanding the salary landscape is crucial for both new entrants and seasoned professionals. If you are considering a career path as a **${profession}**, you're likely asking: "How much does a ${profession} actually make in ${locationName}?"
-
-        According to the latest available data, the **average annual salary for a ${profession} in ${locationName} is ${annualMedian}**, which breaks down to approximately **${hourlyMedian} per hour**. However, this single figure doesn't tell the whole story. Your actual take-home pay can vary dramaticially based on your experience level, the specific facility you work in, and even the city you call home.
-
-        For those just starting their journey, **entry-level ${profession} positions** typically offer a starting base pay around **${annual10th} per year** (${hourly10th}/hr). While this is the starting point, the potential for growth is significant.
-
-        With a few years of experience under your belt, you can expect to move into the mid-tier earning bracket. **Experienced ${profession}s** often command salaries upwards of **${annual75th} annually**, with the most highly skilled and specialized top 10% of earners making over **${annual90th} per year**.
-
-        ${locationName === 'United States' ? `Geographically, opportunities abound. States like **${topStateName}** currently lead the nation in compensation, offering some of the most competitive wages for ${profession}s.` : ''}
+        <h2>${formalName} Salary Guide ${year}</h2>
         
-        Whether you are looking to work in a bustling metropolitan hub like **${topCityName}** or a quieter rural setting, maximizing your earning potential starts with understanding these numbers.
+        <p>The healthcare industry continues to face high demand for skilled professionals, and ${formalName}s are no exception. As we look towards ${year}, understanding the salary landscape is crucial for both new entrants and seasoned professionals. If you are considering a career path as a <strong>${profession}</strong>, you're likely asking: "How much does a ${profession} actually make in ${locationName}?"</p>
+        
+        <p>According to the latest available data, the <strong>average annual salary for a ${profession} in ${locationName} is ${annualMedian}</strong>, which breaks down to approximately <strong>${hourlyMedian} per hour</strong>. However, this single figure doesn't tell the whole story. Your actual take-home pay can vary dramatically based on your experience level, the specific facility you work in, and even the city you call home.</p>
+        
+        <p>For those just starting their journey, <strong>entry-level ${profession} positions</strong> typically offer a starting base pay around <strong>${annual10th} per year</strong> (${hourly10th}/hr). While this is the starting point, the potential for growth is significant.</p>
+        
+        <p>With a few years of experience under your belt, you can expect to move into the mid-tier earning bracket. <strong>Experienced ${profession}s</strong> often command salaries upwards of <strong>${annual75th} annually</strong>, with the most highly skilled and specialized top 10% of earners making over <strong>${annual90th} per year</strong>.</p>
+        
+        ${locationName === 'United States' ? `<p>Geographically, opportunities abound. States like <strong>${topStateName}</strong> currently lead the nation in compensation, offering some of the most competitive wages for ${profession}s. Whether you are looking to work in a bustling metropolitan hub like <strong>${topCityName}</strong> or a quieter rural setting, maximizing your earning potential starts with understanding these numbers.</p>` : `<p>Whether you are looking to work in a bustling metropolitan hub or a quieter rural setting, maximizing your earning potential starts with understanding these numbers.</p>`}
     `;
 
     return {
