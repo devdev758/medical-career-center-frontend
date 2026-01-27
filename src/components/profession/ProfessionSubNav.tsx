@@ -54,24 +54,29 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     );
 
     const isActive = (path: string) => {
-        // If path is root /profession, match exactly or match /how-to-become if we default there
-        if (path === '/how-to-become' && (pathname === `/${profession}` || pathname === `/${profession}/`)) return true;
-        return pathname.includes(path);
+        // Strict matching - don't highlight Guide when on Overview
+        const currentPath = pathname.replace(`/${profession}`, '') || '/';
+        if (path === '/how-to-become') {
+            return currentPath === '/how-to-become' || currentPath.startsWith('/how-to-become/');
+        }
+        return currentPath === path || currentPath.startsWith(`${path}/`);
     };
 
+    const isOverview = pathname === `/${profession}` || pathname === `/${profession}/`;
+
     return (
-        <div className="sticky top-20 z-40 w-full py-3 px-4">
-            {/* Centered Oval SubNav - Matching Header Style */}
-            <div className="mx-auto max-w-4xl">
-                <div className="bg-[#14213D] rounded-full px-4 py-2 shadow-xl border border-[#FFC300]/20 overflow-x-auto no-scrollbar">
-                    <div className="flex items-center justify-center space-x-1 min-w-max">
+        <div className="relative z-40 -mt-6 mb-6">
+            {/* Centered Oval SubNav - Straddling Hero/Content Boundary */}
+            <div className="mx-auto max-w-5xl px-4">
+                <div className="bg-[#14213D] rounded-full px-6 py-3 shadow-2xl border-2 border-[#FFC300]/30">
+                    <div className="flex items-center justify-center gap-1 flex-wrap">
                         {/* Hub Link (Overview) */}
                         <Link
                             href={`/${profession}`}
                             className={cn(
-                                "px-4 py-2 text-sm font-bold rounded-full transition-all duration-200",
-                                pathname === `/${profession}`
-                                    ? "bg-[#FFC300] text-[#14213D]"
+                                "px-5 py-2 text-sm font-bold rounded-full transition-all duration-200",
+                                isOverview
+                                    ? "bg-[#FFC300] text-[#14213D] shadow-md"
                                     : "text-white/80 hover:text-white hover:bg-white/10"
                             )}
                         >
@@ -86,13 +91,13 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
                                     key={item.id}
                                     href={`/${profession}${item.path}`}
                                     className={cn(
-                                        "flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-full transition-all duration-200",
-                                        active
-                                            ? "bg-[#FFC300] text-[#14213D] font-bold"
+                                        "flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full transition-all duration-200",
+                                        active && !isOverview
+                                            ? "bg-[#FFC300] text-[#14213D] font-bold shadow-md"
                                             : "text-white/70 hover:text-white hover:bg-white/10"
                                     )}
                                 >
-                                    <Icon className={cn("w-3.5 h-3.5", active ? "text-[#14213D]" : "")} />
+                                    <Icon className={cn("w-4 h-4", active && !isOverview ? "text-[#14213D]" : "")} />
                                     {item.label}
                                 </Link>
                             );
