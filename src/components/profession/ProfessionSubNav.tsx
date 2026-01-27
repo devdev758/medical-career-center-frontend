@@ -60,7 +60,7 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     };
 
     return (
-        <div className="sticky top-0 z-40 w-full bg-white border-b-[3px] border-[#0D6E6E] shadow-md">
+        <div className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
             <div className="container mx-auto px-4 max-w-7xl">
                 <div className="w-full overflow-x-auto no-scrollbar">
                     <div className="flex h-16 items-center space-x-2 min-w-max">

@@ -5,58 +5,57 @@
 @layer base {
   :root {
 
-    /* CLINICAL TEAL PALETTE - Approved 8-Color System */
+    /* "Electric Ocean" - Fresh, Clinical, Punchy */
 
-    /* Background: Pure White */
-    --background: 0 0% 100%;
+    /* Pure White / Ice - Crisp and Clean */
+    --background: 210 40% 98%;
+    /* Slightly cooler/darker off-white (Slate 50) for contrast */
 
-    /* Foreground: Charcoal (#1A1A2E) */
-    --foreground: 240 30% 14%;
+    /* Deep Slate Black - High Contrast Text */
+    --foreground: 222 47% 11%;
 
-    /* Surface: Pure White */
+    /* White - Card Backgrounds */
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 14%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 14%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Primary: Deep Teal (#0D6E6E) */
-    --primary: 180 80% 24%;
-    --primary-foreground: 0 0% 100%;
+    /* "Admiral Blue" - Deep, Saturated, Trustworthy (Not Mediocre) */
+    --primary: 220 85% 25%;
+    --primary-foreground: 210 40% 98%;
 
-    /* Secondary: Ocean Teal (#14919B) */
-    --secondary: 183 75% 34%;
-    --secondary-foreground: 0 0% 100%;
+    /* "Vivid Cyan" - The Fresh Punch / Secondary */
+    --secondary: 190 95% 35%;
+    --secondary-foreground: 210 40% 98%;
 
-    /* Muted: Slate (#4A5568) */
-    --muted: 214 32% 91%;
-    --muted-foreground: 215 19% 35%;
+    /* Cool Gray - Subtler accents */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
 
-    /* Accent: Soft Teal (#B4E4E4) */
-    --accent: 180 50% 80%;
-    --accent-foreground: 240 30% 14%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
-    /* Border: Silver (#E2E8F0) */
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 180 80% 24%;
+    --ring: 220 85% 25%;
 
     --radius: 0.75rem;
 
-    /* Chart Colors - Teal Spectrum */
-    --chart-1: 180 80% 24%;
-    /* Deep Teal */
-    --chart-2: 183 75% 34%;
-    /* Ocean Teal */
-    --chart-3: 180 50% 80%;
-    /* Soft Teal */
-    --chart-4: 0 100% 71%;
-    /* Coral */
-    --chart-5: 240 30% 14%;
-    /* Charcoal */
+    /* Chart Colors - Cool Spectrum */
+    --chart-1: 220 85% 25%;
+    /* Admiral */
+    --chart-2: 190 95% 35%;
+    /* Cyan */
+    --chart-3: 200 80% 60%;
+    /* Sky */
+    --chart-4: 210 10% 40%;
+    /* Slate */
+    --chart-5: 222 47% 11%;
+    /* Black */
   }
 
   .dark {
