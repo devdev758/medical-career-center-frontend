@@ -114,9 +114,9 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
             {/* STICKY SUB-NAVIGATION */}
             <ProfessionSubNav profession={profession} />
 
-            {/* MAIN CONTENT - Full Width White Background */}
-            <main className="w-full bg-white min-h-screen">
-                <div className="container mx-auto px-4 max-w-5xl py-16">
+            {/* MAIN CONTENT - White Background Starting Right After SubNav */}
+            <main className="w-full bg-white min-h-screen -mt-7 pt-14">
+                <div className="container mx-auto px-4 max-w-5xl py-12">
                     {children}
                 </div>
             </main>

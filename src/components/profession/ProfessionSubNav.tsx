@@ -65,11 +65,11 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     const isOverview = pathname === `/${profession}` || pathname === `/${profession}/`;
 
     return (
-        <div className="relative z-40 -mt-6 mb-6">
-            {/* Centered Oval SubNav - Straddling Hero/Content Boundary */}
-            <div className="mx-auto max-w-5xl px-4">
-                <div className="bg-[#14213D] rounded-full px-6 py-3 shadow-2xl border-2 border-[#FFC300]/30">
-                    <div className="flex items-center justify-center gap-1 flex-wrap">
+        <div className="relative z-40 -mt-7">
+            {/* Full-Width Oval SubNav - All Items in Single Row */}
+            <div className="mx-auto max-w-6xl px-4">
+                <div className="bg-[#14213D] rounded-full px-8 py-3 shadow-2xl border-2 border-[#FFC300]/30">
+                    <div className="flex items-center justify-center gap-2">
                         {/* Hub Link (Overview) */}
                         <Link
                             href={`/${profession}`}
