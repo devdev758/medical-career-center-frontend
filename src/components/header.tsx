@@ -46,9 +46,9 @@ export function Header({ user }: HeaderProps) {
             >
                 <div
                     className={`
-                        relative flex items-center justify-between px-6 py-3 rounded-full border 
+                        relative flex items-center justify-between px-6 py-3 rounded-full border transition-all duration-300
                         ${isScrolled
-                            ? "bg-white/90 border-border/50 backdrop-blur-md shadow-lg"
+                            ? "bg-white/95 border-[#FFC300]/30 backdrop-blur-md shadow-lg shadow-[#FFC300]/5"
                             : "bg-white/80 border-transparent backdrop-blur-sm"
                         }
                     `}

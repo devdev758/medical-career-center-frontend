@@ -60,18 +60,19 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     };
 
     return (
-        <div className="sticky top-0 z-40 w-full bg-[#006494] shadow-lg">
-            <div className="container mx-auto px-4 max-w-7xl">
-                <div className="w-full overflow-x-auto no-scrollbar">
-                    <div className="flex h-14 items-center space-x-1 min-w-max">
+        <div className="sticky top-20 z-40 w-full py-3 px-4">
+            {/* Centered Oval SubNav - Matching Header Style */}
+            <div className="mx-auto max-w-4xl">
+                <div className="bg-[#14213D] rounded-full px-4 py-2 shadow-xl border border-[#FFC300]/20 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center justify-center space-x-1 min-w-max">
                         {/* Hub Link (Overview) */}
                         <Link
                             href={`/${profession}`}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 text-sm font-bold transition-all duration-200 border-b-2",
+                                "px-4 py-2 text-sm font-bold rounded-full transition-all duration-200",
                                 pathname === `/${profession}`
-                                    ? "text-white border-[#FFC300]"
-                                    : "text-white/70 border-transparent hover:text-white hover:border-white/30"
+                                    ? "bg-[#FFC300] text-[#14213D]"
+                                    : "text-white/80 hover:text-white hover:bg-white/10"
                             )}
                         >
                             Overview
@@ -85,13 +86,13 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
                                     key={item.id}
                                     href={`/${profession}${item.path}`}
                                     className={cn(
-                                        "flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 border-b-2",
+                                        "flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-full transition-all duration-200",
                                         active
-                                            ? "text-white border-[#FFC300]"
-                                            : "text-white/70 border-transparent hover:text-white hover:border-white/30"
+                                            ? "bg-[#FFC300] text-[#14213D] font-bold"
+                                            : "text-white/70 hover:text-white hover:bg-white/10"
                                     )}
                                 >
-                                    <Icon className={cn("w-4 h-4", active ? "text-[#FFC300]" : "opacity-70")} />
+                                    <Icon className={cn("w-3.5 h-3.5", active ? "text-[#14213D]" : "")} />
                                     {item.label}
                                 </Link>
                             );

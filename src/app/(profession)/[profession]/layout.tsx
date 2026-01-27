@@ -64,56 +64,47 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
         : keyStats?.medianSalary || 'N/A';
 
     return (
-        <div className="min-h-screen bg-white pb-32">
-            {/* HERO SECTION - Fresh Sky Gradient (Blue Lagoon Palette) */}
-            <div className="relative pt-20 pb-10 px-4 overflow-hidden bg-gradient-to-br from-[#00A6FB]/10 via-[#0582CA]/5 to-white">
-                {/* Decorative gradient blobs */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00A6FB]/15 rounded-full blur-[120px] -z-10 translate-x-1/3 -translate-y-1/3" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0582CA]/10 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2" />
+        <div className="min-h-screen bg-[#F0F4F8] pb-32">
+            {/* HERO SECTION - Darker Blue Wash (More Visible) */}
+            <div className="relative pt-24 pb-6 px-4 overflow-hidden bg-gradient-to-br from-[#00A6FB]/25 via-[#0582CA]/15 to-[#006494]/10">
+                {/* Decorative gradient blobs - Stronger */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00A6FB]/25 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#0582CA]/20 rounded-full blur-[80px] -z-10 -translate-x-1/2 translate-y-1/4" />
 
                 <div className="container mx-auto max-w-7xl">
-                    <Breadcrumb
-                        items={[
-                            { label: 'Home', href: '/' },
-                            { label: 'Directory', href: '/professions' },
-                            { label: careerGuide?.professionName || displayName }
-                        ]}
-                        className="mb-4 text-xs uppercase tracking-widest text-[#006494]"
-                    />
-
-                    <div className="grid lg:grid-cols-2 gap-8 items-start">
-                        <div className="space-y-4">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#051923] leading-tight">
+                    <div className="grid lg:grid-cols-2 gap-6 items-center">
+                        <div className="space-y-3">
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-[#051923] leading-tight">
                                 {careerGuide?.professionName || displayName}
                             </h1>
-                            <p className="text-lg text-[#006494] max-w-2xl font-light leading-relaxed line-clamp-2" title={careerGuide?.overview || `The definitive guide to becoming a ${displayName}.`}>
+                            <p className="text-base text-[#003554] max-w-xl font-normal leading-relaxed line-clamp-2" title={careerGuide?.overview || `The definitive guide to becoming a ${displayName}.`}>
                                 {careerGuide?.overview || `The definitive guide to becoming a ${displayName}. Explore salary data, accredited schools, and job opportunities.`}
                             </p>
                         </div>
 
-                        {/* Stats Cards with Gold Spark accents */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white shadow-md border border-[#0582CA]/20 rounded-xl p-5 hover:border-[#00A6FB]/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-[#006494] mb-2 font-bold">Avg Salary</p>
+                        {/* Stats Cards - Compact 2x2 Grid */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-white/90 backdrop-blur-sm shadow-md border border-white/50 rounded-xl p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                                <p className="text-[9px] uppercase tracking-widest text-[#006494] mb-1 font-bold">Avg Salary</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-2xl font-bold text-[#003554] tracking-tight">{medianSalary}</p>
-                                    <span className="text-xs text-[#006494] font-medium">/yr</span>
+                                    <p className="text-xl font-bold text-[#003554] tracking-tight">{medianSalary}</p>
+                                    <span className="text-[10px] text-[#006494] font-medium">/yr</span>
                                 </div>
                             </div>
-                            <div className="bg-white shadow-md border border-[#0582CA]/20 rounded-xl p-5 hover:border-[#00A6FB]/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-[#006494] mb-2 font-bold">Job Growth</p>
+                            <div className="bg-white/90 backdrop-blur-sm shadow-md border border-white/50 rounded-xl p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                                <p className="text-[9px] uppercase tracking-widest text-[#006494] mb-1 font-bold">Job Growth</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-2xl font-bold text-[#003554]">6%</p>
-                                    <span className="text-xs font-bold bg-[#FFC300] text-[#051923] px-2 py-0.5 rounded-full">High</span>
+                                    <p className="text-xl font-bold text-[#003554]">6%</p>
+                                    <span className="text-[10px] font-bold bg-[#FFC300] text-[#051923] px-1.5 py-0.5 rounded-full">High</span>
                                 </div>
                             </div>
-                            <div className="bg-white shadow-md border border-[#0582CA]/20 rounded-xl p-5 hover:border-[#00A6FB]/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-[#006494] mb-2 font-bold">New Jobs</p>
-                                <p className="text-2xl font-bold text-[#003554] tracking-tight">{jobCount > 0 ? jobCount.toLocaleString() : '194,500'}</p>
+                            <div className="bg-white/90 backdrop-blur-sm shadow-md border border-white/50 rounded-xl p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                                <p className="text-[9px] uppercase tracking-widest text-[#006494] mb-1 font-bold">New Jobs</p>
+                                <p className="text-xl font-bold text-[#003554] tracking-tight">{jobCount > 0 ? jobCount.toLocaleString() : '194,500'}</p>
                             </div>
-                            <div className="bg-white shadow-md border border-[#0582CA]/20 rounded-xl p-5 hover:border-[#00A6FB]/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-[#006494] mb-2 font-bold">Total Workforce</p>
-                                <p className="text-2xl font-bold text-[#003554] tracking-tight">{salaryData?.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + 'M' : '3.2M'}</p>
+                            <div className="bg-white/90 backdrop-blur-sm shadow-md border border-white/50 rounded-xl p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                                <p className="text-[9px] uppercase tracking-widest text-[#006494] mb-1 font-bold">Workforce</p>
+                                <p className="text-xl font-bold text-[#003554] tracking-tight">{salaryData?.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + 'M' : '3.2M'}</p>
                             </div>
                         </div>
                     </div>
