@@ -5,57 +5,58 @@
 @layer base {
   :root {
 
-    /* "Electric Ocean" - Fresh, Clinical, Punchy */
+    /* BLUE LAGOON + GOLD ACCENT PALETTE - Approved */
 
-    /* Pure White / Ice - Crisp and Clean */
-    --background: 210 40% 98%;
-    /* Slightly cooler/darker off-white (Slate 50) for contrast */
+    /* Background: Pure White */
+    --background: 0 0% 100%;
 
-    /* Deep Slate Black - High Contrast Text */
-    --foreground: 222 47% 11%;
+    /* Foreground: Ink Black (#051923) */
+    --foreground: 200 60% 8%;
 
-    /* White - Card Backgrounds */
+    /* Surface: Pure White */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 200 60% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 200 60% 8%;
 
-    /* "Admiral Blue" - Deep, Saturated, Trustworthy (Not Mediocre) */
-    --primary: 220 85% 25%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Deep Space (#003554) - Main buttons */
+    --primary: 200 100% 17%;
+    --primary-foreground: 0 0% 100%;
 
-    /* "Vivid Cyan" - The Fresh Punch / Secondary */
-    --secondary: 190 95% 35%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: Steel Blue (#0582CA) - Links, secondary actions */
+    --secondary: 200 96% 40%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Cool Gray - Subtler accents */
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
+    /* Muted: Mist Gray (#F0F4F8) */
+    --muted: 210 33% 96%;
+    --muted-foreground: 200 20% 40%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
+    /* Accent: Gold Spark (#FFC300) */
+    --accent: 45 100% 50%;
+    --accent-foreground: 200 60% 8%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 220 85% 25%;
+    /* Border: Light Gray */
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 200 100% 17%;
 
     --radius: 0.75rem;
 
-    /* Chart Colors - Cool Spectrum */
-    --chart-1: 220 85% 25%;
-    /* Admiral */
-    --chart-2: 190 95% 35%;
-    /* Cyan */
-    --chart-3: 200 80% 60%;
-    /* Sky */
-    --chart-4: 210 10% 40%;
-    /* Slate */
-    --chart-5: 222 47% 11%;
-    /* Black */
+    /* Chart Colors - Blue Lagoon Spectrum */
+    --chart-1: 200 100% 17%;
+    /* Deep Space */
+    --chart-2: 200 96% 40%;
+    /* Steel Blue */
+    --chart-3: 198 100% 49%;
+    /* Fresh Sky */
+    --chart-4: 45 100% 50%;
+    /* Gold Spark */
+    --chart-5: 200 60% 8%;
+    /* Ink Black */
   }
 
   .dark {
