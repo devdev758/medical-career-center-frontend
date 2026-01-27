@@ -41,29 +41,37 @@ export function Header({ user }: HeaderProps) {
     return (
         <React.Fragment>
             <motion.header
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full ${isScrolled ? "bg-primary/95 backdrop-blur-md shadow-md py-2" : "bg-primary py-4"
+                className={`fixed top-4 left-0 right-0 z-50 transition-all duration-300 mx-auto max-w-7xl px-4 ${isScrolled ? "py-0" : "py-2"
                     }`}
             >
-                <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between">
+                <div
+                    className={`
+                        relative flex items-center justify-between px-6 py-3 rounded-full border 
+                        ${isScrolled
+                            ? "bg-white/90 border-border/50 backdrop-blur-md shadow-lg"
+                            : "bg-white/80 border-transparent backdrop-blur-sm"
+                        }
+                    `}
+                >
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 font-heading font-bold text-xl tracking-tight text-white hover:opacity-90 transition-opacity">
-                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                            <Briefcase className="w-5 h-5 text-white" />
+                    <Link href="/" className="flex items-center gap-2 font-heading font-bold text-xl tracking-tight text-foreground hover:opacity-80 transition-opacity">
+                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                            <Briefcase className="w-5 h-5 text-primary" />
                         </div>
                         <span>MCC</span>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center gap-2">
+                    <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full border border-border/50">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 className={`
-                                    px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+                                    px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200
                                     ${pathname.startsWith(link.href)
-                                        ? "bg-white/10 text-white font-bold"
-                                        : "text-blue-100 hover:text-white hover:bg-white/5"
+                                        ? "bg-background shadow-sm text-foreground"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                                     }
                                 `}
                             >
@@ -77,19 +85,19 @@ export function Header({ user }: HeaderProps) {
                         {isLoggedIn ? (
                             <div className="flex items-center gap-3">
                                 <Link href={isEmployer ? "/employer/dashboard" : "/dashboard"}>
-                                    <div className="flex items-center gap-2 text-sm font-medium text-white hover:text-blue-200 transition-colors">
-                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                                            <User className="w-4 h-4 text-white" />
+                                    <div className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <User className="w-4 h-4 text-primary" />
                                         </div>
                                     </div>
                                 </Link>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" asChild className="rounded-full text-blue-100 hover:text-white hover:bg-white/10 font-medium">
+                                <Button variant="ghost" size="sm" asChild className="rounded-full hover:bg-muted font-medium">
                                     <Link href="/login">Login</Link>
                                 </Button>
-                                <Button size="sm" asChild className="rounded-full px-5 font-semibold bg-white text-primary hover:bg-white/90 shadow-lg">
+                                <Button size="sm" asChild className="rounded-full px-5 font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20">
                                     <Link href="/register">Get Started</Link>
                                 </Button>
                             </div>
@@ -98,7 +106,7 @@ export function Header({ user }: HeaderProps) {
 
                     {/* Mobile Toggle */}
                     <button
-                        className="md:hidden p-2 text-white"
+                        className="md:hidden p-2 text-foreground"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         {mobileMenuOpen ? <X /> : <Menu />}
