@@ -465,54 +465,31 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 className="mb-6"
             />
 
-            {/* Page Header */}
-            <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    How to Become a {displayName}: Complete Career Guide 2026
+            {/* Page Header - Minimized since we have Hero */}
+            <div className="mb-8 border-b border-border/40 pb-6">
+                <span className="text-sm font-bold text-primary mb-2 block uppercase tracking-wide">Career Guide</span>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-foreground">
+                    How to Become a {displayName}
                 </h1>
-                <p className="text-xl text-muted-foreground">
-                    Everything you need to know about becoming {profession === 'registered-nurse' ? 'an RN' : `a ${displayName}`}, from education to career advancement
+                <p className="text-lg text-muted-foreground max-w-3xl">
+                    Everything you need to know about becoming {profession === 'registered-nurse' ? 'an RN' : `a ${displayName}`}, from education to career advancement.
                 </p>
             </div>
 
-            {/* Quick Stats - Visual Element */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg">
-                    <DollarSign className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                    <p className="text-sm text-muted-foreground mb-1">Median Salary</p>
-                    <p className="text-xl font-bold">{salaryData.median}</p>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg">
-                    <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                    <p className="text-sm text-muted-foreground mb-1">Job Growth</p>
-                    <p className="text-xl font-bold">6%</p>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg">
-                    <Briefcase className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                    <p className="text-sm text-muted-foreground mb-1">New Jobs</p>
-                    <p className="text-xl font-bold">194,500</p>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg">
-                    <GraduationCap className="w-6 h-6 mx-auto mb-2 text-orange-600" />
-                    <p className="text-sm text-muted-foreground mb-1">Total RNs</p>
-                    <p className="text-xl font-bold">{salaryData.employmentCount ? `${(salaryData.employmentCount / 1000000).toFixed(1)}M` : '3.2M'}</p>
-                </div>
-            </div>
-
-
+            {/* Quick Stats Grid REMOVED - Moved to Layout Hero */}
 
             {profession === 'registered-nurse' ? (
                 /* RN gets full detailed career guide */
                 <article className="prose prose-slate max-w-none 
-                    prose-headings:font-bold prose-headings:text-black 
-                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-black/10 prose-h2:pb-2
+                    prose-headings:font-bold prose-headings:text-foreground 
+                    prose-h1:hidden
+                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-border/60 prose-h2:pb-2
                     prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-p:text-black/80 prose-p:leading-relaxed prose-p:mb-4 prose-p:font-medium
-                    prose-li:text-black/80 prose-li:font-medium
-                    prose-strong:text-black prose-strong:font-bold
+                    prose-p:text-foreground/90 prose-p:leading-loose prose-p:mb-6 prose-p:font-normal prose-p:text-lg
+                    prose-li:text-foreground/90 prose-li:font-normal
+                    prose-strong:text-foreground prose-strong:font-bold
                     prose-a:text-blue-700 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
-                    bg-white p-8 md:p-12 rounded-3xl border border-black/5 shadow-sm">
+                    bg-white/80 p-0 md:p-6 rounded-none shadow-none border-none">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{

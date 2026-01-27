@@ -7,8 +7,8 @@
 
     /* "Neutral Earth" - Luxury, Editorial, Grounded */
 
-    /* Soft Linen - Creamy neutral background - Adjusted to be slightly lighter for better text contrast */
-    --background: 32 30% 92%;
+    /* Soft Linen - Brightened for crispness */
+    --background: 35 30% 98%;
 
     /* Black - Authority & Depth (#0a0908) */
     --foreground: 220 12% 4%;
@@ -21,11 +21,12 @@
     --popover-foreground: 220 12% 4%;
 
     /* Jet Black - Primary Action / Buttons (#22333b) */
-    --primary: 200 27% 18%;
-    --primary-foreground: 32 30% 92%;
+    --primary: 215 25% 27%;
+    /* Slightly lighter/bluer navy for vibrancy */
+    --primary-foreground: 0 0% 100%;
 
-    /* Tan - Soft Sunlit / Secondary (#c6ac8f) - More saturation */
-    --secondary: 32 28% 67%;
+    /* Tan - Soft Sunlit / Secondary (#c6ac8f) - More vibrant/golden */
+    --secondary: 35 40% 70%;
     --secondary-foreground: 220 12% 4%;
 
     /* Stone Brown - Accents (#5e503f) - Darker for outlines */
