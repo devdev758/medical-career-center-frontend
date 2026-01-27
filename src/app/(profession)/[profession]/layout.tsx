@@ -65,8 +65,8 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
 
     return (
         <div className="min-h-screen bg-[#F0F4F8]">
-            {/* HERO SECTION - Stronger Blue Wash with Clear Definition */}
-            <div className="relative pt-28 pb-12 px-4 overflow-hidden bg-gradient-to-b from-[#003554]/15 via-[#006494]/10 to-[#00A6FB]/5 border-b border-[#006494]/10">
+            {/* HERO SECTION - Stronger Blue Wash */}
+            <div className="relative pt-28 pb-14 px-4 overflow-hidden bg-gradient-to-b from-[#003554]/15 via-[#006494]/10 to-[#00A6FB]/5">
                 {/* Decorative gradient blobs - Stronger */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00A6FB]/20 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
                 <div className="absolute bottom-0 left-1/2 w-[400px] h-[400px] bg-[#0582CA]/15 rounded-full blur-[80px] -z-10 -translate-x-1/2 translate-y-1/4" />
@@ -115,7 +115,7 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
             <ProfessionSubNav profession={profession} />
 
             {/* MAIN CONTENT - White Background Starting Right After SubNav */}
-            <main className="w-full bg-white min-h-screen -mt-7 pt-14">
+            <main className="w-full bg-white min-h-screen -mt-8 pt-16">
                 <div className="container mx-auto px-4 max-w-5xl py-12">
                     {children}
                 </div>

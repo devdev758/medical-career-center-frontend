@@ -65,18 +65,18 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     const isOverview = pathname === `/${profession}` || pathname === `/${profession}/`;
 
     return (
-        <div className="relative z-40 -mt-7">
+        <div className="relative z-40 -mt-8">
             {/* Full-Width Oval SubNav - All Items in Single Row */}
             <div className="mx-auto max-w-6xl px-4">
-                <div className="bg-[#14213D] rounded-full px-8 py-3 shadow-2xl border-2 border-[#FFC300]/30">
-                    <div className="flex items-center justify-center gap-2">
+                <div className="bg-[#14213D] rounded-full px-6 py-2 shadow-2xl border-2 border-[#FFC300]/30">
+                    <div className="flex items-center justify-center gap-1">
                         {/* Hub Link (Overview) */}
                         <Link
                             href={`/${profession}`}
                             className={cn(
-                                "px-5 py-2 text-sm font-bold rounded-full transition-all duration-200",
+                                "px-4 py-1.5 text-sm font-bold rounded-full transition-all duration-200",
                                 isOverview
-                                    ? "bg-[#FFC300] text-[#14213D] shadow-md"
+                                    ? "bg-[#FFC300] text-[#14213D]"
                                     : "text-white/80 hover:text-white hover:bg-white/10"
                             )}
                         >
@@ -91,9 +91,9 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
                                     key={item.id}
                                     href={`/${profession}${item.path}`}
                                     className={cn(
-                                        "flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full transition-all duration-200",
+                                        "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
                                         active && !isOverview
-                                            ? "bg-[#FFC300] text-[#14213D] font-bold shadow-md"
+                                            ? "bg-[#FFC300] text-[#14213D] font-bold"
                                             : "text-white/70 hover:text-white hover:bg-white/10"
                                     )}
                                 >
