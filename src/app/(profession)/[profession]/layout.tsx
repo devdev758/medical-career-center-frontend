@@ -65,11 +65,11 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
 
     return (
         <div className="min-h-screen bg-white pb-32">
-            {/* PERSISTENT HERO SECTION - Tinted Background for Visual Separation */}
-            <div className="relative pt-20 pb-10 px-4 overflow-hidden border-b border-teal-100 bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
+            {/* PERSISTENT HERO SECTION - Soft Teal Gradient (Clinical Teal Palette) */}
+            <div className="relative pt-20 pb-10 px-4 overflow-hidden border-b-2 border-teal-600/20 bg-gradient-to-br from-[#E8F8F5] via-[#B4E4E4] to-[#E8F8F5]">
                 {/* Decorative gradient blobs */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal-100/50 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-100/30 rounded-full blur-[80px] -z-10 -translate-x-1/2 translate-y-1/2" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#B4E4E4]/60 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#14919B]/20 rounded-full blur-[80px] -z-10 -translate-x-1/2 translate-y-1/2" />
 
                 <div className="container mx-auto max-w-7xl">
                     <Breadcrumb
