@@ -89,29 +89,29 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
                             </p>
                         </div>
 
-                        {/* Quick Stats - Expanded 4-Card Grid in Hero */}
-                        <div className="grid grid-cols-2 gap-3 md:gap-4">
-                            <div className="bg-background/50 backdrop-blur-sm border border-border/60 rounded-xl p-4 active-card">
-                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">Avg Salary</p>
+                        {/* Quick Stats - High Contrast Cards */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-white shadow-sm border border-border/20 rounded-xl p-5 hover:shadow-md transition-shadow">
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 font-bold opacity-70">Avg Salary</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-2xl font-bold text-foreground">{medianSalary}</p>
+                                    <p className="text-2xl font-bold text-foreground tracking-tight">{medianSalary}</p>
                                     <span className="text-xs text-muted-foreground font-medium">/yr</span>
                                 </div>
                             </div>
-                            <div className="bg-background/50 backdrop-blur-sm border border-border/60 rounded-xl p-4 active-card">
-                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">Job Growth</p>
+                            <div className="bg-white shadow-sm border border-border/20 rounded-xl p-5 hover:shadow-md transition-shadow">
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 font-bold opacity-70">Job Growth</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-2xl font-bold text-green-700">6%</p>
-                                    <span className="text-xs text-green-600 font-medium">(High)</span>
+                                    <p className="text-2xl font-bold text-emerald-700">6%</p>
+                                    <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">High</span>
                                 </div>
                             </div>
-                            <div className="bg-background/50 backdrop-blur-sm border border-border/60 rounded-xl p-4 active-card">
-                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">New Jobs</p>
-                                <p className="text-2xl font-bold text-foreground">{jobCount > 0 ? jobCount.toLocaleString() : '194,500'}</p>
+                            <div className="bg-white shadow-sm border border-border/20 rounded-xl p-5 hover:shadow-md transition-shadow">
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 font-bold opacity-70">New Jobs</p>
+                                <p className="text-2xl font-bold text-foreground tracking-tight">{jobCount > 0 ? jobCount.toLocaleString() : '194,500'}</p>
                             </div>
-                            <div className="bg-background/50 backdrop-blur-sm border border-border/60 rounded-xl p-4 active-card">
-                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">Total Workforce</p>
-                                <p className="text-2xl font-bold text-foreground">{salaryData?.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + 'M' : '3.2M'}</p>
+                            <div className="bg-white shadow-sm border border-border/20 rounded-xl p-5 hover:shadow-md transition-shadow">
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 font-bold opacity-70">Total Workforce</p>
+                                <p className="text-2xl font-bold text-foreground tracking-tight">{salaryData?.employmentCount ? (salaryData.employmentCount / 1000000).toFixed(1) + 'M' : '3.2M'}</p>
                             </div>
                         </div>
                     </div>
@@ -121,9 +121,11 @@ export default async function ProfessionLayout({ children, params }: LayoutProps
             {/* STICKY SUB-NAVIGATION */}
             <ProfessionSubNav profession={profession} />
 
-            {/* MAIN CONTENT - Centered Single Column */}
-            <main className="container mx-auto px-4 max-w-5xl py-12">
-                {children}
+            {/* MAIN CONTENT - Full Width White Background */}
+            <main className="w-full bg-white min-h-screen">
+                <div className="container mx-auto px-4 max-w-5xl py-16">
+                    {children}
+                </div>
             </main>
         </div>
     );

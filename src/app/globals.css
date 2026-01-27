@@ -7,27 +7,26 @@
 
     /* "Neutral Earth" - Luxury, Editorial, Grounded */
 
-    /* Soft Linen - Brightened for crispness */
-    --background: 35 30% 98%;
+    /* Soft Linen - slightly warmer/richer than the washed out version */
+    --background: 35 30% 96%;
 
     /* Black - Authority & Depth (#0a0908) */
     --foreground: 220 12% 4%;
 
-    /* White / Bone - Card Backgrounds to pop against Linen */
+    /* White / Bone - Card Backgrounds */
     --card: 0 0% 100%;
     --card-foreground: 220 12% 4%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 12% 4%;
 
-    /* Jet Black - Primary Action / Buttons (#22333b) */
-    --primary: 215 25% 27%;
-    /* Slightly lighter/bluer navy for vibrancy */
+    /* Navy Charcoal - Stronger definition for primary actions */
+    --primary: 215 30% 25%;
     --primary-foreground: 0 0% 100%;
 
-    /* Tan - Soft Sunlit / Secondary (#c6ac8f) - More vibrant/golden */
-    --secondary: 35 40% 70%;
-    --secondary-foreground: 220 12% 4%;
+    /* Warm Tan - More definition for secondary elements */
+    --secondary: 35 30% 88%;
+    --secondary-foreground: 215 30% 25%;
 
     /* Stone Brown - Accents (#5e503f) - Darker for outlines */
     --accent: 33 20% 31%;

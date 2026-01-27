@@ -483,13 +483,13 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                 <article className="prose prose-slate max-w-none 
                     prose-headings:font-bold prose-headings:text-foreground 
                     prose-h1:hidden
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-border/60 prose-h2:pb-2
-                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-p:text-foreground/90 prose-p:leading-loose prose-p:mb-6 prose-p:font-normal prose-p:text-lg
-                    prose-li:text-foreground/90 prose-li:font-normal
+                    prose-h2:text-3xl md:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-gray-100 prose-h2:pb-4 prose-h2:tracking-tight
+                    prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-foreground/90
+                    prose-p:text-foreground/80 prose-p:leading-8 prose-p:mb-6 prose-p:font-normal prose-p:text-lg md:prose-p:text-xl
+                    prose-li:text-foreground/80 prose-li:font-normal prose-li:text-lg prose-li:leading-relaxed
                     prose-strong:text-foreground prose-strong:font-bold
-                    prose-a:text-blue-700 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
-                    bg-white/80 p-0 md:p-6 rounded-none shadow-none border-none">
+                    prose-a:text-blue-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-blue-800
+                    mt-8">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{

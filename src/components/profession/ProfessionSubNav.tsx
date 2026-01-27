@@ -60,7 +60,7 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
     };
 
     return (
-        <div className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
             <div className="container mx-auto px-4 max-w-7xl">
                 <div className="w-full overflow-x-auto no-scrollbar">
                     <div className="flex h-16 items-center space-x-2 min-w-max">
@@ -70,8 +70,8 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-colors mr-2 border border-transparent",
                                 pathname === `/${profession}`
-                                    ? "bg-primary text-primary-foreground shadow-md"
-                                    : "text-muted-foreground hover:bg-white/50 hover:text-foreground hover:border-black/5"
+                                    ? "bg-black text-white shadow-md"
+                                    : "text-muted-foreground hover:bg-gray-100 hover:text-black"
                             )}
                         >
                             Overview
@@ -87,11 +87,11 @@ export function ProfessionSubNav({ profession }: ProfessionSubNavProps) {
                                     className={cn(
                                         "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all border border-transparent",
                                         active
-                                            ? "bg-white text-black border-black/10 shadow-sm"
-                                            : "text-muted-foreground hover:bg-white/50 hover:text-foreground hover:border-black/5"
+                                            ? "bg-gray-100 text-black border-gray-200 font-bold"
+                                            : "text-muted-foreground hover:bg-gray-50 hover:text-black"
                                     )}
                                 >
-                                    <Icon className={cn("w-4 h-4", active ? "text-secondary" : "opacity-70")} />
+                                    <Icon className={cn("w-4 h-4", active ? "text-black" : "opacity-70")} />
                                     {item.label}
                                 </Link>
                             );
