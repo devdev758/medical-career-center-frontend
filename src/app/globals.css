@@ -58,27 +58,34 @@
   }
 
   .dark {
-    /* Dark Mode Disabled by User Request ("No dark background color") */
-    /* Inheriting standard Earth tones */
-    --background: 32 29% 88%;
-    --foreground: 220 12% 4%;
-    --card: 33 25% 96%;
-    --card-foreground: 220 12% 4%;
-    --popover: 33 25% 96%;
-    --popover-foreground: 220 12% 4%;
-    --primary: 200 27% 18%;
-    --primary-foreground: 32 29% 88%;
-    --secondary: 32 28% 67%;
-    --secondary-foreground: 220 12% 4%;
-    --muted: 32 20% 80%;
-    --muted-foreground: 220 12% 40%;
-    --accent: 33 20% 31%;
-    --accent-foreground: 32 29% 88%;
+    /* Electric Ocean Dark - Deep Sea / Navy */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 190 95% 35%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 32 28% 67%;
-    --input: 32 28% 67%;
-    --ring: 200 27% 18%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
