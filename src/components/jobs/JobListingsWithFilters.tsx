@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,8 @@ function extractSalaryNumber(salaryString: string | null): number {
 }
 
 export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFiltersProps) {
+    const JOBS_PER_PAGE = 20;
+
     const [filters, setFilters] = useState<JobFiltersState>({
         sortBy: 'relevance',
         datePosted: 'any',
@@ -59,6 +61,8 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
         employmentType: [],
         hours: []
     });
+
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Extract unique locations and companies
     const availableLocations = useMemo(() => {
@@ -129,6 +133,34 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
         return filtered;
     }, [jobs, filters]);
 
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filters]);
+
+    // Pagination calculations
+    const totalPages = Math.max(1, Math.ceil(filteredJobs.length / JOBS_PER_PAGE));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const startIdx = (safeCurrentPage - 1) * JOBS_PER_PAGE;
+    const paginatedJobs = filteredJobs.slice(startIdx, startIdx + JOBS_PER_PAGE);
+
+    // Generate page numbers to show (max 7 at a time)
+    const getPageNumbers = () => {
+        const pages: (number | '...')[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (safeCurrentPage > 3) pages.push('...');
+            const start = Math.max(2, safeCurrentPage - 1);
+            const end = Math.min(totalPages - 1, safeCurrentPage + 1);
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (safeCurrentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+        return pages;
+    };
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Filter Sidebar */}
@@ -144,7 +176,7 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
             <div className="lg:col-span-3">
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                        Showing {filteredJobs.length} of {jobs.length} jobs
+                        Showing {filteredJobs.length > 0 ? startIdx + 1 : 0}–{Math.min(startIdx + JOBS_PER_PAGE, filteredJobs.length)} of {filteredJobs.length} jobs
                     </p>
                 </div>
 
@@ -173,63 +205,106 @@ export function JobListingsWithFilters({ jobs, profession }: JobListingsWithFilt
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="grid gap-6">
-                        {filteredJobs.map((job) => (
-                            <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                                <CardHeader>
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="flex-1">
-                                            <CardTitle className="text-2xl mb-2">
-                                                {job.title}
-                                            </CardTitle>
-                                            <div className="flex items-center gap-4 text-muted-foreground">
-                                                <div className="flex items-center gap-1">
-                                                    <Building2 className="w-4 h-4" />
-                                                    <span>{job.companyName || 'Company'}</span>
+                    <>
+                        <div className="grid gap-6">
+                            {paginatedJobs.map((job) => (
+                                <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                                    <CardHeader>
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex-1">
+                                                <CardTitle className="text-2xl mb-2">
+                                                    {job.title}
+                                                </CardTitle>
+                                                <div className="flex items-center gap-4 text-muted-foreground">
+                                                    <div className="flex items-center gap-1">
+                                                        <Building2 className="w-4 h-4" />
+                                                        <span>{job.companyName || 'Company'}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <MapPin className="w-4 h-4" />
+                                                        <span>{job.location || 'Remote'}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-1">
-                                                    <MapPin className="w-4 h-4" />
-                                                    <span>{job.location || 'Remote'}</span>
+                                            </div>
+                                            <div className="text-right">
+                                                {job.salary && (
+                                                    <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold mb-2">
+                                                        <DollarSign className="w-4 h-4" />
+                                                        <span>{job.salary}</span>
+                                                    </div>
+                                                )}
+                                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                                    <Clock className="w-3 h-3" />
+                                                    <span>{formatDate(job.createdAt)}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            {job.salary && (
-                                                <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold mb-2">
-                                                    <DollarSign className="w-4 h-4" />
-                                                    <span>{job.salary}</span>
-                                                </div>
-                                            )}
-                                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                                <Clock className="w-3 h-3" />
-                                                <span>{formatDate(job.createdAt)}</span>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="mb-4">
+                                            <p className="text-muted-foreground line-clamp-3">
+                                                {job.description.substring(0, 300)}...
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex gap-2">
+                                                <Badge variant="secondary">{job.type.replace('_', ' ')}</Badge>
+                                                {job.remote && <Badge variant="outline">Remote</Badge>}
                                             </div>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="mb-4">
-                                        <p className="text-muted-foreground line-clamp-3">
-                                            {job.description.substring(0, 300)}...
-                                        </p>
-                                    </div>
 
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex gap-2">
-                                            <Badge variant="secondary">{job.type.replace('_', ' ')}</Badge>
-                                            {job.remote && <Badge variant="outline">Remote</Badge>}
+                                            <Button asChild>
+                                                <Link href={`/job-detail/${job.id}`}>
+                                                    View Details →
+                                                </Link>
+                                            </Button>
                                         </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
 
-                                        <Button asChild>
-                                            <Link href={`/job-detail/${job.id}`}>
-                                                View Details →
-                                            </Link>
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="mt-8 flex items-center justify-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={safeCurrentPage === 1}
+                                    onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                >
+                                    ← Previous
+                                </Button>
+
+                                <div className="flex items-center gap-1">
+                                    {getPageNumbers().map((page, idx) =>
+                                        page === '...' ? (
+                                            <span key={`dots-${idx}`} className="px-2 text-muted-foreground">…</span>
+                                        ) : (
+                                            <Button
+                                                key={page}
+                                                variant={page === safeCurrentPage ? 'default' : 'outline'}
+                                                size="sm"
+                                                className="w-9 h-9 p-0"
+                                                onClick={() => { setCurrentPage(page as number); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                            >
+                                                {page}
+                                            </Button>
+                                        )
+                                    )}
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={safeCurrentPage === totalPages}
+                                    onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                >
+                                    Next →
+                                </Button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>
