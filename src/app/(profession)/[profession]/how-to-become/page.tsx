@@ -10,6 +10,13 @@ import { getProfessionUrls, urlSlugToDbSlug } from '@/lib/url-utils';
 import { prisma } from '@/lib/prisma';
 import { validateProfession, getProfessionDisplayName, getBLSKeywords } from '@/lib/profession-utils';
 import { notFound } from 'next/navigation';
+import {
+    EducationPathwayCard,
+    SalarySnapshotStrip,
+    TopStatesGrid,
+    CareerTimelineStrip,
+    MidArticleCTA,
+} from '@/components/content/ArticleVisualBreaks';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -468,36 +475,73 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
 
             {/* Quick Stats Grid REMOVED - Moved to Layout Hero */}
 
-            {profession === 'registered-nurse' ? (
-                /* RN gets full detailed career guide */
-                <article className="prose prose-slate max-w-none 
-                    prose-headings:font-bold prose-headings:text-[#003554] 
-                    prose-h1:hidden
-                    prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-[#006494]/10 prose-h2:pb-3 prose-h2:tracking-tight
-                    prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[#003554]
-                    prose-p:text-[#4A5568] prose-p:leading-relaxed prose-p:mb-4 prose-p:font-normal prose-p:text-base md:prose-p:text-lg
-                    prose-li:text-[#4A5568] prose-li:font-normal prose-li:text-base prose-li:leading-relaxed
-                    prose-strong:text-[#003554] prose-strong:font-bold
-                    prose-a:text-[#0582CA] prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#003554]
-                    mt-6">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            a: ({ node, ...props }) => {
-                                const href = props.href || '';
-                                // External links
-                                if (href.startsWith('http')) {
-                                    return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</a>;
-                                }
-                                // Internal links
-                                return <Link href={href} className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</Link>;
-                            }
-                        }}
-                    >
-                        {content}
-                    </ReactMarkdown>
-                </article>
-            ) : (
+            {profession === 'registered-nurse' ? (() => {
+                /* ── Split markdown at ## boundaries ── */
+                const sections = content.split(/(?=^## )/m).filter(s => s.trim());
+
+                /* ── Helper: which visual break to insert after a section ── */
+                const getBreakAfter = (sectionText: string) => {
+                    if (sectionText.includes('## Education and Training')) {
+                        return <EducationPathwayCard key="edu-break" />;
+                    }
+                    if (sectionText.includes('## Essential Skills')) {
+                        return <MidArticleCTA key="cta-break" professionSlug={profession} displayName={displayName} />;
+                    }
+                    if (sectionText.includes('## Salary and Compensation')) {
+                        return (
+                            <div key="salary-breaks">
+                                <SalarySnapshotStrip
+                                    entry={salaryData.entry}
+                                    median={salaryData.median}
+                                    experienced={salaryData.experienced}
+                                    professionSlug={profession}
+                                />
+                                <TopStatesGrid
+                                    states={salaryData.topStates}
+                                    professionSlug={profession}
+                                />
+                            </div>
+                        );
+                    }
+                    if (sectionText.includes('## Getting Started')) {
+                        return <CareerTimelineStrip key="timeline-break" />;
+                    }
+                    return null;
+                };
+
+                /* ── Shared ReactMarkdown components ── */
+                const mdComponents = {
+                    a: ({ node, ...props }: any) => {
+                        const href = props.href || '';
+                        if (href.startsWith('http')) {
+                            return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</a>;
+                        }
+                        return <Link href={href} className="text-blue-700 hover:text-blue-900 underline font-bold">{props.children}</Link>;
+                    }
+                };
+
+                return (
+                    <article className="prose prose-slate max-w-none 
+                        prose-headings:font-bold prose-headings:text-[#003554] 
+                        prose-h1:hidden
+                        prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-[#006494]/10 prose-h2:pb-3 prose-h2:tracking-tight
+                        prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[#003554]
+                        prose-p:text-[#4A5568] prose-p:leading-relaxed prose-p:mb-4 prose-p:font-normal prose-p:text-base md:prose-p:text-lg
+                        prose-li:text-[#4A5568] prose-li:font-normal prose-li:text-base prose-li:leading-relaxed
+                        prose-strong:text-[#003554] prose-strong:font-bold
+                        prose-a:text-[#0582CA] prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#003554]
+                        mt-6">
+                        {sections.map((section, i) => (
+                            <div key={i}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                    {section}
+                                </ReactMarkdown>
+                                {getBreakAfter(section)}
+                            </div>
+                        ))}
+                    </article>
+                );
+            })() : (
                 /* Other professions get "Coming Soon" placeholder */
                 <Card className="mb-16 border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900">
                     <CardContent className="p-8 text-center">
