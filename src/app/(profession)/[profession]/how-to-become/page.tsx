@@ -17,6 +17,15 @@ import {
     CareerTimelineStrip,
     MidArticleCTA,
 } from '@/components/content/ArticleVisualBreaks';
+import {
+    WorkEnvironmentChart,
+    CurriculumGrid,
+    ExamInfoCard,
+    SkillsGrid,
+    SpecializationsTable,
+    SalaryByExperienceTable,
+    BenefitsGrid,
+} from '@/components/content/ArticleInlineVisuals';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -86,14 +95,7 @@ Accurate, timely documentation ensures continuity of care and meets legal and re
 
 ### Work Environment
 
-Registered nurses work in diverse settings:
-
-- **Hospitals (60% of RNs)**: Acute care, emergency departments, intensive care units, surgical units, and specialty departments
-- **Ambulatory Care (18%)**: Physician offices, outpatient clinics, and same-day surgery centers
-- **Long-term Care (7%)**: Nursing homes, assisted living facilities, and rehabilitation centers
-- **Home Healthcare (6%)**: Providing care in patients' homes
-- **Schools and Public Health (5%)**: School nursing, community health programs, and public health departments
-- **Other Settings (4%)**: Insurance companies, pharmaceutical companies, research institutions, and educational facilities
+<!-- COMPONENT:WORK_ENV -->
 
 Most hospital nurses work 12-hour shifts, typically three days per week, which allows for extended time off between shifts. Clinic and office-based nurses generally work standard business hours. The profession requires physical stamina, as nurses spend most of their shifts on their feet and may need to assist with patient mobility.
 
@@ -130,27 +132,7 @@ Find [accredited nursing schools](/registered-nurse/schools) in your area, or ex
 
 Nursing programs combine classroom instruction with clinical practice:
 
-**Foundational Sciences**
-- Anatomy and physiology
-- Microbiology
-- Chemistry
-- Nutrition
-- Psychology
-
-**Nursing Theory and Practice**
-- Fundamentals of nursing care
-- Pharmacology
-- Pathophysiology
-- Health assessment
-- Medical-surgical nursing
-- Maternal-child health
-- Pediatric nursing
-- Psychiatric-mental health nursing
-- Community health nursing
-
-**Clinical Rotations**
-
-Students complete supervised clinical experiences in various healthcare settings, typically totaling 500-1,000 hours depending on the program. These rotations provide hands-on experience with patient care under the guidance of experienced nurse preceptors.
+<!-- COMPONENT:CURRICULUM -->
 
 ### Licensure Requirements
 
@@ -158,18 +140,11 @@ Students complete supervised clinical experiences in various healthcare settings
 
 All states require passing the National Council Licensure Examination for Registered Nurses (NCLEX-RN). This computerized adaptive test assesses knowledge and clinical judgment across nursing practice areas. The exam is administered by [Pearson VUE](https://home.pearsonvue.com/nclex) and regulated by the [National Council of State Boards of Nursing (NCSBN)](https://www.ncsbn.org/).
 
-- **Format**: 75-145 questions (adaptive based on performance)
-- **Duration**: Up to 5 hours
-- **Pass Rate**: Approximately 85% for first-time U.S.-educated candidates
-- **Cost**: $200 examination fee plus state licensing fees
+<!-- COMPONENT:EXAM_INFO -->
 
 **State Licensure**
 
-After passing the NCLEX-RN, nurses apply for licensure in their state of practice. Requirements vary by state but typically include:
-- Criminal background check
-- Proof of nursing education
-- Application fees ($100-$300)
-- Continuing education for license renewal (varies by state)
+After passing the NCLEX-RN, nurses apply for licensure in their state of practice. Requirements vary by state but typically include a criminal background check, proof of nursing education, application fees ($100-$300), and continuing education for license renewal.
 
 Many states participate in the [Nurse Licensure Compact (NLC)](https://www.ncsbn.org/nurse-licensure-compact.htm), which allows nurses to practice in multiple states with a single license.
 
@@ -187,13 +162,7 @@ Safe medication practices require attention to detail, knowledge of pharmacology
 
 **Technical Procedures**
 
-RNs perform various procedures including:
-- Intravenous catheter insertion and management
-- Wound care and dressing changes
-- Urinary catheterization
-- Nasogastric tube insertion
-- Blood glucose monitoring
-- Specimen collection
+RNs perform various procedures including IV catheter insertion, wound care, urinary catheterization, nasogastric tube insertion, blood glucose monitoring, and specimen collection.
 
 **Technology Proficiency**
 
@@ -201,107 +170,49 @@ Modern nursing requires comfort with electronic health records, medication dispe
 
 ### Soft Skills
 
-**Critical Thinking**
-
-Nurses constantly analyze patient data, prioritize care needs, and make clinical decisions. This requires the ability to synthesize information from multiple sources and anticipate potential complications.
-
-**Communication**
-
-Effective communication with patients, families, and healthcare team members is essential. This includes active listening, clear verbal and written communication, and the ability to explain complex medical information in understandable terms.
-
-**Emotional Intelligence**
-
-Working with patients during vulnerable moments requires empathy, compassion, and the ability to manage one's own emotional responses. Nurses must balance professional boundaries with genuine caring.
-
-**Time Management**
-
-Managing multiple patients with competing needs demands strong organizational skills and the ability to prioritize effectively. Nurses must balance routine care with responding to emergencies and unexpected situations.
-
-**Adaptability**
-
-Healthcare environments change rapidly. Successful nurses adapt to new technologies, evolving best practices, and unexpected situations while maintaining quality patient care.
+<!-- COMPONENT:SKILLS_GRID -->
 
 ## Career Outlook and Job Market
 
 ### Employment Projections
 
-The [Bureau of Labor Statistics](https://www.bls.gov/ooh/healthcare/registered-nurses.htm) projects registered nursing employment will grow 6% from 2022 to 2032, adding approximately 194,500 new positions. This growth stems from:
-
-- Aging population requiring more healthcare services
-- Increased prevalence of chronic conditions
-- Emphasis on preventive care
-- Retirement of experienced nurses
-- Expansion of healthcare facilities
+The [Bureau of Labor Statistics](https://www.bls.gov/ooh/healthcare/registered-nurses.htm) projects registered nursing employment will grow 6% from 2022 to 2032, adding approximately 194,500 new positions. This growth stems from an aging population, increased chronic conditions, emphasis on preventive care, retirement of experienced nurses, and expansion of healthcare facilities.
 
 Browse current [registered nurse job openings](/registered-nurse/jobs) nationwide, or explore opportunities in high-demand markets like [Texas](/registered-nurse/jobs/tx), [California](/registered-nurse/jobs/ca), or [Florida](/registered-nurse/jobs/fl).
 
 ### Geographic Demand
 
-Nursing demand varies by region, with higher needs in:
-- Rural and underserved areas
-- Southern and Western states with growing populations
-- Areas with aging populations
-- Regions experiencing healthcare facility expansion
+Nursing demand varies by region, with higher needs in rural and underserved areas, Southern and Western states with growing populations, areas with aging populations, and regions experiencing healthcare facility expansion.
 
 ### Specialization Opportunities
 
-Experienced RNs can pursue specialized certifications through the [American Nurses Credentialing Center (ANCC)](https://www.nursingworld.org/ancc/) in areas such as:
-- Critical care (CCRN)
-- Emergency nursing (CEN)
-- Oncology (OCN)
-- Pediatrics (CPN)
-- Operating room (CNOR)
-- Cardiac care (CMC)
+Experienced RNs can pursue specialized certifications through the [American Nurses Credentialing Center (ANCC)](https://www.nursingworld.org/ancc/). Specialization typically requires 1-2 years of experience in the specialty area and passing a certification examination.
 
-Specialization typically requires 1-2 years of experience in the specialty area and passing a certification examination.
+<!-- COMPONENT:SPECIALIZATIONS -->
 
 ## Salary and Compensation
 
 ### National Salary Data
 
-According to the [Bureau of Labor Statistics](https://www.bls.gov/oes/current/oes291141.htm) (May 2023 data):
-- **Median Annual Salary**: ${salaryData.median}
-- **Entry Level (10th percentile)**: ${salaryData.entry}
-- **Experienced (90th percentile)**: ${salaryData.experienced}
+According to the [Bureau of Labor Statistics](https://www.bls.gov/oes/current/oes291141.htm) (May 2023 data), the **median annual salary** is **${salaryData.median}**, with entry-level positions starting at **${salaryData.entry}** and experienced RNs earning up to **${salaryData.experienced}**.
 
 Explore detailed [registered nurse salary data](/registered-nurse/salary) by state and city to understand earning potential in your area.
 
 ### Salary by Experience Level
 
-**New Graduate (0-2 years)**
-- Average: $60,000-$75,000
-- Varies significantly by location and setting
-
-**Mid-Career (3-7 years)**
-- Average: $75,000-$95,000
-- Opportunities for shift differentials and specialty pay
-
-**Experienced (8-15 years)**
-- Average: $85,000-$110,000
-- Leadership roles and specializations increase earning potential
-
-**Senior/Advanced (15+ years)**
-- Average: $95,000-$130,000+
-- May include management positions or advanced practice roles
+<!-- COMPONENT:SALARY_TABLE -->
 
 ### Geographic Salary Variations
 
 **Highest-Paying States** (median annual salary):
-${salaryData.topStates.map((s, i) => `${i + 1}. [${s.state}](/registered-nurse/salary/${s.stateCode.toLowerCase()}): ${s.salary}`).join('\n')}
+${salaryData.topStates.map((s, i) => `${i + 1}. [${s.state}](/registered-nurse/salary/${s.stateCode.toLowerCase()}): ${s.salary}`).join('\\n')}
 
 **Highest-Paying Metropolitan Areas**:
-${salaryData.topCities.map((c, i) => `${i + 1}. [${c.city}, ${c.state}](/registered-nurse/salary/${c.stateCode.toLowerCase()}/${c.citySlug}): ${c.salary}`).join('\n')}
+${salaryData.topCities.map((c, i) => `${i + 1}. [${c.city}, ${c.state}](/registered-nurse/salary/${c.stateCode.toLowerCase()}/${c.citySlug}): ${c.salary}`).join('\\n')}
 
 ### Additional Compensation
 
-Many nursing positions offer:
-- Shift differentials (evening, night, weekend: 10-25% premium)
-- Sign-on bonuses ($5,000-$20,000 for high-demand areas)
-- Relocation assistance
-- Tuition reimbursement
-- Retirement benefits (403(b) or 401(k) matching)
-- Health insurance
-- Paid time off (typically 3-4 weeks annually)
+<!-- COMPONENT:BENEFITS -->
 
 ## Getting Started: Your Action Plan
 
@@ -520,6 +431,47 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                     }
                 };
 
+                /* ── Map of marker → React component ── */
+                const inlineComponentMap: Record<string, React.ReactNode> = {
+                    'WORK_ENV': <WorkEnvironmentChart />,
+                    'CURRICULUM': <CurriculumGrid />,
+                    'EXAM_INFO': <ExamInfoCard />,
+                    'SKILLS_GRID': <SkillsGrid />,
+                    'SPECIALIZATIONS': <SpecializationsTable />,
+                    'SALARY_TABLE': <SalaryByExperienceTable />,
+                    'BENEFITS': <BenefitsGrid />,
+                };
+
+                /* ── Helper: render a section, splitting at <!-- COMPONENT:xxx --> markers ── */
+                const renderSectionWithInlines = (sectionText: string, sectionIdx: number) => {
+                    // Split at component markers
+                    const parts = sectionText.split(/<!-- COMPONENT:(\w+) -->/);
+                    // parts = [textBefore, markerName, textAfter, markerName2, textAfter2, ...]
+
+                    if (parts.length === 1) {
+                        // No markers — render plain markdown
+                        return (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                {sectionText}
+                            </ReactMarkdown>
+                        );
+                    }
+
+                    return parts.map((part, partIdx) => {
+                        if (partIdx % 2 === 1) {
+                            // This is a marker name — render the component
+                            return <div key={`${sectionIdx}-comp-${partIdx}`}>{inlineComponentMap[part] || null}</div>;
+                        }
+                        // This is markdown text
+                        if (!part.trim()) return null;
+                        return (
+                            <ReactMarkdown key={`${sectionIdx}-md-${partIdx}`} remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                {part}
+                            </ReactMarkdown>
+                        );
+                    });
+                };
+
                 return (
                     <article className="prose prose-slate max-w-none 
                         prose-headings:font-bold prose-headings:text-[#003554] 
@@ -533,9 +485,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
                         mt-6">
                         {sections.map((section, i) => (
                             <div key={i}>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                                    {section}
-                                </ReactMarkdown>
+                                {renderSectionWithInlines(section, i)}
                                 {getBreakAfter(section)}
                             </div>
                         ))}

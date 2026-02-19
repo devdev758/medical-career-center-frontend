@@ -343,8 +343,8 @@ export function MidArticleCTA({ professionSlug, displayName }: MidArticleCTAProp
 
             <div className="relative z-10 md:flex items-center justify-between gap-6">
                 <div className="mb-4 md:mb-0">
-                    <h3 className="text-xl font-bold mb-1">Ready to explore your options?</h3>
-                    <p className="text-white/70 text-sm">
+                    <h3 className="text-xl font-bold mb-1 text-white">Ready to explore your options?</h3>
+                    <p className="text-white/80 text-sm">
                         See what {displayName}s earn in your state, or browse open positions right now.
                     </p>
                 </div>
