@@ -205,10 +205,10 @@ Explore detailed [registered nurse salary data](/registered-nurse/salary) by sta
 ### Geographic Salary Variations
 
 **Highest-Paying States** (median annual salary):
-${salaryData.topStates.map((s, i) => `${i + 1}. [${s.state}](/registered-nurse/salary/${s.stateCode.toLowerCase()}): ${s.salary}`).join('\\n')}
+${salaryData.topStates.map((s, i) => `${i + 1}. [${s.state}](/registered-nurse/salary/${s.stateCode.toLowerCase()}): ${s.salary}`).join('\n')}
 
 **Highest-Paying Metropolitan Areas**:
-${salaryData.topCities.map((c, i) => `${i + 1}. [${c.city}, ${c.state}](/registered-nurse/salary/${c.stateCode.toLowerCase()}/${c.citySlug}): ${c.salary}`).join('\\n')}
+${salaryData.topCities.map((c, i) => `${i + 1}. [${c.city}, ${c.state}](/registered-nurse/salary/${c.stateCode.toLowerCase()}/${c.citySlug}): ${c.salary}`).join('\n')}
 
 ### Additional Compensation
 
@@ -333,7 +333,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
         },
         include: { location: true },
         orderBy: { annualMedian: 'desc' },
-        take: 5
+        take: 15
     });
 
     // Fetch top paying cities
@@ -345,7 +345,7 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
         },
         include: { location: true },
         orderBy: { annualMedian: 'desc' },
-        take: 5
+        take: 15
     });
 
     // Prepare salary data for content generation
@@ -354,18 +354,40 @@ export default async function RegisteredNurseCareerGuide({ params }: PageProps) 
         entry: nationalData?.annual10th ? `$${Math.round(nationalData.annual10th).toLocaleString()}` : '$63,000',
         experienced: nationalData?.annual90th ? `$${Math.round(nationalData.annual90th).toLocaleString()}` : '$129,000',
         employmentCount: nationalData?.employmentCount || undefined,
-        topStates: topStatesData.map(s => ({
-            state: s.location?.stateName || s.location?.state || '',
-            salary: `$${Math.round(s.annualMedian || 0).toLocaleString()}`,
-            stateCode: s.location?.state || ''
-        })),
-        topCities: topCitiesData.map(c => ({
-            city: c.location?.city || '',
-            state: c.location?.state || '',
-            salary: `$${Math.round(c.annualMedian || 0).toLocaleString()}`,
-            citySlug: c.location?.slug?.split('/').pop() || '',
-            stateCode: c.location?.state || ''
-        }))
+        topStates: (() => {
+            const seen = new Set<string>();
+            return topStatesData
+                .filter(s => {
+                    const key = s.location?.stateName || s.location?.state || '';
+                    if (!key || seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                })
+                .slice(0, 5)
+                .map(s => ({
+                    state: s.location?.stateName || s.location?.state || '',
+                    salary: `$${Math.round(s.annualMedian || 0).toLocaleString()}`,
+                    stateCode: s.location?.state || ''
+                }));
+        })(),
+        topCities: (() => {
+            const seen = new Set<string>();
+            return topCitiesData
+                .filter(c => {
+                    const key = `${c.location?.city}-${c.location?.state}`;
+                    if (seen.has(key) || !c.annualMedian || c.annualMedian === 0) return false;
+                    seen.add(key);
+                    return true;
+                })
+                .slice(0, 5)
+                .map(c => ({
+                    city: c.location?.city || '',
+                    state: c.location?.state || '',
+                    salary: `$${Math.round(c.annualMedian || 0).toLocaleString()}`,
+                    citySlug: c.location?.slug?.split('/').pop() || '',
+                    stateCode: c.location?.state || ''
+                }));
+        })()
     };
 
     // Generate content with live data

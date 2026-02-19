@@ -238,7 +238,7 @@ const specializations = [
 
 export function SpecializationsTable() {
     return (
-        <div className="my-8 rounded-2xl border border-[#006494]/10 bg-white p-6 md:p-8 shadow-sm">
+        <div className="my-8 rounded-2xl border border-[#006494]/10 bg-white p-6 md:p-8 shadow-sm not-prose">
             <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFC300] to-[#FFD54F] flex items-center justify-center">
                     <GraduationCap className="w-5 h-5 text-[#003554]" />

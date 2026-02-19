@@ -336,7 +336,7 @@ interface MidArticleCTAProps {
 
 export function MidArticleCTA({ professionSlug, displayName }: MidArticleCTAProps) {
     return (
-        <div className="my-10 rounded-2xl bg-gradient-to-br from-[#003554] to-[#006494] p-6 md:p-8 shadow-lg text-white relative overflow-hidden">
+        <div className="my-10 rounded-2xl bg-gradient-to-br from-[#003554] to-[#006494] p-6 md:p-8 shadow-lg text-white relative overflow-hidden not-prose">
             {/* Decorative circle */}
             <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5" />
             <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5" />
