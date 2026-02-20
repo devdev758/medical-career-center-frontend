@@ -16,13 +16,21 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { QuickNavigation } from '@/components/ui/quick-navigation';
 import { urlSlugToDbSlug, formatSlugForBreadcrumb, getProfessionUrls } from '@/lib/url-utils';
 import { validateProfession, getProfessionDisplayName } from '@/lib/profession-utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RN_LICENSE_CONTENT } from '@/lib/rn-license-content';
 import { getContentYear } from '@/lib/date-utils';
+import {
+    NCLEXOverviewCard,
+    NCLEXPassRatesCard,
+    CompactStatesGrid,
+    EndorsementChecklist,
+    RenewalFrequencyCards,
+    CompactComparisonTable,
+    LicenseStepsTimeline
+} from '@/components/content/LicenseVisuals';
 
 export const dynamic = 'force-dynamic';
 
@@ -94,6 +102,86 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
+// Map section headings to visual components to insert after them
+function getVisualAfterSection(sectionText: string): React.ReactNode | null {
+    if (sectionText.includes('## NCLEX-RN Exam')) {
+        return (
+            <>
+                <NCLEXOverviewCard key="nclex-overview" />
+                <NCLEXPassRatesCard key="nclex-pass" />
+            </>
+        );
+    }
+    if (sectionText.includes('## Nurse Licensure Compact')) {
+        return <CompactStatesGrid key="compact-states" />;
+    }
+    if (sectionText.includes('## Licensure by Endorsement')) {
+        return <EndorsementChecklist key="endorsement" />;
+    }
+    if (sectionText.includes('## RN License Renewal')) {
+        return <RenewalFrequencyCards key="renewal" />;
+    }
+    if (sectionText.includes('## Compact vs. Single-State')) {
+        return <CompactComparisonTable key="comparison" />;
+    }
+    if (sectionText.includes('## Next Steps')) {
+        return <LicenseStepsTimeline key="steps" />;
+    }
+    return null;
+}
+
+// Sections where the markdown lists are redundant because the component covers it all
+function shouldTrimSection(sectionText: string): string {
+    // For NCLEX section: keep intro paragraph, remove detailed bullet lists
+    if (sectionText.includes('## NCLEX-RN Exam')) {
+        // Keep only up to the first ### (the intro paragraph)
+        const introEnd = sectionText.indexOf('### NCLEX-RN Overview');
+        if (introEnd > 0) {
+            return sectionText.substring(0, introEnd);
+        }
+    }
+    // For Compact section: keep intro + how it works, remove long state lists
+    if (sectionText.includes('## Nurse Licensure Compact')) {
+        const statesListStart = sectionText.indexOf('### NLC Compact States');
+        const howItWorksStart = sectionText.indexOf('### How the NLC Works');
+        if (statesListStart > 0 && howItWorksStart > 0) {
+            // Keep intro, skip state list, keep from "How the NLC Works" onward
+            return sectionText.substring(0, statesListStart) + sectionText.substring(howItWorksStart);
+        }
+    }
+    // For Renewal section: keep intro, remove the frequency/CE lists
+    if (sectionText.includes('## RN License Renewal')) {
+        const freqStart = sectionText.indexOf('### Renewal Frequency');
+        if (freqStart > 0) {
+            // Keep only the intro paragraph
+            return sectionText.substring(0, freqStart);
+        }
+    }
+    // For Compact vs Single-State: keep intro, remove table (component replaces it)
+    if (sectionText.includes('## Compact vs. Single-State')) {
+        const tableStart = sectionText.indexOf('| Feature');
+        if (tableStart > 0) {
+            return sectionText.substring(0, tableStart);
+        }
+    }
+    // For Endorsement: keep intro, remove the checklist
+    if (sectionText.includes('## Licensure by Endorsement')) {
+        const reqStart = sectionText.indexOf('### Endorsement Requirements');
+        const nursysStart = sectionText.indexOf('### Nursys.com');
+        if (reqStart > 0 && nursysStart > 0) {
+            return sectionText.substring(0, reqStart) + sectionText.substring(nursysStart);
+        }
+    }
+    // For Next Steps: remove numbered list (component replaces it)
+    if (sectionText.includes('## Next Steps')) {
+        const listStart = sectionText.indexOf('1. **Determine');
+        if (listStart > 0) {
+            return sectionText.substring(0, listStart);
+        }
+    }
+    return sectionText;
+}
+
 export default async function LicensePage({ params }: PageProps) {
     const { profession, path } = await params;
 
@@ -146,6 +234,17 @@ export default async function LicensePage({ params }: PageProps) {
         breadcrumbItems.push({ label: 'License & Certification' });
     }
 
+    // Markdown link component
+    const mdComponents = {
+        a: ({ node, ...props }: any) => {
+            const href = props.href || '';
+            if (href.startsWith('http')) {
+                return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+            }
+            return <Link href={href}>{props.children}</Link>;
+        }
+    };
+
     return (
         <main className="container mx-auto py-10 px-4 max-w-5xl">
             <Breadcrumb items={breadcrumbItems} className="mb-6" />
@@ -163,8 +262,6 @@ export default async function LicensePage({ params }: PageProps) {
                         : 'Everything you need to know about licensing and certification'}
                 </p>
             </div>
-
-            <QuickNavigation profession={profession} currentPath="license" />
 
             {/* License Type Navigation */}
             {showLicenseNav && (
@@ -203,38 +300,41 @@ export default async function LicensePage({ params }: PageProps) {
                 </Card>
             )}
 
-            {/* Comprehensive License Guide for RN */}
-            {!isLicenseType && profession === 'registered-nurse' && (
-                <article className="prose prose-slate dark:prose-invert max-w-none mb-12
-                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
-                    prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
-                    prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
-                    prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                    prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
-                    prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
-                    prose-table:my-6 prose-table:border-collapse
-                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
-                    prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
-                    prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            a: ({ node, ...props }) => {
-                                const href = props.href || '';
-                                if (href.startsWith('http')) {
-                                    return <a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
-                                }
-                                return <Link href={href}>{props.children}</Link>;
-                            }
-                        }}
-                    >
-                        {RN_LICENSE_CONTENT}
-                    </ReactMarkdown>
-                </article>
-            )}
+            {/* Comprehensive License Guide for RN — with visual components */}
+            {!isLicenseType && profession === 'registered-nurse' && (() => {
+                // Split content at ## headings
+                const sections = RN_LICENSE_CONTENT.split(/(?=^## )/m).filter(s => s.trim());
+
+                return (
+                    <article className="prose prose-slate dark:prose-invert max-w-none mb-12
+                        prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                        prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                        prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                        prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                        prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                        prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                        prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                        prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                        prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                        prose-table:my-6 prose-table:border-collapse
+                        prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
+                        prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
+                        prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
+                        {sections.map((section, i) => {
+                            const trimmed = shouldTrimSection(section);
+                            const visual = getVisualAfterSection(section);
+                            return (
+                                <div key={i}>
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                        {trimmed}
+                                    </ReactMarkdown>
+                                    {visual}
+                                </div>
+                            );
+                        })}
+                    </article>
+                );
+            })()}
 
             {/* Overview - fallback for non-RN */}
             {!isLicenseType && profession !== 'registered-nurse' && (
