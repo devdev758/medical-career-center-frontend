@@ -1,4 +1,3 @@
-import { getPosts } from "@/lib/wordpress";
 import Link from "next/link";
 import {
   Card,
@@ -11,11 +10,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatsTicker } from "@/components/marketing/stats-ticker";
 import { prisma } from "@/lib/prisma";
-import { ArrowRight, Sparkles, TrendingUp, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  TrendingUp,
+  Users,
+  GraduationCap,
+  DollarSign,
+  Briefcase,
+  Award,
+  BookOpen,
+  FileText,
+} from "lucide-react";
 
 export default async function Home() {
-  const posts = await getPosts();
-
   // Fetch featured professions for the grid
   const featuredSlugs = ['registered-nurse', 'physical-therapist', 'nurse-practitioner', 'dental-hygienist', 'radiologic-technologist', 'physician-assistant'];
   const featuredProfessions = await prisma.profession.findMany({
@@ -77,7 +85,7 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Right Side Visual (Empty for now/Shapes) or Featured Card Stack */}
+          {/* Right Side Visual */}
           <div className="relative hidden lg:block h-[600px]">
             {/* 3D Glass Card Effect */}
             <div className="absolute top-10 right-10 w-80 h-96 bg-card border border-white/10 rounded-3xl shadow-2xl z-20 p-6 flex flex-col justify-between active-card rotate-3 hover:rotate-0 transition-all duration-500">
@@ -139,33 +147,92 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Career Resources / Blog */}
+      {/* Career Resources — replaces old WordPress blog section */}
       <section className="py-24 px-4 bg-muted/20">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-heading font-bold mb-12 text-center">Career Resources</h2>
+          <h2 className="text-3xl font-heading font-bold mb-4 text-center">Career Resources</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Everything you need to plan, launch, and grow your healthcare career.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.slice(0, 3).map((post) => (
-              <Card key={post.id} className="flex flex-col bg-card border-border/50 hover:border-primary/50 transition-colors group">
-                <CardHeader>
-                  <CardTitle className="line-clamp-2 text-xl font-heading group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
-                  <CardDescription className="line-clamp-3" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  {post._embedded?.["wp:featuredmedia"]?.[0]?.source_url && (
-                    <img
-                      src={post._embedded["wp:featuredmedia"][0].source_url}
-                      alt={post.title.rendered}
-                      className="w-full h-48 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-500"
-                    />
-                  )}
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="ghost" className="w-full group-hover:bg-primary/10 group-hover:text-primary">
-                    <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+            {[
+              {
+                icon: DollarSign,
+                title: 'Salary Explorer',
+                description: 'Compare salaries across 100+ healthcare professions by state and city. Updated with the latest BLS data.',
+                href: '/registered-nurse/salary',
+                cta: 'Explore Salaries',
+                color: 'text-green-500',
+                bgColor: 'bg-green-500/10',
+              },
+              {
+                icon: GraduationCap,
+                title: 'School Finder',
+                description: 'Find accredited nursing and healthcare programs near you. Filter by degree level, location, and specialization.',
+                href: '/registered-nurse/schools',
+                cta: 'Find Schools',
+                color: 'text-blue-500',
+                bgColor: 'bg-blue-500/10',
+              },
+              {
+                icon: Briefcase,
+                title: 'Job Listings',
+                description: 'Browse thousands of healthcare job openings with filters for location, specialty, and experience level.',
+                href: '/registered-nurse/jobs',
+                cta: 'Browse Jobs',
+                color: 'text-purple-500',
+                bgColor: 'bg-purple-500/10',
+              },
+              {
+                icon: Award,
+                title: 'License & Certification',
+                description: 'State-by-state licensing requirements, compact nursing states, NCLEX prep, and renewal guides.',
+                href: '/registered-nurse/license',
+                cta: 'License Guide',
+                color: 'text-amber-500',
+                bgColor: 'bg-amber-500/10',
+              },
+              {
+                icon: BookOpen,
+                title: 'Career Guides',
+                description: 'Step-by-step guides on how to become a nurse, therapist, technician, and more — from education to first job.',
+                href: '/registered-nurse/how-to-become',
+                cta: 'Read Guides',
+                color: 'text-cyan-500',
+                bgColor: 'bg-cyan-500/10',
+              },
+              {
+                icon: FileText,
+                title: 'Resume Builder',
+                description: 'Build a professional healthcare resume with AI-powered suggestions tailored to your target role.',
+                href: '/resume-builder',
+                cta: 'Build Resume',
+                color: 'text-rose-500',
+                bgColor: 'bg-rose-500/10',
+              },
+            ].map((resource) => {
+              const Icon = resource.icon;
+              return (
+                <Card key={resource.title} className="flex flex-col bg-card border-border/50 hover:border-primary/50 transition-colors group">
+                  <CardHeader>
+                    <div className={`w-12 h-12 rounded-xl ${resource.bgColor} flex items-center justify-center mb-3`}>
+                      <Icon className={`w-6 h-6 ${resource.color}`} />
+                    </div>
+                    <CardTitle className="text-xl font-heading group-hover:text-primary transition-colors">
+                      {resource.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {resource.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter className="mt-auto">
+                    <Button asChild variant="ghost" className="w-full group-hover:bg-primary/10 group-hover:text-primary">
+                      <Link href={resource.href}>{resource.cta} <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>

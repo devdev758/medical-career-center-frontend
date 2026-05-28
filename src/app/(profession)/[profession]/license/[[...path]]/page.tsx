@@ -41,51 +41,61 @@ interface PageProps {
     };
 }
 
-// License type slugs
-const LICENSE_TYPE_SLUGS = ['compact', 'renewal', 'lookup', 'reciprocity', 'continuing-education'];
+// Helper to get dynamically formatted license type meta
+function getLicenseTypeMeta(slug: string, careerTitle: string) {
+    const metas: Record<string, { title: string; description: string; icon: any }> = {
+        'compact': {
+            title: 'Nurse Licensure Compact',
+            description: `Complete guide to the Nurse Licensure Compact (NLC) and multistate practice for ${careerTitle}s.`,
+            icon: Shield,
+        },
+        'renewal': {
+            title: 'License Renewal',
+            description: `How to renew your ${careerTitle} license or certification online, CEU requirements, and deadlines.`,
+            icon: RefreshCw,
+        },
+        'lookup': {
+            title: 'License Lookup',
+            description: `Verify ${careerTitle} licenses, lookup registry status, and contact state boards of nursing.`,
+            icon: Search,
+        },
+        'reciprocity': {
+            title: 'Reciprocity & Endorsement',
+            description: `How to transfer your ${careerTitle} license or certification to another state by reciprocity or endorsement.`,
+            icon: MapPin,
+        },
+        'continuing-education': {
+            title: 'Continuing Education',
+            description: `Continuing education (CEU) requirements, approved courses, and free contact hours for ${careerTitle}s.`,
+            icon: BookOpen,
+        },
+    };
+    return metas[slug] || null;
+}
 
-const LICENSE_TYPE_META: Record<string, { title: string; description: string; icon: any }> = {
-    'compact': {
-        title: 'Nurse Licensure Compact',
-        description: 'Practice in multiple states with one license',
-        icon: Shield,
-    },
-    'renewal': {
-        title: 'License Renewal',
-        description: 'How to renew your CNA certification online',
-        icon: RefreshCw,
-    },
-    'lookup': {
-        title: 'License Lookup',
-        description: 'Verify CNA certifications and check license status by state',
-        icon: Search,
-    },
-    'reciprocity': {
-        title: 'Reciprocity',
-        description: 'Transfer your CNA certification to another state',
-        icon: MapPin,
-    },
-    'continuing-education': {
-        title: 'Continuing Education',
-        description: 'CEU requirements and approved courses',
-        icon: BookOpen,
-    },
-};
+function getAvailableLicenseTypes(profession: string) {
+    const list = ['renewal', 'lookup', 'reciprocity', 'continuing-education'];
+    if (['registered-nurse', 'licensed-practical-nurse'].includes(profession)) {
+        list.unshift('compact');
+    }
+    return list;
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { profession, path } = await params;
     const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = path?.[0];
-    const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
-    const licenseTypeMeta = isLicenseType ? LICENSE_TYPE_META[firstParam] : null;
+    const availableTypes = getAvailableLicenseTypes(profession);
+    const isLicenseType = firstParam && availableTypes.includes(firstParam);
+    const licenseTypeMeta = isLicenseType ? getLicenseTypeMeta(firstParam, careerTitle) : null;
 
     const currentYear = getContentYear();
     let title, description, urlPath;
 
     if (licenseTypeMeta) {
-        title = `${careerTitle} ${licenseTypeMeta.title} ${currentYear} | Medical Career Center`;
-        description = `${licenseTypeMeta.description} for ${careerTitle.toLowerCase()}s. Complete guide to ${licenseTypeMeta.title.toLowerCase()} requirements, process, and resources.`;
+        title = `${careerTitle} ${licenseTypeMeta.title} Guide ${currentYear} | Medical Career Center`;
+        description = licenseTypeMeta.description;
         urlPath = `/${profession}/license/${firstParam}`;
     } else {
         title = `${careerTitle} License & Certification Guide ${currentYear} | Medical Career Center`;
@@ -134,11 +144,19 @@ function getVisualAfterSection(sectionText: string): React.ReactNode | null {
 function shouldTrimSection(sectionText: string): string {
     // For NCLEX section: keep intro paragraph, remove detailed bullet lists
     if (sectionText.includes('## NCLEX-RN Exam')) {
-        // Keep only up to the first ### (the intro paragraph)
-        const introEnd = sectionText.indexOf('### NCLEX-RN Overview');
-        if (introEnd > 0) {
-            return sectionText.substring(0, introEnd);
+        const overviewStart = sectionText.indexOf('### NCLEX-RN Overview');
+        const howToRegisterStart = sectionText.indexOf('### How to Register for NCLEX');
+        const retakingStart = sectionText.indexOf('**Retaking NCLEX**:');
+        
+        let cleaned = sectionText.substring(0, overviewStart); // Keep intro
+        if (howToRegisterStart > 0) {
+            const howToRegisterEnd = retakingStart > 0 ? retakingStart : sectionText.length;
+            cleaned += '\n\n' + sectionText.substring(howToRegisterStart, howToRegisterEnd);
         }
+        if (retakingStart > 0) {
+            cleaned += '\n\n' + sectionText.substring(retakingStart);
+        }
+        return cleaned;
     }
     // For Compact section: keep intro + how it works, remove long state lists
     if (sectionText.includes('## Nurse Licensure Compact')) {
@@ -149,13 +167,16 @@ function shouldTrimSection(sectionText: string): string {
             return sectionText.substring(0, statesListStart) + sectionText.substring(howItWorksStart);
         }
     }
-    // For Renewal section: keep intro, remove the frequency/CE lists
+    // For Renewal section: keep intro and CE requirements, remove only frequency bullet lists (which card covers)
     if (sectionText.includes('## RN License Renewal')) {
         const freqStart = sectionText.indexOf('### Renewal Frequency');
-        if (freqStart > 0) {
-            // Keep only the intro paragraph
-            return sectionText.substring(0, freqStart);
+        const ceStart = sectionText.indexOf('### Continuing Education');
+        
+        let cleaned = sectionText.substring(0, freqStart); // Keep intro
+        if (ceStart > 0) {
+            cleaned += '\n\n' + sectionText.substring(ceStart); // Keep CE requirements onward
         }
+        return cleaned;
     }
     // For Compact vs Single-State: keep intro, remove table (component replaces it)
     if (sectionText.includes('## Compact vs. Single-State')) {
@@ -182,6 +203,40 @@ function shouldTrimSection(sectionText: string): string {
     return sectionText;
 }
 
+function getSubpageContent(slug: string): string {
+    // Split by ## headings
+    const sections = RN_LICENSE_CONTENT.split(/(?=^## )/m);
+    
+    if (slug === 'compact') {
+        const compactSection = sections.find(s => s.startsWith('## Nurse Licensure Compact')) || '';
+        const comparisonSection = sections.find(s => s.startsWith('## Compact vs. Single-State')) || '';
+        return `${compactSection}\n\n${comparisonSection}`;
+    }
+    if (slug === 'reciprocity') {
+        return sections.find(s => s.startsWith('## Licensure by Endorsement')) || '';
+    }
+    if (slug === 'lookup') {
+        return sections.find(s => s.startsWith('## State-Specific Requirements')) || '';
+    }
+    if (slug === 'renewal') {
+        const renewalSection = sections.find(s => s.startsWith('## RN License Renewal')) || '';
+        const ceIndex = renewalSection.indexOf('### Continuing Education');
+        if (ceIndex > 0) {
+            return renewalSection.substring(0, ceIndex);
+        }
+        return renewalSection;
+    }
+    if (slug === 'continuing-education') {
+        const renewalSection = sections.find(s => s.startsWith('## RN License Renewal')) || '';
+        const ceIndex = renewalSection.indexOf('### Continuing Education');
+        if (ceIndex > 0) {
+            return '## Continuing Education (CE) Requirements\n\n' + renewalSection.substring(ceIndex).replace('### Continuing Education (CE) Requirements', '');
+        }
+        return '';
+    }
+    return '';
+}
+
 export default async function LicensePage({ params }: PageProps) {
     const { profession, path } = await params;
 
@@ -197,8 +252,15 @@ export default async function LicensePage({ params }: PageProps) {
     const careerTitle = formatSlugForBreadcrumb(profession);
 
     const firstParam = path?.[0];
-    const isLicenseType = firstParam && LICENSE_TYPE_SLUGS.includes(firstParam);
-    const licenseTypeMeta = isLicenseType ? LICENSE_TYPE_META[firstParam] : null;
+    const availableTypes = getAvailableLicenseTypes(profession);
+    const isLicenseType = firstParam && availableTypes.includes(firstParam);
+
+    // Thrown 404 for invalid sub-paths
+    if (firstParam && !isLicenseType) {
+        notFound();
+    }
+
+    const licenseTypeMeta = isLicenseType ? getLicenseTypeMeta(firstParam, careerTitle) : null;
 
     // Fetch career guide for license data
     const careerGuide = await prisma.careerGuide.findUnique({
@@ -213,12 +275,9 @@ export default async function LicensePage({ params }: PageProps) {
         }
     });
 
-    // Career guide is optional - pages work without it
-
     const stateReqs = (careerGuide?.stateRequirements as Record<string, any>) || {};
     const examInfo = (careerGuide?.examInfo as any[]) || [];
     const certifications = (careerGuide?.certifications as any[]) || [];
-    // Show license navigation for main professions
     const showLicenseNav = ['registered-nurse', 'cna', 'licensed-practical-nurse'].includes(profession);
 
     // Build breadcrumb items
@@ -270,29 +329,31 @@ export default async function LicensePage({ params }: PageProps) {
                         <CardTitle className="text-lg">License Resources</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            {Object.entries(LICENSE_TYPE_META).map(([slug, meta]) => {
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                            {availableTypes.map((slug) => {
+                                const meta = getLicenseTypeMeta(slug, careerTitle);
+                                if (!meta) return null;
                                 const Icon = meta.icon;
                                 const isActive = firstParam === slug;
                                 return (
                                     <Link
                                         key={slug}
                                         href={`/${profession}/license/${slug}`}
-                                        className={`p-4 rounded-lg border transition-colors text-center ${isActive
+                                        className={`p-4 rounded-lg border transition-colors text-center flex flex-col justify-between h-28 ${isActive
                                             ? 'bg-primary text-primary-foreground border-primary'
-                                            : 'hover:bg-muted'
+                                            : 'hover:bg-muted border-border'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5 mx-auto mb-2" />
-                                        <p className="font-medium text-sm">{meta.title.replace('Nurse Licensure ', '')}</p>
+                                        <p className="font-medium text-xs leading-snug">{meta.title.replace('Nurse Licensure ', '')}</p>
                                     </Link>
                                 );
                             })}
                         </div>
                         {isLicenseType && (
-                            <div className="mt-4 pt-4 border-t">
-                                <Link href={`/${profession}/license`} className="text-sm text-primary hover:underline">
-                                    ← View license overview
+                            <div className="mt-4 pt-4 border-t border-border">
+                                <Link href={`/${profession}/license`} className="text-sm text-primary hover:underline flex items-center gap-1">
+                                    ← View complete {careerTitle} license guide
                                 </Link>
                             </div>
                         )}
@@ -300,9 +361,8 @@ export default async function LicensePage({ params }: PageProps) {
                 </Card>
             )}
 
-            {/* Comprehensive License Guide for RN — with visual components */}
+            {/* Comprehensive License Guide for RN (Main Page) */}
             {!isLicenseType && profession === 'registered-nurse' && (() => {
-                // Split content at ## headings
                 const sections = RN_LICENSE_CONTENT.split(/(?=^## )/m).filter(s => s.trim());
 
                 return (
@@ -336,70 +396,150 @@ export default async function LicensePage({ params }: PageProps) {
                 );
             })()}
 
-            {/* Overview - fallback for non-RN */}
+            {/* RN Subpage Content */}
+            {isLicenseType && profession === 'registered-nurse' && (() => {
+                const content = getSubpageContent(firstParam);
+                const sections = content.split(/(?=^## )/m).filter(s => s.trim());
+
+                return (
+                    <article className="prose prose-slate dark:prose-invert max-w-none mb-12
+                        prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+                        prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-0
+                        prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-2
+                        prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                        prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-semibold
+                        prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
+                        prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                        prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold
+                        prose-ul:my-4 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300
+                        prose-table:my-6 prose-table:border-collapse
+                        prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:font-semibold prose-th:border prose-th:border-gray-200 dark:prose-th:border-gray-700
+                        prose-td:p-3 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700
+                        prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded">
+                        {sections.map((section, i) => {
+                            const trimmed = shouldTrimSection(section);
+                            const visual = getVisualAfterSection(section);
+                            return (
+                                <div key={i}>
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                        {trimmed}
+                                    </ReactMarkdown>
+                                    {visual}
+                                </div>
+                            );
+                        })}
+                    </article>
+                );
+            })()}
+
+            {/* Overview - fallback for non-RN (Main Page) */}
             {!isLicenseType && profession !== 'registered-nurse' && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-4">Licensing Overview</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide?.licensingOverview}
+                        {careerGuide?.licensingOverview || `Licensing requirements for ${careerTitle}s vary by state. Most states require completion of an approved training program and passing a competency exam.`}
                     </p>
                 </section>
             )}
 
-            {/* Compact License Content (for RN) */}
-            {firstParam === 'compact' && ['registered-nurse', 'licensed-practical-nurse'].includes(profession) && (
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4">Nurse Licensure Compact (NLC)</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-6">
-                        The Nurse Licensure Compact allows registered nurses to practice in multiple states with a single license.
-                        As of 2024, 41 states have enacted compact legislation, making it easier than ever to work across state lines.
-                    </p>
-                    <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 mb-6">
-                        <CardContent className="p-6">
-                            <h3 className="font-semibold mb-3">Compact Nursing License Benefits</h3>
-                            <ul className="space-y-2 text-muted-foreground">
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">✓</span>
-                                    Practice in all compact states with one license
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">✓</span>
-                                    No additional state license applications needed
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">✓</span>
-                                    Ideal for travel nurses and telehealth positions
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">✓</span>
-                                    Save time and money on licensing fees
-                                </li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-                </section>
-            )}
-
-            {/* Renewal Content */}
-            {firstParam === 'renewal' && (
-                <section className="mb-12">
+            {/* Non-RN Subpage Content: Renewal */}
+            {isLicenseType && firstParam === 'renewal' && profession !== 'registered-nurse' && (
+                <section className="mb-12 prose prose-slate dark:prose-invert max-w-none">
                     <h2 className="text-2xl font-bold mb-4">License Renewal Process</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        {careerGuide?.renewalProcess || 'Most states require nursing license renewal every 1-2 years. Requirements typically include completing continuing education hours and paying a renewal fee.'}
+                        {careerGuide?.renewalProcess || `Most states require renewal every 1-2 years. Check with your state registry or board for local continuing education (CE) requirements, practice hours, and renewal fees.`}
                     </p>
                 </section>
             )}
 
-            {/* Certification Exams */}
+            {/* Non-RN Subpage Content: Lookup */}
+            {isLicenseType && firstParam === 'lookup' && profession !== 'registered-nurse' && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-4">State Registry Verification</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        Verify certification status and find direct links to verify credentials with state-level boards and registries.
+                    </p>
+                    {Object.keys(stateReqs).length > 0 ? (
+                        <div className="space-y-4">
+                            {Object.entries(stateReqs).map(([state, req]: [string, any]) => (
+                                <Card key={state} className="border-border">
+                                    <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                        <div>
+                                            <h4 className="text-lg font-bold text-foreground mb-1">{state}</h4>
+                                            <p className="text-sm text-muted-foreground leading-relaxed">{req.details}</p>
+                                        </div>
+                                        <Badge variant={req.required ? "default" : "secondary"} className="self-start sm:self-center shrink-0">
+                                            {req.required ? "License Required" : "No License Required"}
+                                        </Badge>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-muted-foreground">Detailed state requirement data is not available. Please visit the corresponding state department of health or licensing board.</p>
+                    )}
+                </section>
+            )}
+
+            {/* Non-RN Subpage Content: Reciprocity */}
+            {isLicenseType && firstParam === 'reciprocity' && profession !== 'registered-nurse' && (
+                <section className="mb-12 prose prose-slate dark:prose-invert max-w-none">
+                    <h2 className="text-2xl font-bold mb-4">License Reciprocity & Transfer</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        Transferring your {careerTitle} credentials to a new state typically involves applying for reciprocity or endorsement. General requirements include:
+                    </p>
+                    <ul className="space-y-2 text-muted-foreground">
+                        <li>Holding an active, unencumbered license or certificate in your current home state.</li>
+                        <li>Submitting an application and background check to the new state board or health department.</li>
+                        <li>Providing official verification of your current license (some registries do this electronically).</li>
+                        <li>Verifying recent work experience (usually 1,000+ hours in the past 2 years).</li>
+                    </ul>
+                    {careerGuide?.licensingOverview && (
+                        <div className="mt-6 p-5 bg-muted/30 border rounded-xl">
+                            <h3 className="text-lg font-bold mb-2">Licensing Overview Notes</h3>
+                            <p className="text-sm leading-relaxed">{careerGuide.licensingOverview}</p>
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {/* Non-RN Subpage Content: Continuing Education */}
+            {isLicenseType && firstParam === 'continuing-education' && profession !== 'registered-nurse' && (
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Continuing Education & Certifications</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                        Fulfilling continuing education requirements is crucial for renewal. Many boards require specific topics such as infection control, documentation, and patient rights.
+                    </p>
+                    {certifications.length > 0 ? (
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {certifications.map((cert: any, idx: number) => (
+                                <Card key={idx} className="border-border">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-start justify-between mb-3 gap-2">
+                                            <h3 className="font-bold text-lg text-foreground">{cert.name}</h3>
+                                            <Badge variant="outline" className="shrink-0">{cert.issuer}</Badge>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{cert.description}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-muted-foreground">Please consult your local licensing authority for courses and contact hours approved in your state.</p>
+                    )}
+                </section>
+            )}
+
+            {/* Certification Exams (Main Page only) */}
             {examInfo.length > 0 && !isLicenseType && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">Certification Exams</h2>
                     <div className="space-y-4">
                         {examInfo.map((exam: any, idx: number) => (
-                            <Card key={idx}>
+                            <Card key={idx} className="border-border">
                                 <CardContent className="p-6">
-                                    <h3 className="font-semibold mb-2">{exam.examName}</h3>
-                                    <p className="text-sm text-muted-foreground">{exam.description}</p>
+                                    <h3 className="font-semibold text-lg text-foreground mb-2">{exam.examName}</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{exam.description}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -407,19 +547,19 @@ export default async function LicensePage({ params }: PageProps) {
                 </section>
             )}
 
-            {/* Professional Certifications */}
+            {/* Professional Certifications (Main Page only) */}
             {certifications.length > 0 && !isLicenseType && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">Professional Certifications</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         {certifications.map((cert: any, idx: number) => (
-                            <Card key={idx}>
+                            <Card key={idx} className="border-border">
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between mb-2">
-                                        <h3 className="font-semibold">{cert.name}</h3>
+                                        <h3 className="font-semibold text-lg text-foreground">{cert.name}</h3>
                                         <Badge variant="outline">{cert.issuer}</Badge>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">{cert.description}</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{cert.description}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -427,13 +567,13 @@ export default async function LicensePage({ params }: PageProps) {
                 </section>
             )}
 
-            {/* State Requirements */}
+            {/* State Requirements (Main Page only) */}
             {Object.keys(stateReqs).length > 0 && !isLicenseType && (
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">State-Specific Requirements</h2>
                     <div className="space-y-3">
                         {Object.entries(stateReqs).slice(0, 6).map(([state, req]: [string, any]) => (
-                            <Card key={state}>
+                            <Card key={state} className="border-border">
                                 <CardContent className="p-4">
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="font-semibold">{state}</h4>
@@ -441,32 +581,13 @@ export default async function LicensePage({ params }: PageProps) {
                                             {req.required ? "License Required" : "No License Required"}
                                         </Badge>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">{req.details}</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{req.details}</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
                 </section>
             )}
-
-            {/* Quick Navigation */}
-            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-                <h3 className="font-semibold mb-4">Explore More {careerTitle} Resources</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Link href={urls.schools} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Find Schools</p>
-                    </Link>
-                    <Link href={urls.howToBecome} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Career Guide</p>
-                    </Link>
-                    <Link href={urls.salary} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Salary Data</p>
-                    </Link>
-                    <Link href={urls.jobs} className="p-3 rounded-lg border bg-background hover:bg-primary/5 transition-colors text-center">
-                        <p className="font-medium text-sm">Browse Jobs</p>
-                    </Link>
-                </div>
-            </div>
         </main>
     );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from 'next/script';
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -14,8 +15,21 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "Medical Career Center",
-  description: "Your guide to medical careers, salaries, and schools.",
+  title: {
+    default: 'Medical Career Center | Healthcare Career Guide',
+    template: '%s | Medical Career Center',
+  },
+  description: 'Your comprehensive guide to medical careers — salary data, job listings, top schools, licensure requirements, and career resources for 100+ healthcare professions.',
+  metadataBase: new URL('https://medicalcareercenter.org'),
+  openGraph: {
+    type: 'website',
+    siteName: 'Medical Career Center',
+    locale: 'en_US',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function RootLayout({
@@ -43,6 +57,23 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-SFED06831C"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('consent', 'default', {
+              analytics_storage: 'granted'
+            });
+            gtag('config', 'G-SFED06831C');
+          `}
+        </Script>
+      </head>
       <body className={`${inter.variable} ${outfit.variable} ${mono.variable} font-sans flex flex-col min-h-screen bg-background text-foreground antialiased`}>
         <Header user={user} />
         <div className="flex-1">{children}</div>
